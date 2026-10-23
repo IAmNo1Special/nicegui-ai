@@ -46,6 +46,7 @@ from nicegui_ai import (
     SuggestionPrompt,
 )
 
+
 @ui.page("/")
 def index():
     # 1. Inject ambient dark theme & custom scrollbars
@@ -53,14 +54,16 @@ def index():
 
     # 2. Ambient floating glass header with circular token gauge
     header = FloatingHeader(
-        agent_name="code-assistant",
+        agent_name="code-agent",
         model="claude-3-7-sonnet",
         tokens_used=14200,
         token_limit=128000,
     )
 
     # 3. Centered AI conversation thread
-    with ui.column().classes("w-full max-w-3xl mx-auto h-screen pt-20 pb-4 px-4 overflow-hidden"):
+    with ui.column().classes(
+        "w-full max-w-3xl mx-auto h-screen pt-20 pb-4 px-4 overflow-hidden"
+    ):
         thread = AiThread(
             welcome_title="How can I help you today?",
             suggestions=[
@@ -74,35 +77,36 @@ def index():
             composer.set_running(True)
             thread.add_user_message(prompt)
 
-            # Assistant response with reasoning and tool call
-            asst = thread.add_assistant_message(agent_name="Assistant")
-            asst.set_generating(True)
+            # Agent response with reasoning and tool call
+            agent = thread.add_agent_message(agent_name="Agent")
+            agent.set_generating(True)
 
             # Stream reasoning thoughts
-            reasoning = asst.add_reasoning("")
+            reasoning = agent.add_reasoning("")
             reasoning.append_thought("Analyzing requirements...\n", step_count=1)
             await asyncio.sleep(0.4)
             reasoning.append_thought("Running validation tool...\n", step_count=2)
 
             # Execute tool call
-            tool = asst.add_tool_call(
+            tool = agent.add_tool_call(
                 ToolCall(id="t1", name="run_command", args={"command": "pytest"})
             )
             await asyncio.sleep(0.5)
             tool.resolve("9 passed in 0.42s")
 
             # Stream final markdown text
-            asst.append_text("All checks passed successfully!")
-            asst.set_generating(False)
+            agent.append_text("All checks passed successfully!")
+            agent.set_generating(False)
             composer.set_running(False)
             header.update_tokens(14850)
 
         # 4. Pill prompt composer
         composer = AiComposer(
-            placeholder="Message assistant... (type / for commands, @ for files)",
+            placeholder="Message AI agent... (type / for commands, @ for files)",
             on_send=lambda text: asyncio.create_task(handle_submit(text)),
             on_cancel=lambda: ui.notify("Generation stopped", type="warning"),
         )
+
 
 ui.run(port=8080)
 ```
@@ -115,7 +119,7 @@ ui.run(port=8080)
 | :--- | :--- |
 | **`AiThread`** | Spacious conversation container with auto-scrolling and empty suggestion pills. |
 | **`UserMessage`** | Right-aligned message bubble with tailored `rounded-tr-sm` corner. |
-| **`AssistantMessage`** | Left-aligned message bubble with avatar, status badge, reasoning, and tool call slots. |
+| **`AgentMessage`** | Left-aligned message bubble with avatar, status badge, reasoning, and tool call slots. |
 | **`ReasoningCard`** | Amber-gilded collapsible card displaying model chain-of-thought and step counts. |
 | **`ToolCallCard`** | Inspectable tool execution card with arguments, results, and Human-in-the-Loop Approval Gates. |
 | **`AiComposer`** | Pill input dock with in-flight steering, cancellation controls, and auto-growing textarea. |

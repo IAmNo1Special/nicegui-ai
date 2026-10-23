@@ -5,12 +5,12 @@ from typing import Any, Self
 
 from nicegui import ui
 
-from nicegui_ai.message import AssistantMessage, UserMessage
+from nicegui_ai.message import AgentMessage, UserMessage
 from nicegui_ai.types import SuggestionPrompt, ToolCall
 
 
 class AiThread(ui.column):
-    """Spacious, centered conversation canvas matching modern AI assistant aesthetics."""
+    """Spacious, centered conversation canvas matching modern AI agent aesthetics."""
 
     def __init__(
         self,
@@ -24,7 +24,7 @@ class AiThread(ui.column):
         self.welcome_subtitle = welcome_subtitle
         self.suggestions = suggestions or []
         self.on_suggestion_click_callback = on_suggestion_click
-        self.messages: list[UserMessage | AssistantMessage] = []
+        self.messages: list[UserMessage | AgentMessage] = []
 
         self.classes(
             "w-full max-w-3xl mx-auto flex-1 flex flex-col h-full overflow-hidden px-4"
@@ -100,20 +100,20 @@ class AiThread(ui.column):
         self.scroll_to_bottom()
         return msg
 
-    def add_assistant_message(
+    def add_agent_message(
         self,
-        agent_name: str = "Assistant",
+        agent_name: str = "Agent",
         text: str = "",
         reasoning: str | None = None,
         tool_calls: list[ToolCall] | None = None,
         tokens_used: int = 0,
         current_branch: int = 1,
         total_branches: int = 1,
-    ) -> AssistantMessage:
-        """Add a left-aligned assistant message with reasoning and tools."""
+    ) -> AgentMessage:
+        """Add a left-aligned agent message with reasoning and tools."""
         self.welcome_container.set_visibility(False)
         with self.messages_container:
-            msg = AssistantMessage(
+            msg = AgentMessage(
                 agent_name=agent_name,
                 text=text,
                 reasoning=reasoning,
@@ -125,6 +125,9 @@ class AiThread(ui.column):
         self.messages.append(msg)
         self.scroll_to_bottom()
         return msg
+
+    # Backwards compatibility alias
+    add_assistant_message = add_agent_message
 
     def scroll_to_bottom(self) -> None:
         """Auto-scroll the thread viewport to the latest message."""

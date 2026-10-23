@@ -11,7 +11,7 @@ class AiComposer(ui.element):
 
     def __init__(
         self,
-        placeholder: str = "Message AI assistant... (type / for commands, @ for files)",
+        placeholder: str = "Message AI agent... (type / for commands, @ for files)",
         on_send: Callable[[str], Any] | None = None,
         on_cancel: Callable[[], Any] | None = None,
         model_name: str = "Model Ready",

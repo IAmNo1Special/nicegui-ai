@@ -7,7 +7,8 @@ from typing import Any
 
 class MessageRole(StrEnum):
     USER = "user"
-    ASSISTANT = "assistant"
+    AGENT = "agent"
+    ASSISTANT = "agent"
     SYSTEM = "system"
 
 

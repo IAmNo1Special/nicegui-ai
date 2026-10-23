@@ -1,4 +1,4 @@
-"""User and Assistant message bubbles matching assistant-ui visual geometry."""
+"""User and Agent message bubbles matching modern AI agent visual geometry."""
 
 from nicegui import ui
 
@@ -42,12 +42,12 @@ class UserMessage(ui.row):
                 )
 
 
-class AssistantMessage(ui.row):
-    """Assistant message with avatar, reasoning, tool cards, and streamed text."""
+class AgentMessage(ui.row):
+    """AI agent message with avatar, reasoning, tool cards, and streamed text."""
 
     def __init__(
         self,
-        agent_name: str = "Assistant",
+        agent_name: str = "Agent",
         text: str = "",
         reasoning: str | None = None,
         tool_calls: list[ToolCall] | None = None,
@@ -149,3 +149,7 @@ class AssistantMessage(ui.row):
         else:
             self.reasoning_card.append_thought(thought_text)
         return self.reasoning_card
+
+
+# Backwards compatibility alias
+AssistantMessage = AgentMessage

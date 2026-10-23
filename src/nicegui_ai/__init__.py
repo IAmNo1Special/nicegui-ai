@@ -4,7 +4,7 @@ from nicegui_ai.branch import BranchPicker
 from nicegui_ai.composer import AiComposer
 from nicegui_ai.drawer import SlideOverDrawer
 from nicegui_ai.header import FloatingHeader, TokenRing
-from nicegui_ai.message import AssistantMessage, UserMessage
+from nicegui_ai.message import AgentMessage, AssistantMessage, UserMessage
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.theme import THEME_CSS, setup_ai_theme
 from nicegui_ai.thread import AiThread
@@ -21,6 +21,7 @@ from nicegui_ai.types import (
 __version__ = "0.1.0"
 
 __all__ = [
+    "AgentMessage",
     "AiComposer",
     "AiThread",
     "AssistantMessage",

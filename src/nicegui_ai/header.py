@@ -60,7 +60,7 @@ class FloatingHeader(ui.element):
 
     def __init__(
         self,
-        agent_name: str = "Assistant",
+        agent_name: str = "Agent",
         model: str = "default",
         tokens_used: int = 0,
         token_limit: int = 128000,

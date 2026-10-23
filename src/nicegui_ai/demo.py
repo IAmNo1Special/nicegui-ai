@@ -31,7 +31,7 @@ def demo_page() -> None:
 
     # 2. Top floating glassmorphism header dock
     header = FloatingHeader(
-        agent_name="code-assistant",
+        agent_name="code-agent",
         model="claude-3-7-sonnet",
         tokens_used=state["tokens_used"],
         token_limit=state["token_limit"],
@@ -75,7 +75,7 @@ def demo_page() -> None:
     with sessions_drawer.content:
         for idx, (title, date_str, tokens) in enumerate(
             [
-                ("Assistant UI Component Library", "Just now", 24890),
+                ("AI Agent Component Library", "Just now", 24890),
                 ("Database Schema Migration & Indexing", "2 hours ago", 12100),
                 ("High-Throughput WebSocket Gateway Benchmark", "Yesterday", 45600),
             ],
@@ -155,15 +155,15 @@ def demo_page() -> None:
             # 1. Add User Message
             thread.add_user_message(prompt, user_name="User")
 
-            # 2. Create Assistant Message in Generating state
-            asst_msg = thread.add_assistant_message(
-                agent_name="Assistant",
+            # 2. Create Agent Message in Generating state
+            agent_msg = thread.add_agent_message(
+                agent_name="Agent",
                 text="",
             )
-            asst_msg.set_generating(True)
+            agent_msg.set_generating(True)
 
             # 3. Stream Reasoning (Thinking Process)
-            reasoning_card = asst_msg.add_reasoning("")
+            reasoning_card = agent_msg.add_reasoning("")
             steps = [
                 "Analyzing user invocation against codebase...\n",
                 "Evaluating tool candidates: view_file, run_command, replace_code...\n",
@@ -184,14 +184,14 @@ def demo_page() -> None:
                 summary="Inspect package configuration",
                 status=ToolStatus.EXECUTING,
             )
-            tool_card = asst_msg.add_tool_call(tool_call)
+            tool_card = agent_msg.add_tool_call(tool_call)
             await asyncio.sleep(0.6)
             tool_card.resolve(
                 "Lines 1-40 returned: 5 dependencies resolved successfully.",
                 duration_ms=48,
             )
 
-            # 5. Stream Assistant Response text
+            # 5. Stream Agent Response text
             chunks = [
                 "I have analyzed your request.\n\n",
                 "The **nicegui-ai** runtime processed the turn and synchronized the session:\n\n",
@@ -209,11 +209,11 @@ def demo_page() -> None:
             for chunk in chunks:
                 if state["abort_requested"]:
                     break
-                asst_msg.append_text(chunk)
+                agent_msg.append_text(chunk)
                 await asyncio.sleep(0.2)
 
             # 6. Finalize Turn & Update Token Ring
-            asst_msg.set_generating(False)
+            agent_msg.set_generating(False)
             state["tokens_used"] += 420
             header.update_tokens(state["tokens_used"])
             state["is_running"] = False
@@ -225,7 +225,7 @@ def demo_page() -> None:
 
         # 5. Composer Input Bar
         composer = AiComposer(
-            placeholder="Message AI assistant... (type / for commands, @ for files)",
+            placeholder="Message AI agent... (type / for commands, @ for files)",
             on_send=lambda text: asyncio.create_task(handle_submit(text)),
             on_cancel=handle_cancel,
             model_name="Claude 3.7",
