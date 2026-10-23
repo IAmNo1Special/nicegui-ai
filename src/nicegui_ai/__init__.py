@@ -4,6 +4,7 @@ from nicegui_ai.branch import BranchPicker
 from nicegui_ai.composer import AiComposer
 from nicegui_ai.drawer import SlideOverDrawer
 from nicegui_ai.header import FloatingHeader, TokenRing
+from nicegui_ai.icons import LucideIcon, get_lucide_svg
 from nicegui_ai.message import AgentMessage, AssistantMessage, UserMessage
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.theme import THEME_CSS, setup_ai_theme
@@ -28,6 +29,7 @@ __all__ = [
     "BranchPicker",
     "ChatMessage",
     "FloatingHeader",
+    "LucideIcon",
     "MessageRole",
     "ReasoningCard",
     "ReasoningStep",
@@ -39,5 +41,6 @@ __all__ = [
     "ToolCallCard",
     "ToolStatus",
     "UserMessage",
+    "get_lucide_svg",
     "setup_ai_theme",
 ]

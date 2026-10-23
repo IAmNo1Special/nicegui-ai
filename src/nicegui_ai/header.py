@@ -2,8 +2,10 @@
 
 from nicegui import ui
 
+from nicegui_ai.icons import LucideIcon
 
-class TokenRing(ui.html):
+
+class TokenRing(ui.element):
     """Circular SVG progress ring visualizing token consumption and budget limits."""
 
     def __init__(
@@ -14,14 +16,22 @@ class TokenRing(ui.html):
         stroke_width: float = 2.5,
         color: str = "#8b5cf6",
     ) -> None:
+        super().__init__("div")
         self.used = used
         self.limit = max(limit, 1)
         self.size = size
         self.stroke_width = stroke_width
         self.color = color
 
-        super().__init__()
-        self.classes("relative flex items-center justify-center shrink-0")
+        self.classes("relative w-6 h-6 flex items-center justify-center shrink-0")
+        with self:
+            self.svg_html = ui.html().classes("w-full h-full -rotate-90 block")
+            self.icon = LucideIcon(
+                "sparkles",
+                size=12,
+                classes="text-purple-300 absolute pointer-events-none",
+            )
+
         self.update_progress(used, limit)
 
     def update_progress(self, used: int, limit: int | None = None) -> None:
@@ -36,23 +46,17 @@ class TokenRing(ui.html):
         offset = circumference - (circumference * percentage)
         center = self.size / 2
 
-        svg = f"""
-        <svg width="{self.size}" height="{self.size}" class="-rotate-90">
-            <circle
-                cx="{center}" cy="{center}" r="{radius}"
-                stroke="#1f2937" stroke-width="{self.stroke_width}"
-                fill="none"
-            />
-            <circle
-                cx="{center}" cy="{center}" r="{radius}"
-                stroke="{self.color}" stroke-width="{self.stroke_width}"
-                stroke-dasharray="{circumference}" stroke-dashoffset="{offset}"
-                stroke-linecap="round" fill="none"
-                style="transition: stroke-dashoffset 0.4s ease;"
-            />
-        </svg>
-        """
-        self.content = svg
+        svg = (
+            f'<svg width="{self.size}" height="{self.size}" viewBox="0 0 {self.size} {self.size}">'
+            f'<circle cx="{center}" cy="{center}" r="{radius}" '
+            f'stroke="#1f2937" stroke-width="{self.stroke_width}" fill="none" />'
+            f'<circle cx="{center}" cy="{center}" r="{radius}" '
+            f'stroke="{self.color}" stroke-width="{self.stroke_width}" '
+            f'stroke-dasharray="{circumference}" stroke-dashoffset="{offset}" '
+            f'stroke-linecap="round" fill="none" style="transition: stroke-dashoffset 0.4s ease;" />'
+            f"</svg>"
+        )
+        self.svg_html.content = svg
 
 
 class FloatingHeader(ui.element):

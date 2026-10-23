@@ -3,13 +3,14 @@
 from nicegui import ui
 
 from nicegui_ai.branch import BranchPicker
+from nicegui_ai.icons import LucideIcon
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.tool_call import ToolCallCard
 from nicegui_ai.types import ToolCall
 
 
 class UserMessage(ui.row):
-    """User message bubble right-aligned with tailored rounded-tr-sm corner."""
+    """User message bubble aligned right with subtle corner flair."""
 
     def __init__(
         self,
@@ -19,7 +20,8 @@ class UserMessage(ui.row):
         total_branches: int = 1,
     ) -> None:
         super().__init__()
-        self.classes("w-full justify-end my-3")
+        self.text = text
+        self.classes("justify-end w-full my-3 no-wrap")
 
         with self:
             with ui.column().classes(
@@ -33,9 +35,10 @@ class UserMessage(ui.row):
                         BranchPicker(current_branch, total_branches)
                     else:
                         ui.element("div")
-                    with ui.row().classes("items-center gap-1.5"):
+
+                    with ui.row().classes("items-center gap-1.5 justify-end"):
                         ui.label(user_name)
-                        ui.icon("person").classes("text-purple-400 text-xs")
+                        LucideIcon("user", size=12, classes="text-purple-400")
 
                 self.text_label = ui.label(text).classes(
                     "leading-relaxed whitespace-pre-wrap font-sans text-[13px]"
@@ -59,8 +62,7 @@ class AgentMessage(ui.row):
         self.agent_name = agent_name
         self.text = text
         self.tokens_used = tokens_used
-
-        self.classes("w-full justify-start my-4 gap-3 items-start")
+        self.classes("justify-start w-full my-4 no-wrap gap-3")
 
         with self:
             # Avatar
@@ -68,9 +70,9 @@ class AgentMessage(ui.row):
                 "w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-700 to-indigo-600 "
                 "flex items-center justify-center shrink-0 shadow-md border border-purple-400/40 mt-1"
             ):
-                ui.icon("auto_awesome").classes("text-white text-sm")
+                LucideIcon("sparkles", size=16, classes="text-white")
 
-            # Main message bubble
+            # Bubble Container
             with ui.column().classes(
                 "flex-1 max-w-[92%] bg-[#121620] border border-gray-800/90 "
                 "rounded-2xl rounded-tl-sm p-4 text-xs shadow-md gap-2"
@@ -91,24 +93,29 @@ class AgentMessage(ui.row):
                     ):
                         if total_branches > 1:
                             BranchPicker(current_branch, total_branches)
-                        if self.tokens_used > 0:
+                        with ui.row().classes("items-center gap-1"):
+                            LucideIcon("zap", size=10, classes="text-purple-400")
                             self.token_pill = ui.label(
                                 f"+{self.tokens_used:,} tokens"
+                                if self.tokens_used > 0
+                                else "+0 tokens"
                             ).classes("text-purple-400/80")
 
-                # Optional reasoning card
+                # Reasoning container
+                self.reasoning_container = ui.column().classes("w-full gap-1")
                 self.reasoning_card: ReasoningCard | None = None
                 if reasoning:
-                    self.reasoning_card = ReasoningCard(
-                        thought_text=reasoning, default_open=False
-                    )
+                    with self.reasoning_container:
+                        self.reasoning_card = ReasoningCard(
+                            thought_text=reasoning, default_open=False
+                        )
 
                 # Tool calls container
                 self.tools_container = ui.column().classes("w-full gap-1")
                 if tool_calls:
                     with self.tools_container:
                         for tool in tool_calls:
-                            ToolCallCard(tool)
+                            ToolCallCard(tool, default_open=False)
 
                 # Markdown text content
                 self.markdown = ui.markdown(self.text).classes(
@@ -136,15 +143,15 @@ class AgentMessage(ui.row):
     def add_tool_call(self, tool: ToolCall) -> ToolCallCard:
         """Dynamically attach a tool call card to this message."""
         with self.tools_container:
-            card = ToolCallCard(tool, default_open=True)
+            card = ToolCallCard(tool, default_open=False)
         return card
 
     def add_reasoning(self, thought_text: str) -> ReasoningCard:
         """Attach or update the reasoning effort card."""
         if self.reasoning_card is None:
-            with self:
+            with self.reasoning_container:
                 self.reasoning_card = ReasoningCard(
-                    thought_text=thought_text, default_open=True
+                    thought_text=thought_text, default_open=False
                 )
         else:
             self.reasoning_card.append_thought(thought_text)

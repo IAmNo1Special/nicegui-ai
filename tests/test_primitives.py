@@ -22,7 +22,7 @@ def test_token_ring_initialization():
     ring = TokenRing(used=25000, limit=100000)
     assert ring.used == 25000
     assert ring.limit == 100000
-    assert "<svg" in ring.content
+    assert "<svg" in ring.svg_html.content
 
 
 def test_token_ring_update():
@@ -36,6 +36,12 @@ def test_reasoning_card():
     card = ReasoningCard(thought_text="Initial thought", step_count=1)
     assert card.step_count == 1
     assert "Initial thought" in card.thought_text
+    assert not card.is_open
+
+    card.toggle()
+    assert card.is_open
+    card.toggle()
+    assert not card.is_open
 
     card.append_thought("\nSecond thought", step_count=2)
     assert card.step_count == 2
@@ -52,6 +58,10 @@ def test_tool_call_card():
     card = ToolCallCard(tool)
     assert card.tool_call.name == "view_file"
     assert card.tool_call.status == ToolStatus.EXECUTING
+    assert not card.is_open
+
+    card.toggle()
+    assert card.is_open
 
     card.resolve("file content here", duration_ms=42)
     assert card.tool_call.status == ToolStatus.RESOLVED

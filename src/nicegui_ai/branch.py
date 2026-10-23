@@ -4,6 +4,8 @@ from collections.abc import Callable
 
 from nicegui import ui
 
+from nicegui_ai.icons import LucideIcon
+
 
 class BranchPicker(ui.row):
     """Inline < 1 / 3 > branch picker to inspect alternate conversation turns."""
@@ -25,23 +27,31 @@ class BranchPicker(ui.row):
         )
 
         with self:
-            self.prev_btn = (
-                ui.button(on_click=self.previous)
-                .props("flat dense round size=xs")
-                .classes("text-gray-400 hover:text-white p-0.5")
-            )
-            with self.prev_btn:
-                ui.icon("chevron_left").classes("text-xs")
+            with (
+                ui.element("button")
+                .classes(
+                    "text-gray-400 hover:text-white p-0.5 rounded cursor-pointer "
+                    "bg-transparent border-none outline-none leading-none"
+                )
+                .on("click", self.previous)
+            ) as self.prev_btn:
+                LucideIcon(
+                    "chevron-left", size=10, classes="text-gray-400 hover:text-white"
+                )
 
             self.label = ui.label(f"{self.current_index} / {self.total_branches}")
 
-            self.next_btn = (
-                ui.button(on_click=self.next)
-                .props("flat dense round size=xs")
-                .classes("text-gray-400 hover:text-white p-0.5")
-            )
-            with self.next_btn:
-                ui.icon("chevron_right").classes("text-xs")
+            with (
+                ui.element("button")
+                .classes(
+                    "text-gray-400 hover:text-white p-0.5 rounded cursor-pointer "
+                    "bg-transparent border-none outline-none leading-none"
+                )
+                .on("click", self.next)
+            ) as self.next_btn:
+                LucideIcon(
+                    "chevron-right", size=10, classes="text-gray-400 hover:text-white"
+                )
 
         self._update_state()
 

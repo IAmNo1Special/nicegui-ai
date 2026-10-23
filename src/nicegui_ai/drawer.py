@@ -2,6 +2,8 @@
 
 from nicegui import ui
 
+from nicegui_ai.icons import LucideIcon
+
 
 class SlideOverDrawer(ui.element):
     """Off-canvas drawer sliding in from left or right with backdrop scrim."""
@@ -9,7 +11,7 @@ class SlideOverDrawer(ui.element):
     def __init__(
         self,
         title: str = "Details",
-        icon: str = "layers",
+        icon: str = "scroll",
         side: str = "right",
         width_px: int = 420,
     ) -> None:
@@ -49,19 +51,23 @@ class SlideOverDrawer(ui.element):
                 # Header
                 with ui.row().classes(
                     "items-center justify-between w-full p-3.5 border-b border-gray-800 "
-                    "bg-[#161c28] text-xs font-semibold text-white"
+                    "bg-[#161c28] text-xs font-semibold text-white shrink-0"
                 ):
                     with ui.row().classes("items-center gap-2"):
-                        ui.icon(self.icon_name).classes("text-purple-400 text-sm")
+                        LucideIcon(self.icon_name, size=16, classes="text-purple-400")
                         ui.label(self.title).classes("font-bold text-sm tracking-wide")
 
-                    close_btn = (
-                        ui.button(on_click=self.close)
-                        .props("flat dense round size=sm")
-                        .classes("text-gray-400 hover:text-white p-1")
-                    )
-                    with close_btn:
-                        ui.icon("close").classes("text-xs")
+                    with (
+                        ui.element("button")
+                        .classes(
+                            "text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 "
+                            "transition-colors cursor-pointer"
+                        )
+                        .on("click", self.close)
+                    ):
+                        LucideIcon(
+                            "x", size=16, classes="text-gray-400 hover:text-white"
+                        )
 
                 # Scrollable content area
                 self.content = ui.column().classes(

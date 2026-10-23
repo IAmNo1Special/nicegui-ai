@@ -1,9 +1,11 @@
-"""Rounded pill AI composer with steering, cancellation, and mention support."""
+"""Rounded pill AI composer with steering, cancellation, and Lucide controls."""
 
 from collections.abc import Callable
 from typing import Any
 
 from nicegui import ui
+
+from nicegui_ai.icons import LucideIcon
 
 
 class AiComposer(ui.element):
@@ -22,68 +24,73 @@ class AiComposer(ui.element):
         self.is_running = False
 
         self.classes(
-            "w-full bg-[#141924] border border-gray-700/80 focus-within:border-purple-500/80 "
-            "rounded-xl p-2.5 shadow-lg transition-colors flex flex-col gap-2"
+            "p-3 border-t border-gray-800/80 bg-[#0e121a]/95 backdrop-blur shrink-0 w-full"
         )
 
         with self:
-            # Textarea input
-            self.input = (
-                ui.textarea(placeholder=placeholder)
-                .props("autogrow borderless dense rows=1")
-                .classes(
-                    "w-full bg-transparent text-xs text-gray-100 placeholder-gray-500 "
-                    "resize-none outline-none font-sans min-h-[36px] max-h-36"
-                )
-            )
-
-            # Keyboard shortcut: Enter to submit (Shift+Enter for newline)
-            self.input.on(
-                "keydown.enter.prevent",
-                lambda e: (
-                    self.submit() if not getattr(e.args, "shiftKey", False) else None
-                ),
-            )
-
-            # Bottom toolbar: model status & action buttons
-            with ui.row().classes(
-                "items-center justify-between w-full pt-1.5 border-t border-gray-800/60"
+            with ui.element("div").classes(
+                "relative flex flex-col bg-[#141924] border border-gray-700/80 "
+                "focus-within:border-purple-500/80 rounded-xl p-2.5 shadow-lg transition-colors w-full gap-1.5"
             ):
+                # Textarea input
+                self.input = (
+                    ui.textarea(placeholder=placeholder)
+                    .props("autogrow borderless dense rows=1")
+                    .classes(
+                        "w-full bg-transparent text-xs text-gray-100 placeholder-gray-500 "
+                        "resize-none outline-none font-sans min-h-[36px] max-h-36"
+                    )
+                )
+
+                # Keyboard shortcut: Enter to submit (Shift+Enter for newline)
+                self.input.on(
+                    "keydown.enter.prevent",
+                    lambda e: (
+                        self.submit()
+                        if not getattr(e.args, "shiftKey", False)
+                        else None
+                    ),
+                )
+
+                # Bottom toolbar: model status & action buttons
                 with ui.row().classes(
-                    "items-center gap-2 text-[10px] text-gray-400 font-mono"
+                    "items-center justify-between w-full pt-1.5 border-t border-gray-800/60"
                 ):
-                    with ui.row().classes("items-center gap-1"):
-                        self.status_dot = ui.element("span").classes(
-                            "w-1.5 h-1.5 rounded-full bg-emerald-400"
+                    with ui.row().classes(
+                        "items-center gap-2 text-[10px] text-gray-400 font-mono"
+                    ):
+                        with ui.row().classes("items-center gap-1"):
+                            self.status_dot = ui.element("span").classes(
+                                "w-1.5 h-1.5 rounded-full bg-emerald-400"
+                            )
+                            self.status_text = ui.label("Steering: Ready")
+                        ui.label("•").classes("text-gray-600")
+                        self.model_badge = ui.label(model_name).classes(
+                            "text-purple-300"
                         )
-                        self.status_text = ui.label("Ready")
-                    ui.label("•").classes("text-gray-600")
-                    self.model_badge = ui.label(model_name).classes("text-purple-300")
 
-                with ui.row().classes("items-center gap-1.5"):
-                    # Cancel / Stop button
-                    self.cancel_btn = (
-                        ui.button(on_click=self.cancel)
-                        .props("flat dense round size=sm")
-                        .classes(
-                            "bg-red-950/60 hover:bg-red-900 border border-red-500/40 "
-                            "text-red-300 transition-colors p-1"
-                        )
-                    )
-                    with self.cancel_btn:
-                        ui.icon("stop").classes("text-xs")
-                    self.cancel_btn.set_visibility(False)
+                    with ui.row().classes("items-center gap-1.5"):
+                        # Cancel / Stop button
+                        with (
+                            ui.element("button")
+                            .classes(
+                                "p-1.5 rounded-lg bg-red-950/60 hover:bg-red-900 border border-red-500/40 "
+                                "text-red-300 transition-colors cursor-pointer leading-none"
+                            )
+                            .on("click", self.cancel)
+                        ) as self.cancel_btn:
+                            LucideIcon("square", size=14, classes="text-red-300")
 
-                    # Send / Steer button
-                    self.send_btn = (
-                        ui.button(on_click=self.submit)
-                        .props("flat dense round size=sm")
-                        .classes(
-                            "bg-purple-600 hover:bg-purple-500 text-white transition-colors shadow-sm p-1"
-                        )
-                    )
-                    with self.send_btn:
-                        ui.icon("arrow_upward").classes("text-xs")
+                        # Send / Steer button
+                        with (
+                            ui.element("button")
+                            .classes(
+                                "p-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white "
+                                "transition-colors shadow-sm cursor-pointer leading-none"
+                            )
+                            .on("click", self.submit)
+                        ) as self.send_btn:
+                            LucideIcon("arrow-up", size=14, classes="text-white")
 
     def submit(self) -> None:
         """Submit the current input text."""
@@ -101,16 +108,13 @@ class AiComposer(ui.element):
             self.on_cancel_callback()
 
     def set_running(self, running: bool) -> None:
-        """Toggle running/idle state, updating buttons and status dot."""
+        """Update visual state between idle and running."""
         self.is_running = running
-        self.cancel_btn.set_visibility(running)
         if running:
             self.status_dot.classes(
-                remove="bg-emerald-400", add="bg-cyan-400 animate-pulse"
+                replace="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"
             )
-            self.status_text.set_text("Generating...")
+            self.status_text.set_text("Steering: Active")
         else:
-            self.status_dot.classes(
-                remove="bg-cyan-400 animate-pulse", add="bg-emerald-400"
-            )
-            self.status_text.set_text("Ready")
+            self.status_dot.classes(replace="w-1.5 h-1.5 rounded-full bg-emerald-400")
+            self.status_text.set_text("Steering: Ready")

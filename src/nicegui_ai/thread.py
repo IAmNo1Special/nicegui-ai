@@ -5,6 +5,7 @@ from typing import Any, Self
 
 from nicegui import ui
 
+from nicegui_ai.icons import LucideIcon
 from nicegui_ai.message import AgentMessage, UserMessage
 from nicegui_ai.types import SuggestionPrompt, ToolCall
 
@@ -26,13 +27,13 @@ class AiThread(ui.column):
         self.on_suggestion_click_callback = on_suggestion_click
         self.messages: list[UserMessage | AgentMessage] = []
 
-        self.classes(
-            "w-full max-w-3xl mx-auto flex-1 flex flex-col h-full overflow-hidden px-4"
-        )
+        self.classes("w-full flex-1 flex flex-col overflow-hidden min-h-0")
 
         with self:
             # Scrollable message list container
-            self.scroll_area = ui.scroll_area().classes("flex-1 w-full px-2 py-4")
+            self.scroll_area = ui.scroll_area().classes(
+                "flex-1 w-full px-4 py-2 min-h-0"
+            )
             with self.scroll_area:
                 self.messages_container = ui.column().classes(
                     "w-full gap-2 min-h-[300px]"
@@ -40,7 +41,7 @@ class AiThread(ui.column):
 
                 # Welcome empty state
                 self.welcome_container = ui.column().classes(
-                    "items-center justify-center text-center max-w-lg mx-auto py-12 gap-3"
+                    "items-center justify-center text-center max-w-lg mx-auto py-8 gap-2 w-full"
                 )
                 self._render_welcome()
 
@@ -50,27 +51,34 @@ class AiThread(ui.column):
                 "w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 "
                 "flex items-center justify-center text-white mb-2 shadow-xl border border-purple-400/40"
             ):
-                ui.icon("auto_awesome").classes("text-2xl")
+                LucideIcon("sparkles", size=24, classes="text-white")
 
             ui.label(self.welcome_title).classes(
-                "text-base font-bold text-white tracking-wide"
+                "text-base font-bold text-white tracking-wide mb-0.5"
             )
             ui.label(self.welcome_subtitle).classes(
                 "text-xs text-gray-400 leading-relaxed max-w-md"
             )
 
             if self.suggestions:
-                with ui.grid(columns=2).classes("gap-2.5 w-full mt-4 text-left"):
+                with ui.element("div").classes(
+                    "grid grid-cols-2 gap-2 w-full mt-4 text-left"
+                ):
                     for s in self.suggestions:
-                        with ui.button(
-                            on_click=lambda p=s.prompt: self._handle_suggestion(p)
-                        ).classes(
-                            "p-3 bg-[#131722] hover:bg-[#191f2e] border border-gray-800 "
-                            "hover:border-purple-500/40 rounded-xl text-left transition-all "
-                            "flex flex-col gap-0.5 normal-case shadow-sm h-auto"
+                        with (
+                            ui.element("button")
+                            .classes(
+                                "p-2.5 bg-[#131722] hover:bg-[#191f2e] border border-gray-800 "
+                                "hover:border-purple-500/40 rounded-xl text-left transition-all "
+                                "flex flex-col gap-0.5 shadow-sm w-full cursor-pointer outline-none"
+                            )
+                            .on(
+                                "click",
+                                lambda _e, p=s.prompt: self._handle_suggestion(p),
+                            )
                         ):
                             ui.label(s.label).classes(
-                                "font-semibold text-gray-200 text-xs"
+                                "font-semibold text-gray-200 text-[11px] mb-0.5"
                             )
                             ui.label(s.prompt).classes(
                                 "text-[10px] text-gray-400 font-mono truncate w-full"

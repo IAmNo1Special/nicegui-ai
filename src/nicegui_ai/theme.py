@@ -14,11 +14,51 @@ THEME_CSS = """
   --ai-emerald: #10b981;
 }
 
+/* Force clean system sans-serif across all elements, overriding Quasar Roboto */
+body, button, input, textarea, select, .q-btn, .q-field, .q-expansion-item {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: var(--ai-bg) !important;
   color: #e6edf3 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
   overflow: hidden;
+}
+
+.nicegui-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Neutralize Quasar button capitalization and unwanted elevation */
+.q-btn {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  box-shadow: none !important;
+}
+
+.q-focus-helper {
+  display: none !important;
+}
+
+/* Neutralize Quasar field padding and heights for seamless borderless textareas */
+.q-field--borderless .q-field__control {
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.q-field__native, .q-field__input {
+  padding: 0 !important;
+  min-height: 0 !important;
+  line-height: 1.5 !important;
 }
 
 /* Custom dark scrollbar */
@@ -37,7 +77,7 @@ body {
   background: #364156;
 }
 
-/* Prose markdown tweaks */
+/* Prose markdown styling */
 .nicegui-markdown {
   font-size: 0.8125rem !important;
   line-height: 1.625 !important;
@@ -53,7 +93,7 @@ body {
 }
 
 .nicegui-markdown pre {
-  background-color: #0b0e14 !important;
+  background-color: #0a0d14 !important;
   border: 1px solid rgba(55, 65, 81, 0.6) !important;
   border-radius: 0.5rem !important;
   padding: 0.75rem !important;
