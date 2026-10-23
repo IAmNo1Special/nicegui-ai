@@ -2,7 +2,9 @@
 
 from nicegui import ui
 
+from nicegui_ai.artifact import ArtifactCard
 from nicegui_ai.branch import BranchPicker
+from nicegui_ai.code_block import CodeBlock
 from nicegui_ai.icons import LucideIcon
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.tool_call import ToolCallCard
@@ -73,10 +75,11 @@ class AgentMessage(ui.row):
                 LucideIcon("sparkles", size=16, classes="text-white")
 
             # Bubble Container
-            with ui.column().classes(
+            self.bubble_container = ui.column().classes(
                 "flex-1 max-w-[92%] bg-[#121620] border border-gray-800/90 "
                 "rounded-2xl rounded-tl-sm p-4 text-xs shadow-md gap-2"
-            ):
+            )
+            with self.bubble_container:
                 # Header
                 with ui.row().classes(
                     "items-center justify-between w-full pb-1.5 border-b border-gray-800/60 text-[11px]"
@@ -156,6 +159,44 @@ class AgentMessage(ui.row):
         else:
             self.reasoning_card.append_thought(thought_text)
         return self.reasoning_card
+
+    def add_artifact(
+        self,
+        title: str,
+        artifact_type: str = "file",
+        content: str = "",
+        language: str = "text",
+        size_bytes: int | None = None,
+        default_open: bool = False,
+    ) -> ArtifactCard:
+        """Dynamically attach an artifact card to this message."""
+        with self.bubble_container:
+            card = ArtifactCard(
+                title=title,
+                artifact_type=artifact_type,
+                content=content,
+                language=language,
+                size_bytes=size_bytes,
+                default_open=default_open,
+            )
+        return card
+
+    def add_code_block(
+        self,
+        code: str,
+        language: str = "text",
+        filename: str | None = None,
+        line_numbers: bool = False,
+    ) -> CodeBlock:
+        """Dynamically attach a code block component to this message."""
+        with self.bubble_container:
+            block = CodeBlock(
+                code=code,
+                language=language,
+                filename=filename,
+                line_numbers=line_numbers,
+            )
+        return block
 
 
 # Backwards compatibility alias

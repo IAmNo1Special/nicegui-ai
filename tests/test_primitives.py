@@ -4,8 +4,11 @@ from nicegui_ai import (
     AgentMessage,
     AiComposer,
     AiThread,
+    ApprovalModal,
+    ArtifactCard,
     AssistantMessage,
     BranchPicker,
+    CodeBlock,
     FloatingHeader,
     ReasoningCard,
     SlideOverDrawer,
@@ -146,3 +149,48 @@ def test_thread_messages():
 
     thread.clear()
     assert len(thread.messages) == 0
+
+
+def test_code_block():
+    code = "print('Hello World')"
+    block = CodeBlock(code=code, language="python", filename="test.py")
+    assert block.code == code
+    assert block.language == "python"
+    assert block.filename == "test.py"
+
+
+def test_artifact_card():
+    card = ArtifactCard(
+        title="Generated Script",
+        artifact_type="file",
+        content="import os\nprint(os.getcwd())",
+        language="python",
+        size_bytes=1024,
+    )
+    assert card.title == "Generated Script"
+    assert card.artifact_type == "file"
+    assert not card.is_open
+
+    card.toggle()
+    assert card.is_open
+    card.close()
+    assert not card.is_open
+
+
+def test_approval_modal():
+    tool = ToolCall(
+        id="tool-del-1",
+        name="delete_file",
+        args={"path": "sensitive.txt"},
+        status=ToolStatus.APPROVAL_REQUIRED,
+    )
+    modal = ApprovalModal(tool_call=tool, danger_level="critical")
+    assert modal.tool_call == tool
+    assert modal.danger_level == "critical"
+    assert not modal.is_open
+
+    modal.open()
+    assert modal.is_open
+
+    modal.close()
+    assert not modal.is_open

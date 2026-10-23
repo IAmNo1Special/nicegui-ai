@@ -127,6 +127,10 @@ ui.run(port=8080)
 | **`FloatingHeader`** | Ambient glassmorphism pill with model identity and circular token meter. |
 | **`TokenRing`** | Standalone animated SVG circular progress ring for context window tracking. |
 | **`SlideOverDrawer`** | Smooth off-canvas sheet with soft backdrop scrim for session lists and artifacts. |
+| **`CodeBlock`** | Monospace code block with language indicator, filename, line numbers, and copy button. |
+| **`ArtifactCard`** | Interactive card representing agent artifacts (code, reports, diffs) with copy and download. |
+| **`ApprovalModal`** | Ambient glassmorphism modal dialog for human-in-the-loop security gates. |
+| **`LucideIcon`** | Crisp outline SVG icon primitive matching contemporary AI developer tooling. |
 
 ---
 

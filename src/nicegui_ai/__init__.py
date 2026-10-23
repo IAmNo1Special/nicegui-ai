@@ -1,6 +1,9 @@
 """nicegui-ai: Modern AI agent UI primitives for NiceGUI."""
 
+from nicegui_ai.approval_modal import ApprovalModal
+from nicegui_ai.artifact import ArtifactCard
 from nicegui_ai.branch import BranchPicker
+from nicegui_ai.code_block import CodeBlock
 from nicegui_ai.composer import AiComposer
 from nicegui_ai.drawer import SlideOverDrawer
 from nicegui_ai.header import FloatingHeader, TokenRing
@@ -19,15 +22,18 @@ from nicegui_ai.types import (
     ToolStatus,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "AgentMessage",
     "AiComposer",
     "AiThread",
+    "ApprovalModal",
+    "ArtifactCard",
     "AssistantMessage",
     "BranchPicker",
     "ChatMessage",
+    "CodeBlock",
     "FloatingHeader",
     "LucideIcon",
     "MessageRole",

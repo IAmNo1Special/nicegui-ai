@@ -7,6 +7,7 @@ from nicegui import ui
 from nicegui_ai import (
     AiComposer,
     AiThread,
+    ApprovalModal,
     FloatingHeader,
     LucideIcon,
     SlideOverDrawer,
@@ -98,6 +99,21 @@ def demo_page() -> None:
                     ui.label(date_str)
                     ui.label(f"{tokens:,} tokens")
 
+    # Approval Gate Modal
+    approval_modal = ApprovalModal(
+        title="Security Approval Required",
+        tool_call=ToolCall(
+            id="gate-1",
+            name="delete_database_table",
+            args={"table": "sessions_v1", "force": True},
+            summary="Permanently drop legacy sessions table",
+        ),
+        danger_level="critical",
+        on_approve=lambda: ui.notify("Action approved by operator", type="positive"),
+        on_veto=lambda: ui.notify("Action vetoed by operator", type="negative"),
+        on_always_allow=lambda: ui.notify("Permission cached for session", type="info"),
+    )
+
     # Populate Canvas Drawer
     with canvas_drawer.content:
         ui.label("Staged Git Diff (+22 / -4)").classes(
@@ -117,6 +133,20 @@ def demo_page() -> None:
                 "+        return router"
             )
             ui.label(diff_text)
+
+        ui.label("Human-in-the-Loop Security Gate").classes(
+            "font-semibold text-white text-xs mt-3"
+        )
+        with (
+            ui.element("button")
+            .classes(
+                "w-full p-2.5 rounded-xl border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 "
+                "text-red-300 font-sans text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+            )
+            .on("click", approval_modal.open)
+        ):
+            LucideIcon("shield-alert", size=14, classes="text-red-400")
+            ui.label("Trigger Approval Modal")
 
     # 4. Main Studio Canvas Card (Exact Variant B layout)
     with ui.element("main").classes(
@@ -220,6 +250,23 @@ def demo_page() -> None:
                         break
                     agent_msg.append_text(chunk)
                     await asyncio.sleep(0.2)
+
+                # Attach generated ArtifactCard
+                agent_msg.add_artifact(
+                    title="src/api/stream_router.py",
+                    artifact_type="file",
+                    content=(
+                        "from nicegui_ai import AiThread\n\n"
+                        "class StreamRouter:\n"
+                        "    def __init__(self, model_id: str):\n"
+                        "        self.model_id = model_id\n\n"
+                        "    async def stream_turn(self, prompt: str):\n"
+                        "        yield f'Streaming turn for: {prompt}'\n"
+                    ),
+                    language="python",
+                    size_bytes=248,
+                    default_open=False,
+                )
 
                 # 6. Finalize Turn & Update Token Ring
                 agent_msg.set_generating(False)
