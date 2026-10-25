@@ -55,10 +55,18 @@ class BranchPicker(ui.row):
 
         self._update_state()
 
+    def set_branch(self, current_index: int, total_branches: int) -> None:
+        """Update current branch index and total branches count."""
+        self.current_index = current_index
+        self.total_branches = total_branches
+        self._update_state()
+
     def _update_state(self) -> None:
         self.label.set_text(f"{self.current_index} / {self.total_branches}")
-        self.prev_btn.set_visibility(self.total_branches > 1)
-        self.next_btn.set_visibility(self.total_branches > 1)
+        is_multi = self.total_branches > 1
+        self.set_visibility(is_multi)
+        self.prev_btn.set_visibility(is_multi)
+        self.next_btn.set_visibility(is_multi)
 
     def previous(self) -> None:
         if self.current_index > 1:

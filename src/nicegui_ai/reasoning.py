@@ -1,5 +1,4 @@
-"""Amber-gilded collapsible reasoning card for AI agent thinking steps."""
-
+from collections.abc import Callable
 from typing import Self
 
 from nicegui import ui
@@ -18,11 +17,13 @@ class ReasoningCard(ui.element):
         steps: list[str] | None = None,
         duration_ms: int | None = None,
         default_open: bool = False,
+        on_change: Callable[[str], None] | None = None,
     ) -> None:
         super().__init__("div")
         self.is_open = default_open
         self.title = title
         self.duration_ms = duration_ms
+        self.on_change = on_change
 
         if steps and not thought_text:
             thought_text = "\n".join(f"• {s}" for s in steps)
@@ -98,3 +99,5 @@ class ReasoningCard(ui.element):
         if step_count is not None:
             self.step_count = step_count
             self.steps_badge.set_text(f"{self.step_count} steps")
+        if self.on_change is not None:
+            self.on_change(self.thought_text)

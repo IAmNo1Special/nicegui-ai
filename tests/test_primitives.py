@@ -10,6 +10,7 @@ from nicegui_ai import (
     BranchPicker,
     CodeBlock,
     FloatingHeader,
+    MessageBranch,
     ReasoningCard,
     SlideOverDrawer,
     SuggestionPrompt,
@@ -89,6 +90,117 @@ def test_branch_picker():
     picker.previous()
     assert picker.current_index == 1
     assert changed_indices == [2, 1]
+
+
+def test_message_branching():
+    # 1. UserMessage branching
+    user_changes = []
+    user_msg = UserMessage(
+        "Initial prompt",
+        on_branch_change=lambda idx, txt: user_changes.append((idx, txt)),
+    )
+    assert len(user_msg.branches) == 1
+    assert user_msg.current_branch_index == 1
+
+    user_msg.add_branch("Edited prompt variation", switch_to=True)
+    assert len(user_msg.branches) == 2
+    assert user_msg.current_branch_index == 2
+    assert user_msg.text == "Edited prompt variation"
+    assert user_changes == [(2, "Edited prompt variation")]
+
+    user_msg.switch_branch(1)
+    assert user_msg.current_branch_index == 1
+    assert user_msg.text == "Initial prompt"
+
+    # 2. AgentMessage branching
+    agent_changes = []
+    forks = []
+    agent_msg = AgentMessage(
+        agent_name="Agent",
+        text="Branch 1 completion",
+        tokens_used=100,
+        on_branch_change=lambda idx, b: agent_changes.append((idx, b)),
+        on_fork=lambda msg, idx: forks.append(idx),
+    )
+    assert len(agent_msg.branches) == 1
+    assert agent_msg.current_branch_index == 1
+    assert agent_msg.text == "Branch 1 completion"
+
+    new_idx = agent_msg.add_branch(
+        text="Branch 2 completion",
+        reasoning="Alternative thought chain",
+        tokens_used=180,
+        switch_to=True,
+    )
+    assert new_idx == 2
+    assert agent_msg.current_branch_index == 2
+    assert agent_msg.text == "Branch 2 completion"
+    assert agent_msg.tokens_used == 180
+    assert agent_msg.reasoning_card is not None
+
+    agent_msg.switch_branch(1)
+    assert agent_msg.current_branch_index == 1
+    assert agent_msg.text == "Branch 1 completion"
+    assert agent_msg.tokens_used == 100
+
+    # Test add_branch with MessageBranch object directly
+    branch_obj = MessageBranch(
+        index=3,
+        text="Branch 3 from object",
+        reasoning="Pre-baked thought",
+        tokens_used=220,
+    )
+    obj_idx = agent_msg.add_branch(branch_obj, switch_to=True)
+    assert obj_idx == 3
+    assert agent_msg.text == "Branch 3 from object"
+    assert agent_msg.reasoning_card is not None
+    assert agent_msg.reasoning_card.thought_text == "Pre-baked thought"
+
+    # Test dynamic reasoning append syncs to active branch
+    agent_msg.reasoning_card.append_thought(" - extended step")
+    assert agent_msg.branches[2].reasoning == "Pre-baked thought - extended step"
+
+    # Test tool call dynamically attached syncs to active branch
+    card = agent_msg.add_tool_call(name="inspect_db", args={"q": "SELECT 1"})
+    assert card.tool_call.name == "inspect_db"
+    assert len(agent_msg.branches[2].tool_calls) == 1
+    assert agent_msg.branches[2].tool_calls[0].name == "inspect_db"
+
+    # Switch back to branch 1 and verify tools/reasoning clear
+    agent_msg.switch_branch(1)
+    assert agent_msg.text == "Branch 1 completion"
+    assert agent_msg.reasoning_card is None
+
+    # Switch back to branch 3 and verify tools/reasoning restore
+    agent_msg.switch_branch(3)
+    assert agent_msg.text == "Branch 3 from object"
+    assert agent_msg.reasoning_card is not None
+    assert agent_msg.reasoning_card.thought_text == "Pre-baked thought - extended step"
+    assert len(agent_msg.branches[2].tool_calls) == 1
+
+    # Test forking
+    fork_idx = agent_msg.fork()
+    assert fork_idx == 4
+    assert forks == [4]
+    assert len(agent_msg.branches) == 4
+
+    # 3. AiThread integration with branching callbacks
+    from nicegui_ai import AiThread
+
+    thread = AiThread()
+    t_user = thread.add_user_message(
+        "Thread prompt", on_branch_change=lambda idx, t: None
+    )
+    assert len(t_user.branches) == 1
+    t_agent = thread.add_agent_message(
+        agent_name="ThreadBot",
+        text="Initial reply",
+        on_branch_change=lambda idx, b: None,
+        on_fork=lambda m, idx: None,
+    )
+    assert len(t_agent.branches) == 1
+    t_agent.fork()
+    assert len(t_agent.branches) == 2
 
 
 def test_slide_over_drawer():
@@ -592,7 +704,7 @@ def test_tool_call_card_methods():
     card = ToolCallCard(tool)
     assert card.tool_call.status == ToolStatus.EXECUTING
 
-    card.set_status(ToolStatus.SUCCESS)
+    card.set_status(ToolStatus.RESOLVED)
     assert card.tool_call.status == ToolStatus.RESOLVED
 
     card.set_result("found 3 items")

@@ -17,7 +17,7 @@ A structured message card presenting agent narrative, reasoning chains, and tool
 _Avoid_: Bot response, AI reply, assistant turn
 
 **Branch**:
-An alternative completion or conversational fork spawned from a previous user turn or agent retry.
+An alternative completion or conversational fork spawned from a previous user turn or agent retry, tracked as a `MessageBranch` dataclass encapsulating text, reasoning, tool calls, and token usage.
 _Avoid_: Version, alternative, variation, fork
 
 ## Input & Steering
@@ -55,6 +55,10 @@ _Avoid_: Confirmation modal, veto dialog, permission prompt
 **Artifact**:
 A standalone file, document, or code product produced by an agent that persists independently of conversation messages.
 _Avoid_: Generated file, attachment, output document
+
+**Artifact Viewer Drawer**:
+An off-canvas side drawer (`ArtifactViewerDrawer`) providing comprehensive tabbed inspection for an artifact: syntax-highlighted code with line numbers, live render (HTML/SVG, Mermaid diagrams, Markdown), and unified diff with line delta statistics.
+_Avoid_: Artifact inspector, file preview modal, code popout
 
 **Code Block**:
 A styled syntax-highlighted code container with copy capabilities, language badges, and optional line numbers.

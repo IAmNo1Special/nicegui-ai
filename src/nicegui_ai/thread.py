@@ -7,7 +7,7 @@ from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
 from nicegui_ai.message import AgentMessage, UserMessage
-from nicegui_ai.schema import SuggestionPrompt, ToolCall
+from nicegui_ai.schema import MessageBranch, SuggestionPrompt, ToolCall
 
 
 class AiThread(ui.column):
@@ -101,6 +101,7 @@ class AiThread(ui.column):
         user_name: str = "User",
         current_branch: int = 1,
         total_branches: int = 1,
+        on_branch_change: Callable[[int, str], None] | None = None,
     ) -> UserMessage:
         """Add a right-aligned user message bubble."""
         self.welcome_container.set_visibility(False)
@@ -110,6 +111,7 @@ class AiThread(ui.column):
                 user_name=user_name,
                 current_branch=current_branch,
                 total_branches=total_branches,
+                on_branch_change=on_branch_change,
             )
         self.messages.append(msg)
         self.scroll_to_bottom()
@@ -126,6 +128,8 @@ class AiThread(ui.column):
         total_branches: int = 1,
         initial_text: str | None = None,
         is_generating: bool = False,
+        on_branch_change: Callable[[int, MessageBranch], None] | None = None,
+        on_fork: Callable[[AgentMessage, int], None] | None = None,
     ) -> AgentMessage:
         """Add a left-aligned agent message with reasoning and tools."""
         self.welcome_container.set_visibility(False)
@@ -140,6 +144,8 @@ class AiThread(ui.column):
                 total_branches=total_branches,
                 initial_text=initial_text,
                 is_generating=is_generating,
+                on_branch_change=on_branch_change,
+                on_fork=on_fork,
             )
         self.messages.append(msg)
         self.scroll_to_bottom()

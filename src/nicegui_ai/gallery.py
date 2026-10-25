@@ -16,6 +16,7 @@ from nicegui_ai import (
     FloatingHeader,
     GeminiStreamAdapter,
     LucideIcon,
+    MessageBranch,
     ModelOption,
     ModelSelector,
     OpenCodeStreamAdapter,
@@ -430,21 +431,71 @@ def gallery_page() -> None:
                 LucideIcon("shield-alert", size=14, classes="text-red-400")
                 ui.label("Open Approval Gate Modal")
 
-        # Section 10: BranchPicker
+        # Section 10: Turn Branching & Fork Navigation
         with ui.column().classes(
             "w-full gap-3 p-4 bg-[#11151f]/60 rounded-2xl border border-gray-800/60"
         ):
-            ui.label("BranchPicker").classes(
-                "text-xs font-bold uppercase tracking-wider text-gray-300"
+            ui.label("Turn Branching & Fork Navigation").classes(
+                "text-xs font-bold uppercase tracking-wider text-purple-400"
+            )
+            ui.label(
+                "Reactive turn variations and fork branching directly inside UserMessage and AgentMessage."
+            ).classes("text-[11px] text-gray-400")
+
+            ui.label("Standalone BranchPicker:").classes(
+                "text-[11px] text-gray-400 font-mono mt-1"
             )
             with ui.row().classes("items-center gap-3"):
                 BranchPicker(
                     current_index=1,
                     total_branches=4,
                     on_change=lambda idx: ui.notify(
-                        f"Switched to branch {idx}", type="info"
+                        f"Standalone picker switched to branch {idx}", type="info"
                     ),
                 )
+
+            ui.label("Interactive User & Agent Message Branching:").classes(
+                "text-[11px] text-gray-400 font-mono mt-2"
+            )
+            branch_user = UserMessage(
+                text="Branch 1: Can you provide an async Python generator example?",
+                user_name="Operator",
+            )
+            branch_user.add_branch(
+                "Branch 2: Could you show an object-oriented async iterator instead?",
+                switch_to=False,
+            )
+
+            branch_agent = AgentMessage(
+                agent_name="CodeAgent",
+                text="```python\nasync def count_up(n: int):\n    for i in range(n):\n        yield i\n```",
+                reasoning="Producing a standard lightweight async generator function.",
+                tokens_used=145,
+            )
+            branch_agent.add_branch(
+                MessageBranch(
+                    index=2,
+                    text=(
+                        "```python\n"
+                        "class CountUpIterator:\n"
+                        "    def __init__(self, n: int):\n"
+                        "        self.n = n\n"
+                        "        self.current = 0\n\n"
+                        "    def __aiter__(self):\n"
+                        "        return self\n\n"
+                        "    async def __anext__(self):\n"
+                        "        if self.current < self.n:\n"
+                        "            val = self.current\n"
+                        "            self.current += 1\n"
+                        "            return val\n"
+                        "        raise StopAsyncIteration\n"
+                        "```"
+                    ),
+                    reasoning="Alternative object-oriented approach implementing __aiter__ and __anext__.",
+                    tokens_used=280,
+                ),
+                switch_to=False,
+            )
 
         # Section 11: AG-UI Streaming Bridge & Adapters
         with ui.column().classes(

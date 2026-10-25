@@ -8,7 +8,6 @@ from typing import Any
 class MessageRole(StrEnum):
     USER = "user"
     AGENT = "agent"
-    ASSISTANT = "agent"
     SYSTEM = "system"
 
 
@@ -16,10 +15,20 @@ class ToolStatus(StrEnum):
     PENDING = "pending"
     EXECUTING = "executing"
     RESOLVED = "resolved"
-    SUCCESS = "resolved"
     FAILED = "failed"
     APPROVAL_REQUIRED = "approval_required"
     VETOED = "vetoed"
+
+
+@dataclass
+class MessageBranch:
+    """Alternative branch variation for a message turn."""
+
+    index: int
+    text: str = ""
+    reasoning: str | None = None
+    tool_calls: list["ToolCall"] = field(default_factory=list)
+    tokens_used: int = 0
 
 
 @dataclass

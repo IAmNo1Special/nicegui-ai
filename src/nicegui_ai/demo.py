@@ -7,6 +7,7 @@ from typing import Any
 from nicegui import ui
 
 from nicegui_ai import (
+    AgentMessage,
     AiComposer,
     AiThread,
     ApprovalModal,
@@ -485,6 +486,43 @@ def demo_page() -> None:
                 abort_check=lambda: state["abort_requested"]
             )
 
+            # Turn fork handler for alternative streaming variations
+            async def handle_fork(msg: AgentMessage, new_index: int) -> None:
+                ui.notify(
+                    f"Forked turn to branch {new_index}. Streaming alternative variation...",
+                    type="info",
+                )
+                msg.set_generating(True)
+                fork_task = composer.add_task(
+                    f"Generating alternative branch {new_index}..."
+                )
+                alt_prompt = f"Alternative approach (Variation {new_index})"
+                adapter = stream_factory.create_adapter(
+                    model_name=composer.current_model,
+                    prompt=alt_prompt,
+                    effort=composer.current_effort,
+                )
+                bridge = StreamBridge(
+                    message=msg,
+                    header=header,
+                    composer=composer,
+                    task_tray=composer.task_tray,
+                )
+                result = await bridge.consume(adapter)
+                fork_task.complete()
+                for tc in result.tool_calls:
+                    if tc.id in bridge._tool_cards:
+                        card = bridge._tool_cards[tc.id]
+                        if card.tool_call.status == ToolStatus.EXECUTING:
+                            card.resolve(
+                                "Alternative tool execution verified.",
+                                duration_ms=30,
+                            )
+                if result.usage and "total_tokens" in result.usage:
+                    state["tokens_used"] += result.usage["total_tokens"]
+                    header.update_tokens(state["tokens_used"])
+                msg.set_generating(False)
+
             # Execution handler using object-oriented StreamBridge
             async def handle_submit(prompt: str) -> None:
                 state["is_running"] = True
@@ -504,6 +542,7 @@ def demo_page() -> None:
                     agent_name="Agent",
                     text="",
                     is_generating=True,
+                    on_fork=lambda m, idx: asyncio.create_task(handle_fork(m, idx)),
                 )
 
                 # 3. Create adapter and consume through StreamBridge
