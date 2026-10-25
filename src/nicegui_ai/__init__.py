@@ -9,6 +9,7 @@ from nicegui_ai.adapters import (
 )
 from nicegui_ai.approval_modal import ApprovalModal
 from nicegui_ai.artifact import ArtifactCard
+from nicegui_ai.artifact_viewer import ArtifactViewerDrawer
 from nicegui_ai.branch import BranchPicker
 from nicegui_ai.code_block import CodeBlock
 from nicegui_ai.composer import AiComposer
@@ -55,6 +56,7 @@ __all__ = [
     "AiThread",
     "ApprovalModal",
     "ArtifactCard",
+    "ArtifactViewerDrawer",
     "BaseStreamAdapter",
     "BranchPicker",
     "ChatMessage",

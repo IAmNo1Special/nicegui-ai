@@ -1,6 +1,7 @@
 """User and Agent message bubbles matching modern AI agent visual geometry."""
 
 import uuid
+from collections.abc import Callable
 from typing import Any
 
 from nicegui import ui
@@ -266,6 +267,10 @@ class AgentMessage(ui.row):
         language: str = "text",
         size_bytes: int | None = None,
         default_open: bool = False,
+        diff_content: str | None = None,
+        drawer: Any = None,
+        on_open: Callable[[], None] | None = None,
+        on_download: Callable[[], None] | None = None,
     ) -> ArtifactCard:
         """Dynamically attach an artifact card to this message."""
         with self.bubble_container:
@@ -276,6 +281,10 @@ class AgentMessage(ui.row):
                 language=language,
                 size_bytes=size_bytes,
                 default_open=default_open,
+                diff_content=diff_content,
+                drawer=drawer,
+                on_open=on_open,
+                on_download=on_download,
             )
         return card
 

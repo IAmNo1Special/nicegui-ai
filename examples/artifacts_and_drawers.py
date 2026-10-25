@@ -7,7 +7,7 @@ from nicegui import ui
 from nicegui_ai import (
     AiComposer,
     AiThread,
-    CodeBlock,
+    ArtifactViewerDrawer,
     FloatingHeader,
     LucideIcon,
     SlideOverDrawer,
@@ -29,10 +29,28 @@ def main_page() -> None:
         token_limit=tokens["max"],
     )
 
-    # Left history drawer and right canvas drawer
+    # Left history drawer and right interactive artifact viewer drawer
     history_drawer = SlideOverDrawer(title="Tome History", icon="history", side="left")
-    canvas_drawer = SlideOverDrawer(
-        title="Asset Canvas", icon="file-code", side="right"
+    canvas_drawer = ArtifactViewerDrawer(
+        title="Asset Canvas & Artifact Viewer",
+        side="right",
+        width_px=680,
+    )
+
+    # Load initial component into artifact viewer drawer
+    canvas_drawer.load_artifact(
+        title="quickstart.py",
+        content="from nicegui_ai import AiThread\n\nthread = AiThread()\nprint('Ready')\n",
+        diff_content=(
+            "--- a/quickstart.py\n"
+            "+++ b/quickstart.py\n"
+            "@@ -1,2 +1,3 @@\n"
+            " from nicegui_ai import AiThread\n"
+            "+thread = AiThread()\n"
+            " print('Ready')\n"
+        ),
+        language="python",
+        artifact_type="file",
     )
 
     with header.left_container:
@@ -58,15 +76,6 @@ def main_page() -> None:
         ):
             LucideIcon("file-code", size=14, classes="text-cyan-400")
             ui.label("Canvas").classes("text-xs font-medium")
-
-    # Populate canvas drawer
-    with canvas_drawer.content:
-        ui.label("Generated Component").classes("text-xs font-bold text-gray-200")
-        CodeBlock(
-            code="""from nicegui_ai import AiThread\n\nthread = AiThread()\nprint('Ready')""",
-            language="python",
-            filename="quickstart.py",
-        )
 
     # Populate history drawer
     with history_drawer.content:
@@ -102,7 +111,7 @@ def main_page() -> None:
                     is_generating=True,
                 )
 
-                # Attach generated ArtifactCard
+                # Attach generated ArtifactCard connected to ArtifactViewerDrawer
                 agent_msg.add_artifact(
                     title="src/routes/auth.py",
                     artifact_type="file",
@@ -113,9 +122,22 @@ def main_page() -> None:
                         "async def login():\n"
                         "    return {'token': 'jwt_secret_token_here'}\n"
                     ),
+                    diff_content=(
+                        "--- a/src/routes/auth.py\n"
+                        "+++ b/src/routes/auth.py\n"
+                        "@@ -0,0 +1,6 @@\n"
+                        "+from fastapi import APIRouter, Depends\n"
+                        "+\n"
+                        "+router = APIRouter(prefix='/auth')\n"
+                        "+\n"
+                        "+@router.post('/login')\n"
+                        "+async def login():\n"
+                        "+    return {'token': 'jwt_secret_token_here'}\n"
+                    ),
                     language="python",
                     size_bytes=184,
                     default_open=True,
+                    drawer=canvas_drawer,
                 )
 
                 agent_msg.set_generating(False)

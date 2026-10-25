@@ -10,6 +10,7 @@ from nicegui_ai import (
     AiComposer,
     AiThread,
     ApprovalModal,
+    ArtifactViewerDrawer,
     BaseStreamAdapter,
     FloatingHeader,
     GeminiStreamAdapter,
@@ -331,8 +332,38 @@ def demo_page() -> None:
     sessions_drawer = SlideOverDrawer(
         title="Conversations", icon="history", side="left"
     )
-    canvas_drawer = SlideOverDrawer(
-        title="Workspace Canvas", icon="git-commit", side="right"
+    canvas_drawer = ArtifactViewerDrawer(
+        title="Artifact & Workspace Canvas",
+        side="right",
+        width_px=680,
+    )
+    initial_diff = (
+        "--- a/src/api/router.py\n"
+        "+++ b/src/api/router.py\n"
+        "@@ -42,6 +42,22 @@ class ApiRouter:\n"
+        "+    # Auto-fallback for streaming completions\n"
+        "+    if route_name == 'stream':\n"
+        "+        router = StreamRouter(model_id=model_id)\n"
+        "+        self._routes[route_name] = router\n"
+        "+        return router"
+    )
+    canvas_drawer.load_artifact(
+        title="src/api/router.py",
+        content=(
+            "class ApiRouter:\n"
+            "    def __init__(self, model_id: str):\n"
+            "        self.model_id = model_id\n"
+            "        self._routes = {}\n\n"
+            "    def get_route(self, route_name: str):\n"
+            "        if route_name == 'stream':\n"
+            "            router = StreamRouter(model_id=self.model_id)\n"
+            "            self._routes[route_name] = router\n"
+            "            return router\n"
+            "        return self._routes.get(route_name)\n"
+        ),
+        diff_content=initial_diff,
+        language="python",
+        artifact_type="diff",
     )
 
     with header.left_container:
@@ -402,26 +433,8 @@ def demo_page() -> None:
         on_always_allow=lambda: ui.notify("Permission cached for session", type="info"),
     )
 
-    # Populate Canvas Drawer
+    # Additional Actions in Canvas Drawer
     with canvas_drawer.content:
-        ui.label("Staged Git Diff (+22 / -4)").classes(
-            "font-semibold text-white text-xs"
-        )
-        with ui.element("pre").classes(
-            "p-3 bg-[#0a0d14] rounded-lg border border-gray-800 font-mono text-[11px] leading-relaxed overflow-x-auto text-gray-300"
-        ):
-            diff_text = (
-                "--- a/src/api/router.py\n"
-                "+++ b/src/api/router.py\n"
-                "@@ -42,6 +42,22 @@ class ApiRouter:\n"
-                "+    # Auto-fallback for streaming completions\n"
-                "+    if route_name == 'stream':\n"
-                "+        router = StreamRouter(model_id=model_id)\n"
-                "+        self._routes[route_name] = router\n"
-                "+        return router"
-            )
-            ui.label(diff_text)
-
         ui.label("Human-in-the-Loop Security Gate").classes(
             "font-semibold text-white text-xs mt-3"
         )
@@ -535,6 +548,19 @@ def demo_page() -> None:
                         ),
                         language="python",
                         size_bytes=285,
+                        diff_content=(
+                            "--- a/src/api/stream_router.py\n"
+                            "+++ b/src/api/stream_router.py\n"
+                            "@@ -1,4 +1,7 @@\n"
+                            " from nicegui_ai import AiThread\n"
+                            "+from nicegui_ai import StreamBridge\n"
+                            " \n"
+                            " class StreamRouter:\n"
+                            "+    async def stream_turn(self, prompt: str, message, header):\n"
+                            "+        bridge = StreamBridge(message=message, header=header)\n"
+                            "+        await bridge.consume(self.get_adapter(prompt))\n"
+                        ),
+                        drawer=canvas_drawer,
                         default_open=False,
                     )
 

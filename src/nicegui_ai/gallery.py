@@ -11,6 +11,7 @@ from nicegui_ai import (
     AiThread,
     ApprovalModal,
     ArtifactCard,
+    ArtifactViewerDrawer,
     BranchPicker,
     FloatingHeader,
     GeminiStreamAdapter,
@@ -357,20 +358,45 @@ def gallery_page() -> None:
             )
             AiMarkdown(markdown_content)
 
-        # Section 8: ArtifactCard
+        # Section 8: ArtifactCard & ArtifactViewerDrawer
+        artifact_viewer = ArtifactViewerDrawer(
+            title="Artifact Inspector",
+            width_px=680,
+            on_download=lambda title, content: ui.notify(
+                f"Downloaded {title}", type="positive"
+            ),
+        )
+
         with ui.column().classes(
             "w-full gap-3 p-4 bg-[#11151f]/60 rounded-2xl border border-gray-800/60"
         ):
-            ui.label("ArtifactCard").classes(
+            ui.label("ArtifactCard & ArtifactViewerDrawer").classes(
                 "text-xs font-bold uppercase tracking-wider text-purple-400"
             )
+            ui.label(
+                "Click the panel icon on the card to inspect in the slide-over drawer with Code, Live Render, and Unified Diff tabs."
+            ).classes("text-[11px] text-gray-400")
             ArtifactCard(
                 title="src/nicegui_ai/demo.py",
                 artifact_type="file",
-                content="from nicegui import ui\n\nprint('Component loaded successfully!')",
+                content=(
+                    "from nicegui import ui\n"
+                    "from nicegui_ai import ArtifactViewerDrawer\n\n"
+                    "print('Component loaded successfully!')\n"
+                ),
+                diff_content=(
+                    "--- a/src/nicegui_ai/demo.py\n"
+                    "+++ b/src/nicegui_ai/demo.py\n"
+                    "@@ -1,3 +1,4 @@\n"
+                    " from nicegui import ui\n"
+                    "+from nicegui_ai import ArtifactViewerDrawer\n"
+                    " \n"
+                    " print('Component loaded successfully!')\n"
+                ),
                 language="python",
                 size_bytes=480,
                 default_open=True,
+                drawer=artifact_viewer,
                 on_download=lambda: ui.notify("Downloading artifact...", type="info"),
             )
 

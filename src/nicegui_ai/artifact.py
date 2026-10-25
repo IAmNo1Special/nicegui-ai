@@ -1,7 +1,7 @@
 """Interactive artifact card for agent-generated files, reports, and diffs."""
 
 from collections.abc import Callable
-from typing import Self
+from typing import Any, Self
 
 from nicegui import ui
 
@@ -19,6 +19,8 @@ class ArtifactCard(ui.element):
         language: str = "text",
         size_bytes: int | None = None,
         default_open: bool = False,
+        diff_content: str | None = None,
+        drawer: Any = None,
         on_open: Callable[[], None] | None = None,
         on_download: Callable[[], None] | None = None,
     ) -> None:
@@ -29,6 +31,8 @@ class ArtifactCard(ui.element):
         self.language = language
         self.size_bytes = size_bytes
         self.is_open = default_open
+        self.diff_content = diff_content
+        self.drawer = drawer
         self.on_open_callback = on_open
         self.on_download_callback = on_download
 
@@ -101,6 +105,21 @@ class ArtifactCard(ui.element):
                                 classes="text-gray-400 hover:text-white",
                             )
 
+                    # Open in Drawer button
+                    with (
+                        ui.element("button")
+                        .classes(
+                            "p-1 rounded text-gray-400 hover:text-purple-300 hover:bg-gray-800 "
+                            "cursor-pointer border-none bg-transparent transition-colors"
+                        )
+                        .on("click", lambda _e: self.open_in_drawer())
+                    ):
+                        LucideIcon(
+                            "panel-right-open",
+                            size=13,
+                            classes="text-gray-400 hover:text-purple-300",
+                        )
+
                     self.chevron = LucideIcon(
                         "chevron-down" if default_open else "chevron-right",
                         size=14,
@@ -135,6 +154,23 @@ class ArtifactCard(ui.element):
         self.is_open = False
         self.body.set_visibility(False)
         self.chevron.set_icon("chevron-right")
+        return self
+
+    def open_in_drawer(self, drawer: Any = None) -> Self:
+        """Open this artifact in an attached ArtifactViewerDrawer."""
+        target_drawer = drawer or self.drawer
+        if target_drawer is not None:
+            target_drawer.load_artifact(
+                title=self.title,
+                content=self.content,
+                language=self.language,
+                diff_content=self.diff_content,
+                artifact_type=self.artifact_type,
+                size_bytes=self.size_bytes,
+            )
+            target_drawer.open()
+        if self.on_open_callback:
+            self.on_open_callback()
         return self
 
     async def copy(self) -> None:

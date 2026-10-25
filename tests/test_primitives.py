@@ -6,6 +6,7 @@ from nicegui_ai import (
     AiThread,
     ApprovalModal,
     ArtifactCard,
+    ArtifactViewerDrawer,
     BranchPicker,
     CodeBlock,
     FloatingHeader,
@@ -168,6 +169,73 @@ def test_artifact_card():
     assert card.is_open
     card.close()
     assert not card.is_open
+
+
+def test_artifact_viewer_drawer():
+    downloads = []
+    viewer = ArtifactViewerDrawer(
+        title="Custom Artifact Viewer",
+        on_download=lambda title, content: downloads.append((title, content)),
+    )
+    assert not viewer.is_open
+    assert viewer.active_tab == "code"
+
+    # 1. Load code artifact
+    code_content = "def add(a, b):\n    return a + b\n"
+    viewer.load_artifact(
+        title="math_utils.py",
+        content=code_content,
+        language="python",
+        artifact_type="file",
+    )
+    assert viewer.artifact_title == "math_utils.py"
+    assert viewer.active_tab == "code"
+    assert viewer.type_badge.text == "FILE"
+
+    # 2. Tab switching
+    viewer.set_tab("preview")
+    assert viewer.active_tab == "preview"
+    viewer.set_tab("diff")
+    assert viewer.active_tab == "diff"
+
+    # 3. Load diff artifact
+    diff_content = (
+        "--- a/math_utils.py\n"
+        "+++ b/math_utils.py\n"
+        "@@ -1,2 +1,3 @@\n"
+        "-def add(a, b):\n"
+        "+def add(a: int, b: int) -> int:\n"
+        "+    '''Add two integers.'''\n"
+        "     return a + b\n"
+    )
+    viewer.load_artifact(
+        title="types_patch.diff",
+        content="",
+        diff_content=diff_content,
+        artifact_type="diff",
+    )
+    assert viewer.active_tab == "diff"
+    assert viewer.diff_content == diff_content
+
+    # 4. Connect with ArtifactCard
+    card = ArtifactCard(
+        title="types_patch.diff",
+        artifact_type="diff",
+        content="",
+        diff_content=diff_content,
+        drawer=viewer,
+    )
+    assert not viewer.is_open
+    card.open_in_drawer()
+    assert viewer.is_open
+
+    # 5. Download callback
+    viewer._trigger_download()
+    assert len(downloads) == 1
+    assert downloads[0][0] == "types_patch.diff"
+
+    viewer.close()
+    assert not viewer.is_open
 
 
 def test_approval_modal():
