@@ -108,6 +108,18 @@ body {
   padding: 0.1rem 0.3rem !important;
   border-radius: 0.25rem !important;
 }
+
+/* Cascading flyout submenus for ModelSelector */
+.ai-model-row {
+  position: relative;
+}
+.ai-model-row .ai-model-flyout {
+  display: none !important;
+}
+.ai-model-row:hover .ai-model-flyout,
+.ai-model-row:focus-within .ai-model-flyout {
+  display: flex !important;
+}
 """
 
 

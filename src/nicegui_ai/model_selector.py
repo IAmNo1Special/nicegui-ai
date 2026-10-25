@@ -148,6 +148,24 @@ class ModelSelector(ui.element):
         super().__init__("div")
         self.classes(f"relative inline-flex items-center {classes}")
 
+        ui.add_head_html("""
+<style>
+.ai-model-menu {
+  overflow: visible !important;
+}
+.ai-model-row {
+  position: relative !important;
+}
+.ai-model-row .ai-model-flyout {
+  display: none !important;
+}
+.ai-model-row:hover > .ai-model-flyout,
+.ai-model-row:focus-within > .ai-model-flyout {
+  display: flex !important;
+}
+</style>
+""")
+
         self._model_options: list[ModelOption] = [
             self._normalize_option(m) for m in models
         ]
@@ -206,7 +224,7 @@ class ModelSelector(ui.element):
                 ui.menu()
                 .props(menu_props)
                 .classes(
-                    "p-1.5 bg-[#141822]/98 border border-gray-800/80 rounded-2xl shadow-2xl backdrop-blur-xl min-w-[290px]"
+                    "ai-model-menu p-1.5 bg-[#141822]/98 border border-gray-800/80 rounded-2xl shadow-2xl backdrop-blur-xl min-w-[290px] !overflow-visible"
                 ) as self.menu
             ):
                 ui.label("Model").classes(
@@ -217,8 +235,8 @@ class ModelSelector(ui.element):
                 for opt in self._model_options:
                     is_active = opt.name == self._current_model
 
-                    with ui.menu_item(auto_close=False).classes(
-                        "px-3 py-2 rounded-xl hover:bg-gray-800/60 cursor-pointer "
+                    with ui.element("div").classes(
+                        "ai-model-row relative px-3 py-2 rounded-xl hover:bg-gray-800/60 cursor-pointer "
                         "text-xs text-gray-200 flex items-center justify-between transition-colors gap-3 group"
                     ) as item:
                         # Clicking the row directly chooses this model with default/current effort
@@ -253,16 +271,12 @@ class ModelSelector(ui.element):
                                     classes="text-gray-500 group-hover:text-gray-300",
                                 )
 
-                        # Cascading Submenu for Reasoning Effort
+                        # Cascading Flyout Submenu for Reasoning Effort (pure CSS hover driven)
                         if self._show_effort and opt.effort_options:
-                            with (
-                                ui.menu()
-                                .props(
-                                    'anchor="top end" self="top start" auto-close separate-close-popup'
-                                )
-                                .classes(
-                                    "p-1.5 bg-[#141822]/98 border border-gray-800/80 rounded-xl shadow-2xl backdrop-blur-xl min-w-[120px]"
-                                ) as sub_menu
+                            with ui.element("div").classes(
+                                "ai-model-flyout flex-col gap-1 absolute left-full -top-1 ml-1.5 "
+                                "p-1.5 bg-[#141822]/98 border border-gray-800/80 rounded-xl shadow-2xl backdrop-blur-xl min-w-[120px] z-50 "
+                                "before:content-[''] before:absolute before:-left-3 before:top-0 before:w-3 before:h-full"
                             ):
                                 for eff in opt.effort_options:
                                     is_eff_active = is_active and (
@@ -270,13 +284,13 @@ class ModelSelector(ui.element):
                                         == eff.lower()
                                     )
                                     with (
-                                        ui.menu_item(auto_close=True)
+                                        ui.element("div")
                                         .classes(
-                                            "px-3 py-1.5 rounded-lg hover:bg-gray-800/60 cursor-pointer "
-                                            "text-xs text-gray-200 flex items-center justify-between transition-colors gap-3"
+                                            "px-3 py-1.5 rounded-lg hover:bg-gray-800/80 cursor-pointer "
+                                            "text-xs text-gray-200 flex items-center justify-between transition-colors gap-3 select-none"
                                         )
                                         .on(
-                                            "click",
+                                            "click.stop",
                                             lambda _, m=opt.name, e=eff: (
                                                 self.set_model_and_effort(m, e)
                                             ),
@@ -289,9 +303,6 @@ class ModelSelector(ui.element):
                                                 size=13,
                                                 classes="text-gray-200",
                                             )
-
-                            # Open submenu on hover
-                            item.on("mouseenter", sub_menu.open)
 
                         self.model_items.append(item)
 
