@@ -60,6 +60,16 @@ _Avoid_: Generated file, attachment, output document
 A styled syntax-highlighted code container with copy capabilities, language badges, and optional line numbers.
 _Avoid_: Snippet box, pre block, code viewer
 
+## Streaming & Protocol
+
+**Stream Adapter**:
+An object-oriented adapter translating heterogeneous LLM provider streaming chunks (e.g. OpenRouter, OpenAI, Gemini SDK, OpenCode, SSE) into normalized AG-UI events.
+_Avoid_: Provider parser, chunk transformer, stream reader
+
+**Stream Bridge**:
+The reactive orchestrator consuming normalized AG-UI events from any stream adapter to drive message rendering, reasoning cards, tool call inspection, header tokens, and task trays.
+_Avoid_: Event listener, stream handler, stream consumer
+
 ## Session & Identity
 
 **Floating Header**:
