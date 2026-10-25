@@ -28,11 +28,4 @@ jobs:
         run: uv build
 
       - name: Publish package distributions to PyPI
-        run: |
-          if [ -n "$UV_PUBLISH_TOKEN" ]; then
-            uv publish
-          else
-            uv publish --trusted-publishing always
-          fi
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish --trusted-publishing always
