@@ -221,24 +221,60 @@ def test_examples_importable():
 
 
 def test_model_selector():
-    from nicegui_ai import ModelSelector
+    from nicegui_ai import ModelOption, ModelSelector, ReasoningEffortSelector
+
+    changes = []
+    view_usage_calls = []
 
     selector = ModelSelector(
-        models=["claude-3-7-sonnet", "gpt-4o", "gemini-2.5-pro"],
-        current_model="claude-3-7-sonnet",
-        reasoning_effort="high",
+        models=[
+            ModelOption(name="Gemini 4 Argon", effort="Medium", badge="New"),
+            ModelOption(name="Gemini 3.8 Flash", effort="High"),
+            "Claude Opus 5.5",
+        ],
+        current_model="Gemini 3.8 Flash",
+        reasoning_effort="High",
+        on_change=lambda m, eff: changes.append((m, eff)),
+        on_view_usage=lambda: view_usage_calls.append(True),
     )
-    assert selector.current_model == "claude-3-7-sonnet"
-    assert selector.reasoning_effort == "high"
+    assert selector.current_model == "Gemini 3.8 Flash"
+    assert selector.reasoning_effort == "High"
+    assert selector.model_label.text == "Gemini 3.8 Flash"
+    assert selector.effort_badge.text == "High"
+    assert len(selector.models) == 3
 
-    selector.set_model("gpt-4o")
-    assert selector.current_model == "gpt-4o"
+    # Change model and effort
+    selector.set_model_and_effort("Gemini 4 Argon", "Low")
+    assert selector.current_model == "Gemini 4 Argon"
+    assert selector.reasoning_effort == "Low"
+    assert selector.model_label.text == "Gemini 4 Argon"
+    assert selector.effort_badge.text == "Low"
+    assert changes[-1] == ("Gemini 4 Argon", "Low")
 
-    selector.set_reasoning_effort("low")
-    assert selector.reasoning_effort == "low"
+    # Change model only
+    selector.set_model("Claude Opus 5.5")
+    assert selector.current_model == "Claude Opus 5.5"
+    assert selector.reasoning_effort == "Low"
+    assert changes[-1] == ("Claude Opus 5.5", "Low")
 
+    # Change effort only
     selector.set_reasoning_effort(None)
     assert selector.reasoning_effort is None
+    assert not selector.effort_badge.visible
+    assert changes[-1] == ("Claude Opus 5.5", None)
+
+    # Standalone ReasoningEffortSelector
+    standalone_efforts = []
+    effort_sel = ReasoningEffortSelector(
+        current_effort="medium",
+        on_change=lambda eff: standalone_efforts.append(eff),
+    )
+    assert effort_sel.current_effort == "medium"
+    assert effort_sel.label.text == "Medium"
+    effort_sel.set_effort("max")
+    assert effort_sel.current_effort == "max"
+    assert effort_sel.label.text == "Max"
+    assert standalone_efforts == ["max"]
 
 
 def test_voice_pill():

@@ -12,6 +12,7 @@ from nicegui_ai import (
     BranchPicker,
     FloatingHeader,
     LucideIcon,
+    ModelOption,
     ModelSelector,
     QueuedMessagesTray,
     ReasoningCard,
@@ -121,17 +122,49 @@ def gallery_page() -> None:
             with ui.row().classes("items-center gap-4 flex-wrap"):
                 ui.label("Pill Variant:").classes("text-xs text-gray-400")
                 ModelSelector(
-                    models=["Claude Opus 5.5", "Claude Sonnet 3.7", "GPT-4o"],
-                    current_model="Claude Opus 5.5",
-                    reasoning_effort="high",
+                    models=[
+                        ModelOption(
+                            name="Gemini 4 Argon", effort="Medium", badge="New"
+                        ),
+                        ModelOption(name="Gemini 3.8 Flash", effort="High"),
+                        ModelOption(
+                            name="Claude Opus 5.5", effort="Medium", badge="New"
+                        ),
+                        ModelOption(
+                            name="Claude Sonnet 5.5", effort="Medium", badge="New"
+                        ),
+                        ModelOption(name="GPT-OSS 120B (Medium)", badge="Notice"),
+                    ],
+                    current_model="Gemini 3.8 Flash",
+                    reasoning_effort="High",
                     variant="pill",
+                    on_view_usage=lambda: ui.notify(
+                        "Usage: 14,200 / 128,000 tokens", type="info"
+                    ),
                 )
-                ui.label("Inline Variant:").classes("text-xs text-gray-400 ml-4")
+                ui.label("Inline Variant (Cascading):").classes(
+                    "text-xs text-gray-400 ml-4"
+                )
                 ModelSelector(
-                    models=["Claude Opus 5.5", "Claude Sonnet 3.7", "GPT-4o"],
-                    current_model="Claude Opus 5.5",
-                    reasoning_effort="medium",
+                    models=[
+                        ModelOption(
+                            name="Gemini 4 Argon", effort="Medium", badge="New"
+                        ),
+                        ModelOption(name="Gemini 3.8 Flash", effort="High"),
+                        ModelOption(
+                            name="Claude Opus 5.5", effort="Medium", badge="New"
+                        ),
+                        ModelOption(
+                            name="Claude Sonnet 5.5", effort="Medium", badge="New"
+                        ),
+                        ModelOption(name="GPT-OSS 120B (Medium)", badge="Notice"),
+                    ],
+                    current_model="Gemini 3.8 Flash",
+                    reasoning_effort="High",
                     variant="inline",
+                    on_view_usage=lambda: ui.notify(
+                        "Usage: 14,200 / 128,000 tokens", type="info"
+                    ),
                 )
             with ui.row().classes("items-center gap-3 mt-2 flex-wrap"):
                 ui.label("VoicePill States:").classes("text-xs text-gray-400")

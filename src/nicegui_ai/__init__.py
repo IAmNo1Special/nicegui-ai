@@ -10,7 +10,11 @@ from nicegui_ai.header import FloatingHeader, TokenRing
 from nicegui_ai.icons import LucideIcon, get_lucide_svg
 from nicegui_ai.markdown import AiMarkdown, parse_markdown_blocks
 from nicegui_ai.message import AgentMessage, AssistantMessage, UserMessage
-from nicegui_ai.model_selector import ModelSelector
+from nicegui_ai.model_selector import (
+    ModelOption,
+    ModelSelector,
+    ReasoningEffortSelector,
+)
 from nicegui_ai.queued_messages import QueuedMessagesTray
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.task_tray import TaskHandle, TaskTray
@@ -45,10 +49,12 @@ __all__ = [
     "FloatingHeader",
     "LucideIcon",
     "MessageRole",
+    "ModelOption",
     "ModelSelector",
     "QueuedMessage",
     "QueuedMessagesTray",
     "ReasoningCard",
+    "ReasoningEffortSelector",
     "ReasoningStep",
     "RunningTask",
     "SlideOverDrawer",

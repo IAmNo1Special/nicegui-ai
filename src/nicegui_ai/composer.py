@@ -6,7 +6,7 @@ from typing import Any
 from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
-from nicegui_ai.model_selector import ModelSelector
+from nicegui_ai.model_selector import ModelOption, ModelSelector
 from nicegui_ai.queued_messages import QueuedMessagesTray
 from nicegui_ai.task_tray import TaskHandle, TaskTray
 from nicegui_ai.types import QueuedMessage
@@ -32,9 +32,9 @@ class AiComposer(ui.element):
         on_cancel: Callable[[], Any] | None = None,
         on_attach: Callable[[], Any] | None = None,
         on_voice: Callable[[str], Any] | None = None,
-        model_name: str = "Claude Opus 5.5",
-        models: list[str] | None = None,
-        reasoning_effort: str | None = "Medium",
+        model_name: str = "Gemini 3.8 Flash",
+        models: list[str | ModelOption | dict[str, Any]] | None = None,
+        reasoning_effort: str | None = "High",
         on_model_change: Callable[[str, str | None], None] | None = None,
         auto_drain_queue: bool = True,
         classes: str = "",
@@ -49,11 +49,12 @@ class AiComposer(ui.element):
         self.is_running: bool = False
         self._queue_paused: bool = False
 
-        self.models = models or [
-            model_name,
-            "Claude Sonnet 3.7",
-            "GPT-4o",
-            "Gemini 2.5 Pro",
+        self.models: list[str | ModelOption | dict[str, Any]] = models or [
+            ModelOption(name="Gemini 4 Argon", effort="Medium", badge="New"),
+            ModelOption(name="Gemini 3.8 Flash", effort="High"),
+            ModelOption(name="Claude Opus 5.5", effort="Medium", badge="New"),
+            ModelOption(name="Claude Sonnet 5.5", effort="Medium", badge="New"),
+            ModelOption(name="GPT-OSS 120B (Medium)", badge="Notice"),
         ]
         self.current_model = model_name
         self.current_effort = reasoning_effort
