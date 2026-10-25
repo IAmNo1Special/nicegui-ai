@@ -38,9 +38,9 @@ nicegui-ai = "nicegui_ai.gallery:main"
 nicegui-ai-demo = "nicegui_ai.demo:main"
 
 [project.urls]
-Homepage = "https://github.com/mvgeos/nicegui-ai"
-Repository = "https://github.com/mvgeos/nicegui-ai"
-Issues = "https://github.com/mvgeos/nicegui-ai/issues"
+Homepage = "https://github.com/IAmNo1Special/nicegui-ai"
+Repository = "https://github.com/IAmNo1Special/nicegui-ai"
+Issues = "https://github.com/IAmNo1Special/nicegui-ai/issues"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
