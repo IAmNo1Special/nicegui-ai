@@ -20,6 +20,7 @@ class ModelSelector(ui.element):
         reasoning_effort: str | None = None,
         on_change: Callable[[str, str | None], None] | None = None,
         show_effort_selector: bool = True,
+        variant: Literal["pill", "inline"] = "pill",
         classes: str = "",
     ) -> None:
         super().__init__("div")
@@ -30,34 +31,60 @@ class ModelSelector(ui.element):
         self._reasoning_effort = reasoning_effort
         self._on_change = on_change
         self._show_effort = show_effort_selector
+        self._variant = variant
 
-        # Trigger pill button
+        btn_classes = (
+            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-800 "
+            "bg-[#11151f]/80 hover:bg-[#181e2b] hover:border-gray-700 text-xs text-gray-300 "
+            "hover:text-white transition-colors cursor-pointer outline-none"
+            if variant == "pill"
+            else "flex items-center gap-1.5 py-0.5 px-1 bg-transparent text-xs text-gray-400 "
+            "hover:text-gray-200 transition-colors cursor-pointer outline-none border-none"
+        )
+
+        # Trigger button
         with (
-            ui.element("button")
-            .classes(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-800 "
-                "bg-[#11151f]/80 hover:bg-[#181e2b] hover:border-gray-700 text-xs text-gray-300 "
-                "hover:text-white transition-colors cursor-pointer outline-none"
-            )
-            .props("type=button")
+            ui.element("button").classes(btn_classes).props("type=button")
         ) as self.trigger_btn:
-            LucideIcon("sparkles", size=13, classes="text-purple-400")
+            if variant == "pill":
+                LucideIcon("sparkles", size=13, classes="text-purple-400")
+
             self.model_label = ui.label(self._current_model).classes(
                 "font-medium text-xs text-gray-200"
             )
 
-            self.effort_badge = ui.label(
-                f"• {self._reasoning_effort}" if self._reasoning_effort else ""
-            ).classes("text-[10px] text-amber-400 font-mono")
+            effort_display = (
+                f"{self._reasoning_effort.capitalize()}"
+                if variant == "inline" and self._reasoning_effort
+                else f"• {self._reasoning_effort}"
+                if self._reasoning_effort
+                else ""
+            )
+            self.effort_badge = ui.label(effort_display).classes(
+                "text-[10px] text-gray-400 font-mono"
+                if variant == "inline"
+                else "text-[10px] text-amber-400 font-mono"
+            )
             if not self._reasoning_effort:
                 self.effort_badge.set_visibility(False)
 
-            LucideIcon("chevron-down", size=12, classes="text-gray-400 ml-0.5")
+            LucideIcon(
+                "chevron-up" if variant == "inline" else "chevron-down",
+                size=12,
+                classes="text-gray-400 ml-0.5",
+            )
 
             # Dropdown menu
-            with ui.menu().classes(
-                "p-2 bg-[#0e121a]/95 border border-gray-800 rounded-xl shadow-2xl backdrop-blur min-w-[200px]"
-            ) as self.menu:
+            menu_props = (
+                'anchor="top left" self="bottom left"' if variant == "inline" else ""
+            )
+            with (
+                ui.menu()
+                .props(menu_props)
+                .classes(
+                    "p-2 bg-[#0e121a]/95 border border-gray-800 rounded-xl shadow-2xl backdrop-blur min-w-[200px]"
+                ) as self.menu
+            ):
                 ui.label("MODEL").classes(
                     "text-[10px] font-mono tracking-wider text-gray-500 px-2 py-1 uppercase"
                 )
@@ -127,7 +154,9 @@ class ModelSelector(ui.element):
     def set_reasoning_effort(self, effort: str | None) -> None:
         self._reasoning_effort = effort
         if effort:
-            self.effort_badge.text = f"• {effort}"
+            self.effort_badge.text = (
+                effort.capitalize() if self._variant == "inline" else f"• {effort}"
+            )
             self.effort_badge.set_visibility(True)
         else:
             self.effort_badge.text = ""

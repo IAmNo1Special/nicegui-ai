@@ -23,14 +23,18 @@ class TokenRing(ui.element):
         self.stroke_width = stroke_width
         self.color = color
 
-        self.classes("relative w-6 h-6 flex items-center justify-center shrink-0")
+        self.classes("relative flex items-center justify-center shrink-0")
+        self.style(f"width: {size}px; height: {size}px;")
         with self:
             self.svg_html = ui.html().classes("w-full h-full -rotate-90 block")
-            self.icon = LucideIcon(
-                "sparkles",
-                size=12,
-                classes="text-purple-300 absolute pointer-events-none",
-            )
+            with ui.element("div").classes(
+                "absolute inset-0 flex items-center justify-center pointer-events-none"
+            ):
+                self.icon = LucideIcon(
+                    "sparkles",
+                    size=max(size // 2, 10),
+                    classes="text-purple-300",
+                )
 
         self.update_progress(used, limit)
 
@@ -41,8 +45,8 @@ class TokenRing(ui.element):
             self.limit = max(limit, 1)
 
         percentage = min(max(self.used / self.limit, 0.0), 1.0)
-        radius = (self.size - self.stroke_width * 2) / 2
-        circumference = 2 * 3.14159 * radius
+        radius = (self.size - self.stroke_width) / 2
+        circumference = 2 * 3.1415926535 * radius
         offset = circumference - (circumference * percentage)
         center = self.size / 2
 

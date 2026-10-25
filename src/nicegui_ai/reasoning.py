@@ -14,10 +14,20 @@ class ReasoningCard(ui.element):
         self,
         thought_text: str = "",
         step_count: int = 1,
+        title: str = "Reasoning (Thinking Process)",
+        steps: list[str] | None = None,
+        duration_ms: int | None = None,
         default_open: bool = False,
     ) -> None:
         super().__init__("div")
         self.is_open = default_open
+        self.title = title
+        self.duration_ms = duration_ms
+
+        if steps and not thought_text:
+            thought_text = "\n".join(f"• {s}" for s in steps)
+            step_count = len(steps)
+
         self.thought_text = thought_text
         self.step_count = step_count
 
@@ -36,12 +46,13 @@ class ReasoningCard(ui.element):
                     LucideIcon(
                         "brain-circuit", size=14, classes="text-amber-400 shrink-0"
                     )
-                    ui.label("Reasoning (Thinking Process)").classes(
+                    self.title_label = ui.label(self.title).classes(
                         "font-semibold text-amber-300 text-xs"
                     )
-                    self.steps_badge = ui.label(f"{self.step_count} steps").classes(
-                        "text-[10px] text-amber-400/80 font-mono"
-                    )
+                    duration_str = f" ({duration_ms}ms)" if duration_ms else ""
+                    self.steps_badge = ui.label(
+                        f"{self.step_count} steps{duration_str}"
+                    ).classes("text-[10px] text-amber-400/80 font-mono")
 
                 self.chevron = LucideIcon(
                     "chevron-down" if default_open else "chevron-right",

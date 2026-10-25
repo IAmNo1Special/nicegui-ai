@@ -11,14 +11,18 @@ from nicegui_ai.icons import LucideIcon, get_lucide_svg
 from nicegui_ai.markdown import AiMarkdown, parse_markdown_blocks
 from nicegui_ai.message import AgentMessage, AssistantMessage, UserMessage
 from nicegui_ai.model_selector import ModelSelector
+from nicegui_ai.queued_messages import QueuedMessagesTray
 from nicegui_ai.reasoning import ReasoningCard
+from nicegui_ai.task_tray import TaskHandle, TaskTray
 from nicegui_ai.theme import THEME_CSS, setup_ai_theme
 from nicegui_ai.thread import AiThread
 from nicegui_ai.tool_call import ToolCallCard
 from nicegui_ai.types import (
     ChatMessage,
     MessageRole,
+    QueuedMessage,
     ReasoningStep,
+    RunningTask,
     SuggestionPrompt,
     ToolCall,
     ToolStatus,
@@ -42,11 +46,16 @@ __all__ = [
     "LucideIcon",
     "MessageRole",
     "ModelSelector",
+    "QueuedMessage",
+    "QueuedMessagesTray",
     "ReasoningCard",
     "ReasoningStep",
+    "RunningTask",
     "SlideOverDrawer",
     "SuggestionPrompt",
     "THEME_CSS",
+    "TaskHandle",
+    "TaskTray",
     "TokenRing",
     "ToolCall",
     "ToolCallCard",

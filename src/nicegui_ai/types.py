@@ -16,9 +16,26 @@ class ToolStatus(StrEnum):
     PENDING = "pending"
     EXECUTING = "executing"
     RESOLVED = "resolved"
+    SUCCESS = "resolved"
     FAILED = "failed"
     APPROVAL_REQUIRED = "approval_required"
     VETOED = "vetoed"
+
+
+@dataclass
+class QueuedMessage:
+    """A user prompt queued while an agent execution is in-flight."""
+
+    id: str
+    text: str
+
+
+@dataclass
+class RunningTask:
+    """A background task displayed in the TaskTray."""
+
+    id: str
+    text: str
 
 
 @dataclass

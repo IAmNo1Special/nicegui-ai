@@ -17,14 +17,21 @@ class AiThread(ui.column):
         self,
         welcome_title: str = "How can I help you today?",
         welcome_subtitle: str = "Ask a question, run tools, or coordinate autonomous tasks.",
-        suggestions: list[SuggestionPrompt] | None = None,
+        suggestions: list[SuggestionPrompt | str] | None = None,
         on_suggestion_click: Callable[[str], Any] | None = None,
+        on_select_suggestion: Callable[[str], Any] | None = None,
     ) -> None:
         super().__init__()
         self.welcome_title = welcome_title
         self.welcome_subtitle = welcome_subtitle
-        self.suggestions = suggestions or []
-        self.on_suggestion_click_callback = on_suggestion_click
+        raw_suggestions = suggestions or []
+        self.suggestions: list[SuggestionPrompt] = [
+            s
+            if isinstance(s, SuggestionPrompt)
+            else SuggestionPrompt(label=s, prompt=s)
+            for s in raw_suggestions
+        ]
+        self.on_suggestion_click_callback = on_suggestion_click or on_select_suggestion
         self.messages: list[UserMessage | AgentMessage] = []
 
         self.classes("w-full flex-1 flex flex-col overflow-hidden min-h-0")
@@ -117,6 +124,8 @@ class AiThread(ui.column):
         tokens_used: int = 0,
         current_branch: int = 1,
         total_branches: int = 1,
+        initial_text: str | None = None,
+        is_generating: bool = False,
     ) -> AgentMessage:
         """Add a left-aligned agent message with reasoning and tools."""
         self.welcome_container.set_visibility(False)
@@ -129,6 +138,8 @@ class AiThread(ui.column):
                 tokens_used=tokens_used,
                 current_branch=current_branch,
                 total_branches=total_branches,
+                initial_text=initial_text,
+                is_generating=is_generating,
             )
         self.messages.append(msg)
         self.scroll_to_bottom()

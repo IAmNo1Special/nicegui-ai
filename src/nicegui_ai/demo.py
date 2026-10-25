@@ -182,11 +182,6 @@ def demo_page() -> None:
 
             # Execution handler
             async def handle_submit(prompt: str) -> None:
-                if state["is_running"]:
-                    # In-flight steering!
-                    thread.add_user_message(f"🔄 [Steer]: {prompt}", user_name="User")
-                    return
-
                 state["is_running"] = True
                 state["abort_requested"] = False
                 composer.set_running(True)
@@ -194,12 +189,17 @@ def demo_page() -> None:
                 # 1. Add User Message
                 thread.add_user_message(prompt, user_name="User")
 
+                # Show background task in task tray
+                task = composer.add_task(
+                    f"Executing tool trajectory for: {prompt[:30]}..."
+                )
+
                 # 2. Create Agent Message in Generating state
                 agent_msg = thread.add_agent_message(
                     agent_name="Agent",
                     text="",
+                    is_generating=True,
                 )
-                agent_msg.set_generating(True)
 
                 # 3. Stream Reasoning (Thinking Process)
                 reasoning_card = agent_msg.add_reasoning("")
@@ -229,12 +229,13 @@ def demo_page() -> None:
                     "Lines 1-40 returned: 5 dependencies resolved successfully.",
                     duration_ms=48,
                 )
+                task.complete()
 
                 # 5. Stream Agent Response text
                 chunks = [
                     "I have analyzed your request.\n\n",
                     "The **nicegui-ai** runtime processed the turn and synchronized the session:\n\n",
-                    "```python\n",
+                    "```python:quickstart.py\n",
                     "# Verified component integration\n",
                     "from nicegui_ai import AiThread, FloatingHeader\n",
                     "\n",
@@ -270,6 +271,7 @@ def demo_page() -> None:
 
                 # 6. Finalize Turn & Update Token Ring
                 agent_msg.set_generating(False)
+                agent_msg.set_tokens(420)
                 state["tokens_used"] += 420
                 header.update_tokens(state["tokens_used"])
                 state["is_running"] = False

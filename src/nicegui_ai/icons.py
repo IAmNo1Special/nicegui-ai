@@ -119,12 +119,35 @@ LUCIDE_SVG_NODES: dict[str, str] = {
         '<line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" />'
         '<line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" />'
     ),
+    "arrow-right": '<path d="M5 12h14" /><path d="m12 5 7 7-7 7" />',
+    "pencil": (
+        '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />'
+        '<path d="m15 5 4 4" />'
+    ),
+    "trash": (
+        '<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />'
+        '<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />'
+        '<line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" />'
+    ),
+    "plus": '<path d="M5 12h14" /><path d="M12 5v14" />',
+    "chevron-up": '<path d="m18 15-6-6-6 6" />',
+    "loader": '<path d="M21 12a9 9 0 1 1-6.219-8.56" />',
+    "thumbs-up": (
+        '<path d="M7 10v12" /><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />'
+    ),
+    "thumbs-down": (
+        '<path d="M17 14V2" /><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" />'
+    ),
 }
 
 # Synonyms
 LUCIDE_SVG_NODES["wand-2"] = LUCIDE_SVG_NODES["wand"]
 LUCIDE_SVG_NODES["circle-check"] = LUCIDE_SVG_NODES["check-circle"]
 LUCIDE_SVG_NODES["commit"] = LUCIDE_SVG_NODES["git-commit"]
+LUCIDE_SVG_NODES["edit"] = LUCIDE_SVG_NODES["pencil"]
+LUCIDE_SVG_NODES["edit-2"] = LUCIDE_SVG_NODES["pencil"]
+LUCIDE_SVG_NODES["trash-2"] = LUCIDE_SVG_NODES["trash"]
+LUCIDE_SVG_NODES["loader-2"] = LUCIDE_SVG_NODES["loader"]
 
 
 def get_lucide_svg(

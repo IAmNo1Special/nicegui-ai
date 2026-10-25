@@ -70,30 +70,83 @@ class AiMarkdown(ui.element):
         super().__init__("div")
         self.classes(f"w-full flex flex-col gap-3 leading-relaxed {classes}")
         self._content = content
-        self._render()
+        self._rendered_blocks: list[dict[str, Any]] = []
+        self._elements: list[ui.markdown | CodeBlock] = []
+        self.set_content(content)
 
     @property
     def content(self) -> str:
         return self._content
 
     def set_content(self, content: str) -> None:
-        """Update markdown content, re-parsing text and code blocks."""
+        """Update markdown content incrementally without rebuilding unchanged blocks."""
         self._content = content
-        self.clear()
-        self._render()
+        new_blocks = parse_markdown_blocks(content)
 
-    def _render(self) -> None:
-        blocks = parse_markdown_blocks(self._content)
-        with self:
-            for block in blocks:
-                if block["type"] == "text":
-                    ui.markdown(block["content"]).classes(
-                        "text-sm text-gray-200 prose prose-invert max-w-none leading-relaxed"
-                    )
-                elif block["type"] == "code":
-                    CodeBlock(
-                        code=block["code"],
-                        language=block["language"],
-                        filename=block.get("filename"),
-                        line_numbers=True,
-                    )
+        common_len = min(len(self._rendered_blocks), len(new_blocks))
+        can_patch = True
+        for i in range(common_len):
+            old_b = self._rendered_blocks[i]
+            new_b = new_blocks[i]
+            if old_b["type"] != new_b["type"]:
+                can_patch = False
+                break
+            if old_b["type"] == "code" and (
+                old_b.get("language") != new_b.get("language")
+                or old_b.get("filename") != new_b.get("filename")
+            ):
+                can_patch = False
+                break
+
+        if can_patch and len(self._rendered_blocks) <= len(new_blocks):
+            # Update existing blocks in place
+            for i in range(common_len):
+                old_b = self._rendered_blocks[i]
+                new_b = new_blocks[i]
+                el = self._elements[i]
+                if old_b != new_b:
+                    if new_b["type"] == "text" and isinstance(el, ui.markdown):
+                        el.set_content(new_b["content"])
+                    elif new_b["type"] == "code" and isinstance(el, CodeBlock):
+                        el.set_code(new_b["code"])
+                    self._rendered_blocks[i] = new_b
+
+            # Append new blocks
+            with self:
+                for j in range(common_len, len(new_blocks)):
+                    b = new_blocks[j]
+                    if b["type"] == "text":
+                        nel = ui.markdown(b["content"]).classes(
+                            "text-sm text-gray-200 prose prose-invert max-w-none leading-relaxed"
+                        )
+                        self._elements.append(nel)
+                    elif b["type"] == "code":
+                        c_el = CodeBlock(
+                            code=b["code"],
+                            language=b["language"],
+                            filename=b.get("filename"),
+                            line_numbers=True,
+                        )
+                        self._elements.append(c_el)
+                    self._rendered_blocks.append(b)
+        else:
+            # Full re-render when structure has changed
+            self.clear()
+            self._rendered_blocks = []
+            self._elements = []
+            with self:
+                for b in new_blocks:
+                    if b["type"] == "text":
+                        tel = ui.markdown(b["content"]).classes(
+                            "text-sm text-gray-200 prose prose-invert max-w-none leading-relaxed"
+                        )
+                        self._elements.append(tel)
+                    elif b["type"] == "code":
+                        c_el = CodeBlock(
+                            code=b["code"],
+                            language=b["language"],
+                            filename=b.get("filename"),
+                            line_numbers=True,
+                        )
+                        self._elements.append(c_el)
+                    self._rendered_blocks.append(b)

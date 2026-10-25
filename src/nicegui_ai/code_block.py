@@ -57,22 +57,30 @@ class CodeBlock(ui.element):
                     self.copy_label = ui.label("Copy")
 
             # Code container
-            with ui.element("pre").classes(
+            self.code_container = ui.element("pre").classes(
                 "p-3 overflow-x-auto font-mono text-[11px] leading-relaxed text-gray-200 w-full select-text m-0"
-            ):
-                if line_numbers:
-                    lines = self.code.split("\n")
-                    pad = len(str(len(lines)))
-                    for i, line in enumerate(lines, 1):
-                        with ui.row().classes("gap-3 no-wrap"):
-                            ui.label(f"{i:>{pad}}").classes(
-                                "text-gray-600 select-none font-mono"
-                            )
-                            ui.label(line).classes(
-                                "font-mono text-inherit whitespace-pre"
-                            )
-                else:
-                    ui.label(self.code).classes("font-mono whitespace-pre text-inherit")
+            )
+            self._render_code()
+
+    def set_code(self, code: str) -> None:
+        """Update the code content dynamically."""
+        self.code = code
+        self._render_code()
+
+    def _render_code(self) -> None:
+        self.code_container.clear()
+        with self.code_container:
+            if self.line_numbers:
+                lines = self.code.split("\n")
+                pad = len(str(len(lines)))
+                for i, line in enumerate(lines, 1):
+                    with ui.row().classes("gap-3 no-wrap"):
+                        ui.label(f"{i:>{pad}}").classes(
+                            "text-gray-600 select-none font-mono"
+                        )
+                        ui.label(line).classes("font-mono text-inherit whitespace-pre")
+            else:
+                ui.label(self.code).classes("font-mono whitespace-pre text-inherit")
 
     async def copy(self) -> None:
         """Copy the code contents to the system clipboard with visual feedback."""

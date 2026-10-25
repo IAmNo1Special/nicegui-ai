@@ -211,6 +211,29 @@ class ToolCallCard(ui.element):
         if self.on_veto_callback:
             self.on_veto_callback(self.tool_call)
 
+    def set_status(self, status: ToolStatus | str) -> Self:
+        """Update the tool call execution status."""
+        self.tool_call.status = ToolStatus(status)
+        self._render_status_badge()
+        if self.tool_call.status != ToolStatus.APPROVAL_REQUIRED:
+            self.approval_container.clear()
+        return self
+
+    def set_result(self, result: Any) -> Self:
+        """Set the execution result without automatically changing status."""
+        self.tool_call.result = result
+        self._render_result()
+        return self
+
+    def fail(self, error_message: str) -> Self:
+        """Mark tool call as failed with an error message."""
+        self.tool_call.status = ToolStatus.FAILED
+        self.tool_call.result = error_message
+        self._render_status_badge()
+        self._render_result()
+        self.approval_container.clear()
+        return self
+
     def resolve(self, result: Any, duration_ms: int | None = None) -> None:
         """Mark the tool call as resolved with its output."""
         self.tool_call.status = ToolStatus.RESOLVED

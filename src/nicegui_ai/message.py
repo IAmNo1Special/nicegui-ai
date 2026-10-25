@@ -1,14 +1,18 @@
 """User and Agent message bubbles matching modern AI agent visual geometry."""
 
+import uuid
+from typing import Any
+
 from nicegui import ui
 
 from nicegui_ai.artifact import ArtifactCard
 from nicegui_ai.branch import BranchPicker
 from nicegui_ai.code_block import CodeBlock
 from nicegui_ai.icons import LucideIcon
+from nicegui_ai.markdown import AiMarkdown
 from nicegui_ai.reasoning import ReasoningCard
 from nicegui_ai.tool_call import ToolCallCard
-from nicegui_ai.types import ToolCall
+from nicegui_ai.types import ToolCall, ToolStatus
 
 
 class UserMessage(ui.row):
@@ -59,10 +63,12 @@ class AgentMessage(ui.row):
         tokens_used: int = 0,
         current_branch: int = 1,
         total_branches: int = 1,
+        initial_text: str | None = None,
+        is_generating: bool = False,
     ) -> None:
         super().__init__()
         self.agent_name = agent_name
-        self.text = text
+        self.text = text or (initial_text or "")
         self.tokens_used = tokens_used
         self.classes("justify-start w-full my-4 no-wrap gap-3")
 
@@ -120,15 +126,76 @@ class AgentMessage(ui.row):
                         for tool in tool_calls:
                             ToolCallCard(tool, default_open=False)
 
-                # Markdown text content
-                self.markdown = ui.markdown(self.text).classes(
-                    "leading-relaxed font-sans text-[13px] text-gray-200 w-full"
-                )
+                # Markdown text content powered by AiMarkdown
+                self.markdown = AiMarkdown(self.text)
+
+                # Action and reaction footer
+                with ui.row().classes(
+                    "items-center justify-end w-full pt-1.5 gap-2 text-gray-500 text-[10px] select-none"
+                ):
+                    ui.label("just now").classes(
+                        "font-mono text-gray-500 text-[10px] mr-1"
+                    )
+                    with (
+                        ui.element("button")
+                        .classes(
+                            "p-1 rounded text-gray-500 hover:text-gray-300 hover:bg-gray-800/60 "
+                            "transition-colors cursor-pointer border-none bg-transparent"
+                        )
+                        .on("click", self.copy_text)
+                    ):
+                        LucideIcon("copy", size=12, classes="text-inherit")
+                    with (
+                        ui.element("button")
+                        .classes(
+                            "p-1 rounded text-gray-500 hover:text-emerald-400 hover:bg-gray-800/60 "
+                            "transition-colors cursor-pointer border-none bg-transparent"
+                        )
+                        .on(
+                            "click",
+                            lambda: ui.notify(
+                                "Feedback recorded: positive",
+                                type="positive",
+                                timeout=800,
+                            ),
+                        )
+                    ):
+                        LucideIcon("thumbs-up", size=12, classes="text-inherit")
+                    with (
+                        ui.element("button")
+                        .classes(
+                            "p-1 rounded text-gray-500 hover:text-red-400 hover:bg-gray-800/60 "
+                            "transition-colors cursor-pointer border-none bg-transparent"
+                        )
+                        .on(
+                            "click",
+                            lambda: ui.notify(
+                                "Feedback recorded: negative", type="info", timeout=800
+                            ),
+                        )
+                    ):
+                        LucideIcon("thumbs-down", size=12, classes="text-inherit")
+
+        if is_generating:
+            self.set_generating(True)
 
     def append_text(self, chunk: str) -> None:
         """Stream an additional text delta into the message."""
         self.text += chunk
         self.markdown.set_content(self.text)
+
+    def set_tokens(self, tokens: int) -> None:
+        """Update token consumption badge."""
+        self.tokens_used = tokens
+        self.token_pill.set_text(f"+{tokens:,} tokens")
+
+    async def copy_text(self) -> None:
+        """Copy message content to system clipboard."""
+        safe_text = (
+            self.text.replace("\\", "\\\\").replace("`", "\\`").replace("$", "\\$")
+        )
+        await ui.run_javascript(f"navigator.clipboard.writeText(`{safe_text}`)")
+        ui.notify("Message copied to clipboard", type="positive", timeout=1000)
 
     def set_generating(self, is_generating: bool = True) -> None:
         """Update status badge between Generating... and Done."""
@@ -143,18 +210,47 @@ class AgentMessage(ui.row):
                 "text-purple-300 border-purple-500/30 bg-purple-950/80"
             )
 
-    def add_tool_call(self, tool: ToolCall) -> ToolCallCard:
+    def add_tool_call(
+        self,
+        tool: ToolCall | None = None,
+        *,
+        name: str = "",
+        args: dict[str, Any] | None = None,
+        summary: str = "",
+        status: ToolStatus = ToolStatus.PENDING,
+        default_open: bool = False,
+    ) -> ToolCallCard:
         """Dynamically attach a tool call card to this message."""
+        if tool is None:
+            tool = ToolCall(
+                id=str(uuid.uuid4())[:8],
+                name=name,
+                args=args or {},
+                summary=summary,
+                status=status,
+            )
         with self.tools_container:
-            card = ToolCallCard(tool, default_open=False)
+            card = ToolCallCard(tool, default_open=default_open)
         return card
 
-    def add_reasoning(self, thought_text: str) -> ReasoningCard:
+    def add_reasoning(
+        self,
+        thought_text: str = "",
+        *,
+        title: str = "Reasoning (Thinking Process)",
+        steps: list[str] | None = None,
+        duration_ms: int | None = None,
+        default_open: bool = False,
+    ) -> ReasoningCard:
         """Attach or update the reasoning effort card."""
         if self.reasoning_card is None:
             with self.reasoning_container:
                 self.reasoning_card = ReasoningCard(
-                    thought_text=thought_text, default_open=False
+                    thought_text=thought_text,
+                    title=title,
+                    steps=steps,
+                    duration_ms=duration_ms,
+                    default_open=default_open,
                 )
         else:
             self.reasoning_card.append_thought(thought_text)
