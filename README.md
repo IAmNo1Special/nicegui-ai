@@ -1,12 +1,31 @@
-# nicegui-ai 🤖✨
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IAmNo1Special/nicegui-ai/main/assets/hero-banner.png" alt="nicegui-ai: Modern AI Agent UI Primitives for Python" width="100%">
+</p>
 
-[![PyPI - Version](https://img.shields.io/pypi/v/nicegui-ai?color=8b5cf6)](https://pypi.org/project/nicegui-ai/)
-[![CI](https://github.com/IAmNo1Special/nicegui-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/IAmNo1Special/nicegui-ai/actions)
-[![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://pypi.org/project/nicegui-ai/"><img src="https://img.shields.io/pypi/v/nicegui-ai?color=8b5cf6" alt="PyPI - Version"></a>
+  <a href="https://github.com/IAmNo1Special/nicegui-ai/actions"><img src="https://github.com/IAmNo1Special/nicegui-ai/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
-**Modern, production-grade AI agent UI primitives for NiceGUI.**  
-A clean 1:1 Python port of contemporary AI interface patterns (inspired by `@assistant-ui/react` and Vercel AI SDK).
+<p align="center">
+  <b>Modern, production-grade AI agent UI primitives for NiceGUI.</b><br>
+  A clean 1:1 Python port of contemporary AI interface patterns (inspired by <code>@assistant-ui/react</code> and Vercel AI SDK).
+</p>
+
+<p align="center">
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#component-catalog">Component Catalog</a> •
+  <a href="#live-showcase-demo--component-gallery">Live Showcase</a> •
+  <a href="https://pypi.org/project/nicegui-ai/">PyPI</a>
+</p>
+
+---
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IAmNo1Special/nicegui-ai/main/assets/studio-preview.png" alt="nicegui-ai Studio Preview" width="100%">
+</p>
 
 ---
 
@@ -147,6 +166,10 @@ ui.run(port=8080)
 | **`VoicePill`** | Audio streaming indicator and push-to-talk pill with animated waveforms. |
 | **`AiMarkdown`** | Markdown renderer that auto-converts fenced code into interactive `CodeBlock` components with incremental streaming. |
 | **`LucideIcon`** | Crisp outline SVG icon primitive matching contemporary AI developer tooling. |
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IAmNo1Special/nicegui-ai/main/assets/artifact-drawer-preview.png" alt="nicegui-ai Off-Canvas Artifact Drawer with Unified Diff" width="100%">
+</p>
 
 ---
 
