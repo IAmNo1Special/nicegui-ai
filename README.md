@@ -15,7 +15,9 @@ Python has great AI agent engines, but lacks modern, sleek interfaces. Streamlit
 * 🧠 **Reasoning Blocks**: Amber-gilded collapsible reasoning cards displaying live step counts and monospace thoughts.
 * ⚡ **Tool Call Cards**: Runic command cards with live status badges (`Executing...`, `Resolved`, `Failed`), collapsible arguments, and interactive Approval Gate buttons (**[Approve]** and **[Veto]**).
 * 🔄 **In-Stream Branching**: `< 1 / 3 >` branch pickers to inspect alternative completions or user edits.
-* ✍️ **Steerable Composer**: Auto-expanding pill input with in-flight steering (guidance mid-stream) and cancellation controls.
+* ✍️ **Steerable Composer**: Auto-expanding dock with 3-state Action Button (Send / Stop / Queue), in-flight message queue tray, background task indicators, and multiline support (`Shift+Enter` for newline, `Enter` to submit).
+* 📬 **Queued Messages Tray**: In-flight steering buffer with FIFO auto-draining, Send Now, Edit, and Delete actions.
+* ⚙️ **Background Task Tray**: Monospace status indicators with spinners for asynchronous agent jobs.
 * 📊 **Organic Token Ring**: Smooth animated circular SVG progress gauge for context window budget tracking.
 * 📑 **Slide-Over Drawers**: Ephemeral slide-out sheets for conversation histories, diff reviews, and live artifacts.
 
@@ -100,7 +102,7 @@ def index():
             composer.set_running(False)
             header.update_tokens(14850)
 
-        # 4. Pill prompt composer
+        # 4. Pill prompt composer with unified action button and steering
         composer = AiComposer(
             placeholder="Message AI agent... (type / for commands, @ for files)",
             on_send=lambda text: asyncio.create_task(handle_submit(text)),
@@ -122,7 +124,9 @@ ui.run(port=8080)
 | **`AgentMessage`** | Left-aligned message bubble with avatar, status badge, reasoning, and tool call slots. |
 | **`ReasoningCard`** | Amber-gilded collapsible card displaying model chain-of-thought and step counts. |
 | **`ToolCallCard`** | Inspectable tool execution card with arguments, results, and Human-in-the-Loop Approval Gates. |
-| **`AiComposer`** | Pill input dock with in-flight steering, cancellation controls, and auto-growing textarea. |
+| **`AiComposer`** | Steerable input dock with 3-state Action Button, integrated model selector, and audio pill. |
+| **`QueuedMessagesTray`** | FIFO message queue tray anchored above the composer for in-flight steering with Send Now, Edit, and Delete actions. |
+| **`TaskTray`** | Live status tray displaying asynchronous background tasks with spinners and monospace labels. |
 | **`BranchPicker`** | Inline `< 1 / 3 >` branch switcher for multi-turn alternative explorations. |
 | **`FloatingHeader`** | Ambient glassmorphism pill with model identity and circular token meter. |
 | **`TokenRing`** | Standalone animated SVG circular progress ring for context window tracking. |
@@ -130,19 +134,25 @@ ui.run(port=8080)
 | **`CodeBlock`** | Monospace code block with language indicator, filename, line numbers, and copy button. |
 | **`ArtifactCard`** | Interactive card representing agent artifacts (code, reports, diffs) with copy and download. |
 | **`ApprovalModal`** | Ambient glassmorphism modal dialog for human-in-the-loop security gates. |
-| **`ModelSelector`** | Floating pill dropdown for active model identity and reasoning effort control. |
+| **`ModelSelector`** | Floating pill dropdown or inline composer selector for active model and reasoning effort. |
 | **`VoicePill`** | Audio streaming indicator and push-to-talk pill with animated waveforms. |
-| **`AiMarkdown`** | Markdown renderer that auto-converts fenced code into interactive `CodeBlock` components. |
+| **`AiMarkdown`** | Markdown renderer that auto-converts fenced code into interactive `CodeBlock` components with incremental streaming. |
 | **`LucideIcon`** | Crisp outline SVG icon primitive matching contemporary AI developer tooling. |
 
 ---
 
-## Run the Live Showcase Demo
+## Live Showcase Demo & Component Gallery
 
-Clone this repository and run the demo application:
+Run the interactive live demo showcasing end-to-end agent streaming with reasoning, tools, and queued steering:
 
 ```bash
 uv run python -m nicegui_ai.demo
+```
+
+Or open the **Component Gallery** to inspect every single primitive across all its visual states:
+
+```bash
+uv run python -m nicegui_ai.gallery
 ```
 
 Then open your browser at **http://localhost:8080**.
