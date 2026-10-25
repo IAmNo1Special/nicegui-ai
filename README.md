@@ -130,6 +130,9 @@ ui.run(port=8080)
 | **`CodeBlock`** | Monospace code block with language indicator, filename, line numbers, and copy button. |
 | **`ArtifactCard`** | Interactive card representing agent artifacts (code, reports, diffs) with copy and download. |
 | **`ApprovalModal`** | Ambient glassmorphism modal dialog for human-in-the-loop security gates. |
+| **`ModelSelector`** | Floating pill dropdown for active model identity and reasoning effort control. |
+| **`VoicePill`** | Audio streaming indicator and push-to-talk pill with animated waveforms. |
+| **`AiMarkdown`** | Markdown renderer that auto-converts fenced code into interactive `CodeBlock` components. |
 | **`LucideIcon`** | Crisp outline SVG icon primitive matching contemporary AI developer tooling. |
 
 ---

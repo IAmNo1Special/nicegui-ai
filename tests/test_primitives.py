@@ -218,3 +218,62 @@ def test_examples_importable():
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         assert hasattr(mod, "main_page")
+
+
+def test_model_selector():
+    from nicegui_ai import ModelSelector
+
+    selector = ModelSelector(
+        models=["claude-3-7-sonnet", "gpt-4o", "gemini-2.5-pro"],
+        current_model="claude-3-7-sonnet",
+        reasoning_effort="high",
+    )
+    assert selector.current_model == "claude-3-7-sonnet"
+    assert selector.reasoning_effort == "high"
+
+    selector.set_model("gpt-4o")
+    assert selector.current_model == "gpt-4o"
+
+    selector.set_reasoning_effort("low")
+    assert selector.reasoning_effort == "low"
+
+    selector.set_reasoning_effort(None)
+    assert selector.reasoning_effort is None
+
+
+def test_voice_pill():
+    from nicegui_ai import VoicePill
+
+    pill = VoicePill(state="idle")
+    assert pill.state == "idle"
+    assert not pill.is_active
+
+    pill.set_state("listening")
+    assert pill.state == "listening"
+    assert pill.is_active
+
+    pill.set_state("speaking")
+    assert pill.state == "speaking"
+    assert pill.is_active
+
+    pill.set_state("idle")
+    assert pill.state == "idle"
+    assert not pill.is_active
+
+
+def test_ai_markdown_parser():
+    from nicegui_ai import parse_markdown_blocks
+
+    text = "Here is some code:\n```python:main.py\nprint('hello')\n```\nDone."
+    blocks = parse_markdown_blocks(text)
+    assert len(blocks) == 3
+    assert blocks[0]["type"] == "text"
+    assert "Here is some code:" in blocks[0]["content"]
+
+    assert blocks[1]["type"] == "code"
+    assert blocks[1]["language"] == "python"
+    assert blocks[1]["filename"] == "main.py"
+    assert "print('hello')" in blocks[1]["code"]
+
+    assert blocks[2]["type"] == "text"
+    assert "Done." in blocks[2]["content"]
