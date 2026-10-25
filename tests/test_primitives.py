@@ -277,3 +277,166 @@ def test_ai_markdown_parser():
 
     assert blocks[2]["type"] == "text"
     assert "Done." in blocks[2]["content"]
+
+
+def test_queued_messages_tray():
+    from nicegui_ai import QueuedMessagesTray
+
+    send_now_calls = []
+    edit_calls = []
+    delete_calls = []
+
+    tray = QueuedMessagesTray(
+        on_send_now=lambda m: send_now_calls.append(m.text),
+        on_edit=lambda m: edit_calls.append(m.text),
+        on_delete=lambda m: delete_calls.append(m.text),
+    )
+    assert len(tray) == 0
+    assert not tray.visible
+
+    tray.add_message("Prompt 1")
+    assert len(tray) == 1
+    assert tray.visible
+    assert tray.count_badge.text == "1"
+
+    m2 = tray.add_message("Prompt 2")
+    assert len(tray) == 2
+    assert tray.count_badge.text == "2"
+
+    # FIFO popping
+    popped = tray.pop_next()
+    assert popped is not None
+    assert popped.text == "Prompt 1"
+    assert len(tray) == 1
+
+    # Edit callback
+    tray._handle_edit(m2)
+    assert edit_calls == ["Prompt 2"]
+    assert len(tray) == 0
+
+
+def test_task_tray():
+    from nicegui_ai import TaskTray
+
+    tray = TaskTray()
+    assert len(tray) == 0
+    assert not tray.visible
+
+    h1 = tray.add_task("Indexing files...")
+    assert len(tray) == 1
+    assert tray.visible
+    assert "1 task running" in tray.title_label.text
+
+    h2 = tray.add_task("Checking policies...")
+    assert len(tray) == 2
+    assert "2 tasks running" in tray.title_label.text
+
+    h1.set_text("Indexing files (45/100)...")
+    assert h1.text == "Indexing files (45/100)..."
+
+    h1.complete()
+    assert len(tray) == 1
+    assert "1 task running" in tray.title_label.text
+
+    h2.complete()
+    assert len(tray) == 0
+    assert not tray.visible
+
+
+def test_composer_unified_action_button():
+    from nicegui_ai import AiComposer
+
+    sent = []
+    cancelled = []
+    composer = AiComposer(
+        on_send=lambda text: sent.append(text),
+        on_cancel=lambda: cancelled.append(True),
+    )
+
+    # 1. Idle + empty: disabled send
+    assert not composer.is_running
+    assert "cursor-not-allowed" in composer.action_btn._classes
+
+    # 2. Idle + text: enabled send
+    composer.input.set_value("Hello agent")
+    composer._update_action_button()
+    assert "cursor-pointer" in composer.action_btn._classes
+    assert "bg-purple-600" in composer.action_btn._classes
+
+    # Submitting sends
+    composer.submit()
+    assert sent == ["Hello agent"]
+    assert composer.input.value == ""
+
+    # 3. Running + empty: stop
+    composer.set_running(True)
+    assert composer.is_running
+    assert "bg-gray-200" in composer.action_btn._classes
+    assert composer.action_icon.icon_name == "square"
+
+    # 4. Running + text: queue
+    composer.input.set_value("Queued follow-up")
+    composer._update_action_button()
+    assert "bg-purple-600" in composer.action_btn._classes
+    assert composer.action_icon.icon_name == "arrow-right"
+
+    # Submitting while running adds to queued_tray!
+    composer.submit()
+    assert len(composer.queued_tray) == 1
+    assert composer.queued_tray.messages[0].text == "Queued follow-up"
+
+    # 5. Agent finishes -> auto-drains queue
+    composer.set_running(False)
+    assert sent == ["Hello agent", "Queued follow-up"]
+    assert len(composer.queued_tray) == 0
+
+
+def test_tool_call_card_methods():
+    from nicegui_ai import ToolCall, ToolCallCard, ToolStatus
+
+    tool = ToolCall(id="t-1", name="search", status=ToolStatus.EXECUTING)
+    card = ToolCallCard(tool)
+    assert card.tool_call.status == ToolStatus.EXECUTING
+
+    card.set_status(ToolStatus.SUCCESS)
+    assert card.tool_call.status == ToolStatus.RESOLVED
+
+    card.set_result("found 3 items")
+    assert card.tool_call.result == "found 3 items"
+
+    card.fail("timeout error")
+    assert card.tool_call.status == ToolStatus.FAILED
+    assert card.tool_call.result == "timeout error"
+
+
+def test_agent_message_set_tokens_and_markdown():
+    from nicegui_ai import AgentMessage, AiMarkdown
+
+    msg = AgentMessage(agent_name="TestBot", text="# Title\n\n```python\nprint(1)\n```")
+    assert isinstance(msg.markdown, AiMarkdown)
+    assert msg.tokens_used == 0
+
+    msg.set_tokens(850)
+    assert msg.tokens_used == 850
+    assert "+850 tokens" in msg.token_pill.text
+
+
+def test_thread_string_suggestions():
+    from nicegui_ai import AiThread, SuggestionPrompt
+
+    thread = AiThread(
+        suggestions=[
+            "First Prompt",
+            SuggestionPrompt(label="Second", prompt="Second Prompt"),
+        ]
+    )
+    assert len(thread.suggestions) == 2
+    assert thread.suggestions[0].label == "First Prompt"
+    assert thread.suggestions[0].prompt == "First Prompt"
+    assert thread.suggestions[1].label == "Second"
+
+
+def test_gallery_module_importable():
+    from nicegui_ai import gallery
+
+    assert hasattr(gallery, "gallery_page")
