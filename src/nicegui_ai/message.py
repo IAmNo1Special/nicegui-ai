@@ -2,7 +2,7 @@
 
 import uuid
 from collections.abc import Callable
-from typing import Any, Self
+from typing import Any
 
 from nicegui import ui
 
@@ -25,7 +25,7 @@ class UserMessage(ui.row):
         user_name: str = "User",
         current_branch: int = 1,
         total_branches: int = 1,
-        on_branch_change: Callable[[int, str], None] | None = None,
+        on_branch_change: Callable[[int, str], Any] | None = None,
     ) -> None:
         super().__init__()
         self.text = text
@@ -94,8 +94,8 @@ class AgentMessage(ui.row):
         total_branches: int = 1,
         initial_text: str | None = None,
         is_generating: bool = False,
-        on_branch_change: Callable[[int, MessageBranch], None] | None = None,
-        on_fork: Callable[[Self, int], None] | None = None,
+        on_branch_change: Callable[[int, MessageBranch], Any] | None = None,
+        on_fork: Callable[["AgentMessage", int], Any] | None = None,
     ) -> None:
         super().__init__()
         self.agent_name = agent_name
@@ -148,9 +148,7 @@ class AgentMessage(ui.row):
                     ):
                         self.branch_picker = BranchPicker(
                             current_index=current_branch,
-                            total_branches=max(
-                                total_branches, len(self.branches)
-                            ),
+                            total_branches=max(total_branches, len(self.branches)),
                             on_change=self.switch_branch,
                         )
                         with ui.row().classes("items-center gap-1"):
@@ -401,9 +399,9 @@ class AgentMessage(ui.row):
         else:
             self.reasoning_card.append_thought(thought_text)
         if self.branches and 1 <= self.current_branch_index <= len(self.branches):
-            self.branches[self.current_branch_index - 1].reasoning = (
-                self.reasoning_card.thought_text
-            )
+            self.branches[
+                self.current_branch_index - 1
+            ].reasoning = self.reasoning_card.thought_text
         return self.reasoning_card
 
     def _sync_reasoning(self, text: str) -> None:

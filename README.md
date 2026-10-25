@@ -26,9 +26,9 @@ Python has great AI agent engines, but lacks modern, sleek interfaces. Streamlit
 ## Installation
 
 ```bash
-pip install nicegui-ai
-# or with uv:
 uv add nicegui-ai
+# or with pip fallback:
+pip install nicegui-ai
 ```
 
 ---
@@ -133,6 +133,10 @@ ui.run(port=8080)
 | **`SlideOverDrawer`** | Smooth off-canvas sheet with soft backdrop scrim for session lists and artifacts. |
 | **`CodeBlock`** | Monospace code block with language indicator, filename, line numbers, and copy button. |
 | **`ArtifactCard`** | Interactive card representing agent artifacts (code, reports, diffs) with copy and download. |
+| **`ArtifactViewerDrawer`** | Full-featured off-canvas drawer with tabbed Code (syntax highlighted, line numbers), Live Render (HTML/SVG, Mermaid, Markdown), and Unified Diff view (+/- line highlights). |
+| **`StreamBridge`** | Reactive streaming orchestrator that consumes AG-UI events and drives UI updates (text, reasoning, tools, tasks, tokens). |
+| **`BaseStreamAdapter`** | Object-oriented adapter hierarchy (`OpenRouterStreamAdapter`, `GeminiStreamAdapter`, `OpenCodeStreamAdapter`, `AgUiStreamAdapter`) translating provider events to normalized AG-UI protocol. |
+| **`MessageBranch`** | Dataclass encapsulating branch state (text, reasoning, tool calls, tokens) for reactive turn switching and forking. |
 | **`ApprovalModal`** | Ambient glassmorphism modal dialog for human-in-the-loop security gates. |
 | **`ModelSelector`** | Floating pill dropdown or inline composer selector for active model and reasoning effort. |
 | **`VoicePill`** | Audio streaming indicator and push-to-talk pill with animated waveforms. |

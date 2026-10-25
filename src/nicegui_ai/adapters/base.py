@@ -24,7 +24,7 @@ class BaseStreamAdapter(ABC):
         self.events: list[AgUiEvent] = []
 
     @abstractmethod
-    async def stream_events(self) -> AsyncIterator[AgUiEvent]:
+    def stream_events(self) -> AsyncIterator[AgUiEvent]:
         """Asynchronously yield standardized AG-UI events from the underlying stream."""
         ...
 

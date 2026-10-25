@@ -314,7 +314,7 @@ def demo_page() -> None:
     setup_ai_theme()
 
     # Shared demo state
-    state = {
+    state: dict[str, Any] = {
         "tokens_used": 24890,
         "token_limit": 128000,
         "is_running": False,
@@ -483,7 +483,7 @@ def demo_page() -> None:
             )
 
             stream_factory = DemoStreamFactory(
-                abort_check=lambda: state["abort_requested"]
+                abort_check=lambda: bool(state["abort_requested"])
             )
 
             # Turn fork handler for alternative streaming variations

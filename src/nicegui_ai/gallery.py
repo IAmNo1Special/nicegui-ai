@@ -567,9 +567,7 @@ def gallery_page() -> None:
             async def run_gemini_demo() -> None:
                 stream_container.clear()
                 with stream_container:
-                    msg = AgentMessage(
-                        agent_name="gemini-agent", is_generating=True
-                    )
+                    msg = AgentMessage(agent_name="gemini-agent", is_generating=True)
 
                 async def mock_gemini_chunks() -> AsyncIterator[dict[str, Any]]:
                     for t in [
@@ -578,11 +576,7 @@ def gallery_page() -> None:
                     ]:
                         yield {
                             "candidates": [
-                                {
-                                    "content": {
-                                        "parts": [{"text": t, "thought": True}]
-                                    }
-                                }
+                                {"content": {"parts": [{"text": t, "thought": True}]}}
                             ]
                         }
                         await asyncio.sleep(0.15)
@@ -644,13 +638,9 @@ def gallery_page() -> None:
             async def run_opencode_demo() -> None:
                 stream_container.clear()
                 with stream_container:
-                    msg = AgentMessage(
-                        agent_name="opencode-agent", is_generating=True
-                    )
+                    msg = AgentMessage(agent_name="opencode-agent", is_generating=True)
 
-                async def mock_opencode_events() -> AsyncIterator[
-                    dict[str, Any]
-                ]:
+                async def mock_opencode_events() -> AsyncIterator[dict[str, Any]]:
                     yield {
                         "type": "thought",
                         "thought": "OpenCode planning execution steps.\n",

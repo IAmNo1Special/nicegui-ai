@@ -216,33 +216,27 @@ class StreamBridge:
                         event.delta
                         if isinstance(event.delta, dict)
                         else (
-                            event.snapshot
-                            if isinstance(event.snapshot, dict)
-                            else {}
+                            event.snapshot if isinstance(event.snapshot, dict) else {}
                         )
                     )
                     is_done = (
                         payload.get("status") in {"done", "completed"}
                         or payload.get("done") is True
                     )
-                    task_text = payload.get(
-                        "text",
-                        payload.get("title", "Processing background task..."),
+                    task_text = str(
+                        payload.get("text")
+                        or payload.get("title")
+                        or "Processing background task..."
                     )
 
                     if is_done and event.activity_id in self._active_tasks:
                         self._active_tasks[event.activity_id].complete()
                         del self._active_tasks[event.activity_id]
-                    elif (
-                        event.activity_id not in self._active_tasks
-                        and not is_done
-                    ):
+                    elif event.activity_id not in self._active_tasks and not is_done:
                         handle = self.task_tray.add_task(task_text)
                         self._active_tasks[event.activity_id] = handle
                     elif event.activity_id in self._active_tasks:
-                        self._active_tasks[event.activity_id].update_text(
-                            task_text
-                        )
+                        self._active_tasks[event.activity_id].update_text(task_text)
 
             # 6. State / Usage metrics
             case AgUiEventType.STATE_DELTA:

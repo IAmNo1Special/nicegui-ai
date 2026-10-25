@@ -29,6 +29,10 @@ class TaskHandle:
         self._task.text = text
         self._tray._render()
 
+    def update_text(self, text: str) -> None:
+        """Update the displayed task text."""
+        self.set_text(text)
+
     def complete(self) -> None:
         """Mark task as complete and remove from tray."""
         self._tray.remove_task(self._task.id)

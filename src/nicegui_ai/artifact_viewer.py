@@ -131,9 +131,7 @@ class ArtifactViewerDrawer(SlideOverDrawer):
         # Determine default tab
         if default_tab:
             self.active_tab = default_tab
-        elif artifact_type in {"diff", "patch"} or (
-            diff_content and not content
-        ):
+        elif artifact_type in {"diff", "patch"} or (diff_content and not content):
             self.active_tab = "diff"
         elif artifact_type in {"report", "doc", "document"} or language in {
             "html",
@@ -243,9 +241,7 @@ class ArtifactViewerDrawer(SlideOverDrawer):
 
     def _render_diff_tab(self) -> None:
         diff_text = self.diff_content or (
-            self.artifact_content
-            if self.artifact_type in {"diff", "patch"}
-            else ""
+            self.artifact_content if self.artifact_type in {"diff", "patch"} else ""
         )
         if not diff_text:
             ui.label("No diff or patch data provided for this artifact.").classes(
@@ -307,9 +303,7 @@ class ArtifactViewerDrawer(SlideOverDrawer):
             else self.artifact_content
         )
         safe_code = (
-            target_text.replace("\\", "\\\\")
-            .replace("`", "\\`")
-            .replace("$", "\\$")
+            target_text.replace("\\", "\\\\").replace("`", "\\`").replace("$", "\\$")
         )
         await ui.run_javascript(f"navigator.clipboard.writeText(`{safe_code}`)")
         ui.notify("Artifact copied to clipboard", type="positive", timeout=1200)

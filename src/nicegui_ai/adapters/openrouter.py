@@ -293,6 +293,9 @@ class OpenRouterStreamAdapter(BaseStreamAdapter):
         if not val.strip():
             return {}
         try:
-            return json.loads(val)
+            parsed = json.loads(val)
+            if isinstance(parsed, dict):
+                return parsed
+            return str(parsed)
         except Exception:
             return val

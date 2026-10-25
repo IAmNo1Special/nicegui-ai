@@ -183,9 +183,10 @@ class GeminiStreamAdapter(BaseStreamAdapter):
             if not content:
                 continue
 
-            parts = getattr(content, "parts", None) or (
-                content.get("parts") if isinstance(content, dict) else []
+            raw_parts = getattr(content, "parts", None) or (
+                content.get("parts") if isinstance(content, dict) else None
             )
+            parts = raw_parts if isinstance(raw_parts, list) else []
             for part in parts:
                 events.extend(self._process_part(part))
 
