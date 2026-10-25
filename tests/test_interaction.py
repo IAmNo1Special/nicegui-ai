@@ -19,6 +19,7 @@ async def test_gallery_page_loads(user: User):
     await user.should_see("ModelSelector & VoicePill Controls")
     await user.should_see("QueuedMessagesTray & TaskTray")
     await user.should_see("AiComposer with Unified Action Button")
+    await user.should_see("AG-UI Streaming Bridge & Adapters")
 
 
 @pytest.mark.nicegui_main_file("examples/basic_chat.py")

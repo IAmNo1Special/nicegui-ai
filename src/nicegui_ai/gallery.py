@@ -1,4 +1,6 @@
-"""Component Gallery showcasing all nicegui-ai primitives in every state."""
+import asyncio
+from collections.abc import AsyncIterator
+from typing import Any
 
 from nicegui import ui
 
@@ -11,12 +13,16 @@ from nicegui_ai import (
     ArtifactCard,
     BranchPicker,
     FloatingHeader,
+    GeminiStreamAdapter,
     LucideIcon,
     ModelOption,
     ModelSelector,
+    OpenCodeStreamAdapter,
+    OpenRouterStreamAdapter,
     QueuedMessagesTray,
     ReasoningCard,
     SlideOverDrawer,
+    StreamBridge,
     SuggestionPrompt,
     TaskTray,
     TokenRing,
@@ -413,6 +419,215 @@ def gallery_page() -> None:
                         f"Switched to branch {idx}", type="info"
                     ),
                 )
+
+        # Section 11: AG-UI Streaming Bridge & Adapters
+        with ui.column().classes(
+            "w-full gap-3 p-4 bg-[#11151f]/60 rounded-2xl border border-gray-800/60"
+        ):
+            ui.label("AG-UI Streaming Bridge & Adapters").classes(
+                "text-xs font-bold uppercase tracking-wider text-purple-400"
+            )
+            ui.label(
+                "Live reactive streaming with OpenRouter, Gemini, and OpenCode adapters."
+            ).classes("text-[11px] text-gray-400")
+
+            stream_container = ui.column().classes("w-full")
+
+            async def run_openrouter_demo() -> None:
+                stream_container.clear()
+                with stream_container:
+                    msg = AgentMessage(
+                        agent_name="openrouter-agent", is_generating=True
+                    )
+
+                async def mock_or_chunks() -> AsyncIterator[dict[str, Any]]:
+                    for t in [
+                        "Analyzing query parameters...\n",
+                        "Selecting optimal code transformation.\n",
+                    ]:
+                        yield {"choices": [{"delta": {"reasoning": t}}]}
+                        await asyncio.sleep(0.15)
+                    yield {
+                        "choices": [
+                            {
+                                "delta": {
+                                    "tool_calls": [
+                                        {
+                                            "index": 0,
+                                            "id": "gallery_tool_1",
+                                            "function": {
+                                                "name": "format_code",
+                                                "arguments": '{"style": "ruff"}',
+                                            },
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                    await asyncio.sleep(0.2)
+                    for text in [
+                        "Formatted python buffer cleanly with **OpenRouterStreamAdapter**:\n",
+                        "- 0 linter violations\n",
+                        "- Reconstructed arguments via `update_args`\n",
+                    ]:
+                        yield {"choices": [{"delta": {"content": text}}]}
+                        await asyncio.sleep(0.1)
+                    yield {
+                        "choices": [{"delta": {}, "finish_reason": "stop"}],
+                        "usage": {"total_tokens": 310},
+                    }
+
+                adapter = OpenRouterStreamAdapter(mock_or_chunks())
+                bridge = StreamBridge(message=msg, header=header)
+                res = await bridge.consume(adapter)
+                for tc in res.tool_calls:
+                    if tc.id in bridge._tool_cards:
+                        bridge._tool_cards[tc.id].resolve(
+                            "Clean formatting applied", duration_ms=35
+                        )
+
+            async def run_gemini_demo() -> None:
+                stream_container.clear()
+                with stream_container:
+                    msg = AgentMessage(
+                        agent_name="gemini-agent", is_generating=True
+                    )
+
+                async def mock_gemini_chunks() -> AsyncIterator[dict[str, Any]]:
+                    for t in [
+                        "Gemini 2.5 thinking process initiated...\n",
+                        "Validating type annotations with strict mypy flags.\n",
+                    ]:
+                        yield {
+                            "candidates": [
+                                {
+                                    "content": {
+                                        "parts": [{"text": t, "thought": True}]
+                                    }
+                                }
+                            ]
+                        }
+                        await asyncio.sleep(0.15)
+                    yield {
+                        "candidates": [
+                            {
+                                "content": {
+                                    "parts": [
+                                        {
+                                            "function_call": {
+                                                "name": "type_check",
+                                                "args": {"target": "schema.py"},
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                    await asyncio.sleep(0.2)
+                    yield {
+                        "candidates": [
+                            {
+                                "content": {
+                                    "parts": [
+                                        {
+                                            "function_response": {
+                                                "name": "type_check",
+                                                "response": {
+                                                    "result": "Success: no issues found in 1 source file"
+                                                },
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                    await asyncio.sleep(0.15)
+                    yield {
+                        "candidates": [
+                            {
+                                "content": {
+                                    "parts": [
+                                        {
+                                            "text": "Gemini stream verified: zero type discrepancies detected."
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                    yield {"usage_metadata": {"total_token_count": 290}}
+
+                adapter = GeminiStreamAdapter(mock_gemini_chunks())
+                bridge = StreamBridge(message=msg, header=header)
+                await bridge.consume(adapter)
+
+            async def run_opencode_demo() -> None:
+                stream_container.clear()
+                with stream_container:
+                    msg = AgentMessage(
+                        agent_name="opencode-agent", is_generating=True
+                    )
+
+                async def mock_opencode_events() -> AsyncIterator[
+                    dict[str, Any]
+                ]:
+                    yield {
+                        "type": "thought",
+                        "thought": "OpenCode planning execution steps.\n",
+                    }
+                    await asyncio.sleep(0.15)
+                    yield {
+                        "type": "step_start",
+                        "step_id": "step_lint",
+                        "name": "Run Ruff Linter",
+                    }
+                    yield {"type": "command", "command": "uv run ruff check ."}
+                    await asyncio.sleep(0.2)
+                    yield {
+                        "type": "command_result",
+                        "output": "All checks passed!",
+                    }
+                    yield {"type": "step_finish", "step_id": "step_lint"}
+                    await asyncio.sleep(0.15)
+                    yield {
+                        "type": "content",
+                        "content": "OpenCode agent workflow finished with zero errors.",
+                    }
+
+                adapter = OpenCodeStreamAdapter(mock_opencode_events())
+                bridge = StreamBridge(message=msg, header=header)
+                await bridge.consume(adapter)
+
+            with ui.row().classes("gap-2"):
+                with (
+                    ui.element("button")
+                    .classes(
+                        "px-3 py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-200 text-xs font-medium cursor-pointer transition-colors"
+                    )
+                    .on("click", lambda: asyncio.create_task(run_openrouter_demo()))
+                ):
+                    ui.label("OpenRouter Stream")
+
+                with (
+                    ui.element("button")
+                    .classes(
+                        "px-3 py-1.5 rounded-lg bg-blue-950/80 hover:bg-blue-900 border border-blue-500/40 text-blue-200 text-xs font-medium cursor-pointer transition-colors"
+                    )
+                    .on("click", lambda: asyncio.create_task(run_gemini_demo()))
+                ):
+                    ui.label("Gemini Stream")
+
+                with (
+                    ui.element("button")
+                    .classes(
+                        "px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-200 text-xs font-medium cursor-pointer transition-colors"
+                    )
+                    .on("click", lambda: asyncio.create_task(run_opencode_demo()))
+                ):
+                    ui.label("OpenCode Stream")
 
 
 def main() -> None:

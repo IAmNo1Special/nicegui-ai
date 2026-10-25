@@ -141,6 +141,9 @@ class StreamBridge:
                     self.message.set_generating(False)
                 if self.composer is not None:
                     self.composer.set_running(False)
+                for handle in self._active_tasks.values():
+                    handle.complete()
+                self._active_tasks.clear()
 
             case AgUiEventType.RUN_ERROR:
                 if self.message is not None:
@@ -209,16 +212,37 @@ class StreamBridge:
             # 5. Background Activity / Tasks
             case AgUiEventType.ACTIVITY_SNAPSHOT | AgUiEventType.ACTIVITY_DELTA:
                 if self.task_tray is not None and event.activity_id:
-                    task_text = (
-                        event.delta.get("text", "Processing...")
+                    payload = (
+                        event.delta
                         if isinstance(event.delta, dict)
-                        else "Running background task..."
+                        else (
+                            event.snapshot
+                            if isinstance(event.snapshot, dict)
+                            else {}
+                        )
                     )
-                    if event.activity_id not in self._active_tasks:
+                    is_done = (
+                        payload.get("status") in {"done", "completed"}
+                        or payload.get("done") is True
+                    )
+                    task_text = payload.get(
+                        "text",
+                        payload.get("title", "Processing background task..."),
+                    )
+
+                    if is_done and event.activity_id in self._active_tasks:
+                        self._active_tasks[event.activity_id].complete()
+                        del self._active_tasks[event.activity_id]
+                    elif (
+                        event.activity_id not in self._active_tasks
+                        and not is_done
+                    ):
                         handle = self.task_tray.add_task(task_text)
                         self._active_tasks[event.activity_id] = handle
-                    else:
-                        self._active_tasks[event.activity_id].update_text(task_text)
+                    elif event.activity_id in self._active_tasks:
+                        self._active_tasks[event.activity_id].update_text(
+                            task_text
+                        )
 
             # 6. State / Usage metrics
             case AgUiEventType.STATE_DELTA:

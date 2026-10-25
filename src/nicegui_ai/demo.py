@@ -1,6 +1,8 @@
 """Interactive showcase application for nicegui-ai primitives."""
 
 import asyncio
+from collections.abc import AsyncIterator, Callable
+from typing import Any
 
 from nicegui import ui
 
@@ -8,14 +10,300 @@ from nicegui_ai import (
     AiComposer,
     AiThread,
     ApprovalModal,
+    BaseStreamAdapter,
     FloatingHeader,
+    GeminiStreamAdapter,
     LucideIcon,
+    OpenCodeStreamAdapter,
+    OpenRouterStreamAdapter,
     SlideOverDrawer,
+    StreamBridge,
     SuggestionPrompt,
     ToolCall,
     ToolStatus,
     setup_ai_theme,
 )
+
+
+class DemoStreamFactory:
+    """Object-oriented factory creating simulated provider streams for showcase interaction."""
+
+    def __init__(self, abort_check: Callable[[], bool] | None = None) -> None:
+        self.abort_check = abort_check or (lambda: False)
+
+    def create_adapter(
+        self,
+        model_name: str,
+        prompt: str,
+        effort: str | None = None,
+    ) -> BaseStreamAdapter:
+        """Create the appropriate provider stream adapter based on selected model."""
+        name_lower = model_name.lower()
+        if "gemini" in name_lower:
+            return GeminiStreamAdapter(
+                self._generate_gemini_chunks(prompt, effort, model_name)
+            )
+        if "opencode" in name_lower or "oss" in name_lower:
+            return OpenCodeStreamAdapter(
+                self._generate_opencode_events(prompt, model_name)
+            )
+        return OpenRouterStreamAdapter(
+            self._generate_openrouter_chunks(prompt, effort, model_name)
+        )
+
+    async def _generate_gemini_chunks(
+        self, prompt: str, effort: str | None, model_name: str
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Simulate Google GenAI SDK stream with candidate parts and usage metadata."""
+        thoughts = [
+            f"Analyzing user prompt: '{prompt[:40]}...'\n",
+            f"Reasoning effort budget: {effort or 'Medium'}. Scanning workspace modules...\n",
+            "Synthesizing tool trajectory with zero standard library shadowing.\n",
+        ]
+        for t in thoughts:
+            if self.abort_check():
+                return
+            yield {
+                "candidates": [
+                    {
+                        "content": {
+                            "parts": [{"text": t, "thought": True}],
+                            "role": "model",
+                        }
+                    }
+                ]
+            }
+            await asyncio.sleep(0.2)
+
+        # Tool call
+        if self.abort_check():
+            return
+        yield {
+            "candidates": [
+                {
+                    "content": {
+                        "parts": [
+                            {
+                                "function_call": {
+                                    "name": "view_file",
+                                    "args": {
+                                        "path": "pyproject.toml",
+                                        "start_line": 1,
+                                        "end_line": 40,
+                                    },
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        await asyncio.sleep(0.35)
+
+        # Tool response
+        if self.abort_check():
+            return
+        yield {
+            "candidates": [
+                {
+                    "content": {
+                        "parts": [
+                            {
+                                "function_response": {
+                                    "name": "view_file",
+                                    "response": {
+                                        "result": "File pyproject.toml inspected: 5 core dependencies resolved."
+                                    },
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        await asyncio.sleep(0.2)
+
+        # Text chunks
+        text_chunks = [
+            "I have inspected the project structure using **Google Gemini GenAI**.\n\n",
+            "The turn was consumed through `GeminiStreamAdapter`:\n\n",
+            "```python:gemini_stream.py\n",
+            "# Ingested via GeminiStreamAdapter & StreamBridge\n",
+            "from nicegui_ai import GeminiStreamAdapter, StreamBridge\n\n",
+            "bridge = StreamBridge(message=agent_msg, header=header)\n",
+            "await bridge.consume(GeminiStreamAdapter(gemini_stream))\n",
+            "```\n\n",
+            f"- **Active Model**: `{model_name}`\n",
+            f"- **Effort Level**: `{effort or 'Medium'}`\n",
+            "- **Streaming Protocol**: AG-UI Normalized via `GeminiStreamAdapter`\n",
+        ]
+        for chunk in text_chunks:
+            if self.abort_check():
+                return
+            yield {
+                "candidates": [
+                    {
+                        "content": {
+                            "parts": [{"text": chunk}],
+                            "role": "model",
+                        }
+                    }
+                ]
+            }
+            await asyncio.sleep(0.12)
+
+        # Usage metadata
+        yield {
+            "usage_metadata": {
+                "prompt_token_count": 142,
+                "candidates_token_count": 338,
+                "total_token_count": 480,
+            }
+        }
+
+    async def _generate_openrouter_chunks(
+        self, prompt: str, effort: str | None, model_name: str
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Simulate OpenRouter / OpenAI SSE chunk stream with reasoning and tool fragments."""
+        thoughts = [
+            f"Analyzing query: '{prompt[:40]}...'\n",
+            f"Selected reasoning effort: {effort or 'High'}. Evaluating tool candidates...\n",
+            "Formulating modular architecture with clean OOP contracts.\n",
+        ]
+        for t in thoughts:
+            if self.abort_check():
+                return
+            yield {
+                "choices": [
+                    {
+                        "delta": {"reasoning": t},
+                        "finish_reason": None,
+                    }
+                ]
+            }
+            await asyncio.sleep(0.2)
+
+        # Tool call streaming
+        if self.abort_check():
+            return
+        yield {
+            "choices": [
+                {
+                    "delta": {
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": "call_view_01",
+                                "function": {
+                                    "name": "view_file",
+                                    "arguments": '{"path": "src/',
+                                },
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        await asyncio.sleep(0.15)
+        yield {
+            "choices": [
+                {
+                    "delta": {
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "function": {
+                                    "arguments": 'nicegui_ai/schema.py"}',
+                                },
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+        await asyncio.sleep(0.3)
+
+        # Text chunks
+        text_chunks = [
+            f"I analyzed your request using **{model_name}**.\n\n",
+            "The turn was consumed through `OpenRouterStreamAdapter`:\n\n",
+            "```python:openrouter_stream.py\n",
+            "# Ingested via OpenRouterStreamAdapter & StreamBridge\n",
+            "from nicegui_ai import OpenRouterStreamAdapter, StreamBridge\n\n",
+            "adapter = OpenRouterStreamAdapter(openrouter_stream)\n",
+            "result = await agent_msg.consume(adapter, header=header)\n",
+            "```\n\n",
+            f"- **Engine**: `{model_name}`\n",
+            f"- **Reasoning Effort**: `{effort or 'High'}`\n",
+            "- **Tool Args**: Reconstructed incremental JSON arguments cleanly.\n",
+        ]
+        for chunk in text_chunks:
+            if self.abort_check():
+                return
+            yield {
+                "choices": [
+                    {
+                        "delta": {"content": chunk},
+                        "finish_reason": None,
+                    }
+                ]
+            }
+            await asyncio.sleep(0.12)
+
+        # Finish and token usage
+        yield {
+            "choices": [{"delta": {}, "finish_reason": "stop"}],
+            "usage": {
+                "prompt_tokens": 120,
+                "completion_tokens": 300,
+                "total_tokens": 420,
+            },
+        }
+
+    async def _generate_opencode_events(
+        self, prompt: str, model_name: str
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Simulate OpenCode coding agent event stream."""
+        if self.abort_check():
+            return
+        yield {
+            "type": "thought",
+            "thought": f"OpenCode reasoning for '{prompt[:40]}...'\nFormulating plan steps.\n",
+        }
+        await asyncio.sleep(0.25)
+
+        if self.abort_check():
+            return
+        yield {
+            "type": "step_start",
+            "step_id": "step_1",
+            "name": "Verify dependencies",
+        }
+        yield {
+            "type": "command",
+            "command": "uv run pytest tests/test_stream.py",
+        }
+        await asyncio.sleep(0.3)
+        yield {
+            "type": "command_result",
+            "output": "6 passed in 0.45s",
+        }
+        yield {
+            "type": "step_finish",
+            "step_id": "step_1",
+        }
+        await asyncio.sleep(0.2)
+
+        if self.abort_check():
+            return
+        yield {
+            "type": "content",
+            "content": (
+                f"**OpenCode Execution Completed** using `{model_name}`.\n\n"
+                "- Plan steps validated successfully\n"
+                "- All test suites executed hermetically\n"
+            ),
+        }
 
 
 @ui.page("/")
@@ -148,7 +436,7 @@ def demo_page() -> None:
             LucideIcon("shield-alert", size=14, classes="text-red-400")
             ui.label("Trigger Approval Modal")
 
-    # 4. Main Studio Canvas Card (Exact Variant B layout)
+    # 4. Main Studio Canvas Card
     with ui.element("main").classes(
         "flex-1 flex flex-col items-center justify-center pt-16 pb-6 px-4 w-full h-full min-h-0 overflow-hidden"
     ):
@@ -180,7 +468,11 @@ def demo_page() -> None:
                 on_suggestion_click=lambda p: composer.input.set_value(p),
             )
 
-            # Execution handler
+            stream_factory = DemoStreamFactory(
+                abort_check=lambda: state["abort_requested"]
+            )
+
+            # Execution handler using object-oriented StreamBridge
             async def handle_submit(prompt: str) -> None:
                 state["is_running"] = True
                 state["abort_requested"] = False
@@ -201,92 +493,75 @@ def demo_page() -> None:
                     is_generating=True,
                 )
 
-                # 3. Stream Reasoning (Thinking Process)
-                reasoning_card = agent_msg.add_reasoning("")
-                steps = [
-                    "Analyzing user invocation against codebase...\n",
-                    "Evaluating tool candidates: view_file, run_command, replace_code...\n",
-                    "Checking approval gate security boundaries for target paths...\n",
-                    "Formulating execution trajectory with zero proprietary polyfills.\n",
-                ]
-                for i, step in enumerate(steps, start=1):
-                    if state["abort_requested"]:
-                        break
-                    reasoning_card.append_thought(f"• {step}", step_count=i)
-                    await asyncio.sleep(0.3)
+                # 3. Create adapter and consume through StreamBridge
+                adapter = stream_factory.create_adapter(
+                    model_name=composer.current_model,
+                    prompt=prompt,
+                    effort=composer.current_effort,
+                )
 
-                # 4. Execute a Tool Call (collapsed by default)
-                tool_call = ToolCall(
-                    id="call-001",
-                    name="view_file",
-                    args={"Path": "pyproject.toml", "StartLine": 1, "EndLine": 40},
-                    summary="Inspect package configuration",
-                    status=ToolStatus.EXECUTING,
+                bridge = StreamBridge(
+                    message=agent_msg,
+                    header=header,
+                    composer=composer,
+                    task_tray=composer.task_tray,
                 )
-                tool_card = agent_msg.add_tool_call(tool_call)
-                await asyncio.sleep(0.6)
-                tool_card.resolve(
-                    "Lines 1-40 returned: 5 dependencies resolved successfully.",
-                    duration_ms=48,
-                )
+                result = await bridge.consume(adapter)
                 task.complete()
 
-                # 5. Stream Agent Response text
-                chunks = [
-                    "I have analyzed your request.\n\n",
-                    "The **nicegui-ai** runtime processed the turn and synchronized the session:\n\n",
-                    "```python:quickstart.py\n",
-                    "# Verified component integration\n",
-                    "from nicegui_ai import AiThread, FloatingHeader\n",
-                    "\n",
-                    "thread = AiThread()\n",
-                    "thread.add_user_message('Hello world')\n",
-                    "```\n\n",
-                    "- **Model**: `claude-3-7-sonnet`\n",
-                    "- **Tool execution**: `view_file` executed cleanly.\n",
-                    "- **Approval Gate**: Clear, zero policy violations.",
-                ]
-                for chunk in chunks:
-                    if state["abort_requested"]:
-                        break
-                    agent_msg.append_text(chunk)
-                    await asyncio.sleep(0.2)
+                # 4. Resolve any remaining executing tool calls in the demo
+                for tc in result.tool_calls:
+                    if tc.id in bridge._tool_cards:
+                        card = bridge._tool_cards[tc.id]
+                        if card.tool_call.status == ToolStatus.EXECUTING:
+                            card.resolve(
+                                "Lines 1-40 returned: 5 dependencies resolved successfully.",
+                                duration_ms=48,
+                            )
 
-                # Attach generated ArtifactCard
-                agent_msg.add_artifact(
-                    title="src/api/stream_router.py",
-                    artifact_type="file",
-                    content=(
-                        "from nicegui_ai import AiThread\n\n"
-                        "class StreamRouter:\n"
-                        "    def __init__(self, model_id: str):\n"
-                        "        self.model_id = model_id\n\n"
-                        "    async def stream_turn(self, prompt: str):\n"
-                        "        yield f'Streaming turn for: {prompt}'\n"
-                    ),
-                    language="python",
-                    size_bytes=248,
-                    default_open=False,
-                )
+                # 5. Attach generated ArtifactCard
+                if not state["abort_requested"]:
+                    agent_msg.add_artifact(
+                        title="src/api/stream_router.py",
+                        artifact_type="file",
+                        content=(
+                            "from nicegui_ai import AiThread, StreamBridge\n\n"
+                            "class StreamRouter:\n"
+                            "    def __init__(self, model_id: str):\n"
+                            "        self.model_id = model_id\n\n"
+                            "    async def stream_turn(self, prompt: str, message, header):\n"
+                            "        bridge = StreamBridge(message=message, header=header)\n"
+                            "        await bridge.consume(self.get_adapter(prompt))\n"
+                        ),
+                        language="python",
+                        size_bytes=285,
+                        default_open=False,
+                    )
 
                 # 6. Finalize Turn & Update Token Ring
-                agent_msg.set_generating(False)
-                agent_msg.set_tokens(420)
-                state["tokens_used"] += 420
-                header.update_tokens(state["tokens_used"])
+                if result.usage and "total_tokens" in result.usage:
+                    state["tokens_used"] += result.usage["total_tokens"]
+                    header.update_tokens(state["tokens_used"])
                 state["is_running"] = False
                 composer.set_running(False)
 
             def handle_cancel() -> None:
                 state["abort_requested"] = True
+                composer.set_running(False)
                 ui.notify("Generation aborted by user", type="warning")
+
+            def handle_model_change(model: str, effort: str | None) -> None:
+                display_name = f"{model} ({effort})" if effort else model
+                header.set_model(display_name)
 
             # 5. Composer Input Bar Docked into the Studio Card
             composer = AiComposer(
                 placeholder="Message AI agent... (type / for commands, @ for files)",
                 on_send=lambda text: asyncio.create_task(handle_submit(text)),
                 on_cancel=handle_cancel,
-                model_name="Claude 3.7",
+                model_name="Claude Sonnet 5.5",
+                reasoning_effort="Medium",
+                on_model_change=handle_model_change,
             )
 
 
@@ -294,5 +569,5 @@ def main() -> None:
     ui.run(title="nicegui-ai — Modern AI Agent Primitives", port=8080, reload=False)
 
 
-if __name__ == "__main__":
+if __name__ in {"__main__", "__mp_main__"}:
     main()

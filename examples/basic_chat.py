@@ -1,10 +1,36 @@
-"""Basic chat interface example using nicegui-ai."""
+"""Basic chat interface example using nicegui-ai and AG-UI streaming."""
 
 import asyncio
+from collections.abc import AsyncIterator
 
 from nicegui import ui
 
-from nicegui_ai import AiComposer, AiThread, setup_ai_theme
+from nicegui_ai import AgUiStreamAdapter, AiComposer, AiThread, setup_ai_theme
+
+
+async def mock_stream(prompt: str) -> AsyncIterator[dict[str, str]]:
+    """Yield simulated AG-UI text message content chunks."""
+    yield {"type": "TEXT_MESSAGE_CONTENT", "content": "Hello! "}
+    await asyncio.sleep(0.12)
+    yield {
+        "type": "TEXT_MESSAGE_CONTENT",
+        "content": "I am an AI agent built with **nicegui-ai**.\n\n",
+    }
+    await asyncio.sleep(0.12)
+    yield {
+        "type": "TEXT_MESSAGE_CONTENT",
+        "content": f'You asked: *"{prompt}"*\n\n',
+    }
+    await asyncio.sleep(0.12)
+    yield {
+        "type": "TEXT_MESSAGE_CONTENT",
+        "content": (
+            "Here is a quick overview:\n"
+            "- Native Lucide outline icons\n"
+            "- Monospace code styling\n"
+            "- AG-UI streaming adapter & StreamBridge\n"
+        ),
+    }
 
 
 @ui.page("/")
@@ -43,21 +69,9 @@ def main_page() -> None:
                     is_generating=True,
                 )
 
-                # Simulate streaming response
-                chunks = [
-                    "Hello! ",
-                    "I am an AI agent built with **nicegui-ai**.\n\n",
-                    f'You asked: *"{user_text}"*\n\n',
-                    "Here is a quick overview:\n",
-                    "- Native Lucide outline icons\n",
-                    "- Monospace code styling\n",
-                    "- Smooth streaming updates\n",
-                ]
-                for chunk in chunks:
-                    agent_msg.append_text(chunk)
-                    await asyncio.sleep(0.2)
-
-                agent_msg.set_generating(False)
+                # Consume through standard AG-UI stream adapter
+                adapter = AgUiStreamAdapter(mock_stream(user_text))
+                await agent_msg.consume(adapter)
                 composer.set_running(False)
 
             # 4. Docked composer input

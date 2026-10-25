@@ -74,6 +74,8 @@ class FloatingHeader(ui.element):
         token_limit: int = 128000,
     ) -> None:
         super().__init__("header")
+        self.agent_name = agent_name
+        self.model = model
         self.classes(
             "fixed top-4 left-1/2 -translate-x-1/2 z-40 "
             "flex items-center gap-3 px-4 py-2 "
@@ -114,3 +116,13 @@ class FloatingHeader(ui.element):
         self.token_ring.update_progress(used, limit)
         curr_limit = limit if limit is not None else self.token_ring.limit
         self.tokens_label.set_text(f"{used:,} / {curr_limit:,} tokens")
+
+    def set_model(self, model: str) -> None:
+        """Update displayed model name in badge."""
+        self.model = model
+        self.model_badge.set_text(model)
+
+    def set_agent_name(self, name: str) -> None:
+        """Update displayed agent name."""
+        self.agent_name = name
+        self.agent_label.set_text(name)

@@ -1,6 +1,8 @@
-"""Advanced tool calling and reasoning example using nicegui-ai."""
+"""Advanced tool calling and reasoning example using nicegui-ai and OpenRouter stream adapter."""
 
 import asyncio
+from collections.abc import AsyncIterator
+from typing import Any
 
 from nicegui import ui
 
@@ -8,10 +10,100 @@ from nicegui_ai import (
     AiComposer,
     AiThread,
     ApprovalModal,
+    OpenRouterStreamAdapter,
+    StreamBridge,
     ToolCall,
-    ToolStatus,
     setup_ai_theme,
 )
+
+
+async def mock_ops_stream(prompt: str) -> AsyncIterator[dict[str, Any]]:
+    """Yield simulated OpenRouter/OpenAI chunks with reasoning, tool call, and answer."""
+    # 1. Deliberation reasoning chunks
+    thoughts = [
+        "Analyzing infrastructure state against query...\n",
+        "Validating database connection pool and replica lag...\n",
+        "Checking cluster load and selecting inspect_schema tool.\n",
+    ]
+    for thought in thoughts:
+        yield {
+            "choices": [
+                {
+                    "delta": {"reasoning": thought},
+                    "finish_reason": None,
+                }
+            ]
+        }
+        await asyncio.sleep(0.2)
+
+    # 2. Tool call initiation & JSON args chunking
+    yield {
+        "choices": [
+            {
+                "delta": {
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "id": "call_schema_01",
+                            "function": {
+                                "name": "inspect_schema",
+                                "arguments": '{"target": "users_v2", ',
+                            },
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    await asyncio.sleep(0.15)
+    yield {
+        "choices": [
+            {
+                "delta": {
+                    "tool_calls": [
+                        {
+                            "index": 0,
+                            "function": {
+                                "arguments": '"read_only": true}',
+                            },
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    await asyncio.sleep(0.3)
+
+    # 3. Text completion chunks
+    text_chunks = [
+        "Schema inspection for `users_v2` completed with 0 locks detected.\n\n",
+        "The turn was consumed through `OpenRouterStreamAdapter`:\n\n",
+        "```python:ops_turn.py\n",
+        "adapter = OpenRouterStreamAdapter(openrouter_stream)\n",
+        "bridge = StreamBridge(message=agent_msg)\n",
+        "await bridge.consume(adapter)\n",
+        "```\n\n",
+        "Click the button below to test the Human-in-the-Loop Security Gate.",
+    ]
+    for chunk in text_chunks:
+        yield {
+            "choices": [
+                {
+                    "delta": {"content": chunk},
+                    "finish_reason": None,
+                }
+            ]
+        }
+        await asyncio.sleep(0.12)
+
+    yield {
+        "choices": [{"delta": {}, "finish_reason": "stop"}],
+        "usage": {
+            "prompt_tokens": 150,
+            "completion_tokens": 280,
+            "total_tokens": 430,
+        },
+    }
 
 
 @ui.page("/")
@@ -57,42 +149,19 @@ def main_page() -> None:
                     is_generating=True,
                 )
 
-                # 1. Attach ReasoningCard (amber chain of thought)
-                agent_msg.add_reasoning(
-                    title="Analyzing infrastructure requirements",
-                    steps=[
-                        "Validating database connection pool...",
-                        "Checking cluster load and memory pressure...",
-                        "Determining appropriate schema migration strategy.",
-                    ],
-                    duration_ms=450,
-                    default_open=True,
-                )
-                await asyncio.sleep(0.5)
+                # Consume through OpenRouter stream adapter
+                adapter = OpenRouterStreamAdapter(mock_ops_stream(text))
+                bridge = StreamBridge(message=agent_msg, composer=composer)
+                result = await bridge.consume(adapter)
 
-                # 2. Attach ToolCallCard (cyan tool execution)
-                tool = agent_msg.add_tool_call(
-                    name="inspect_schema",
-                    args={"target": "users_v2", "read_only": True},
-                    summary="Inspecting active table schema",
-                    status=ToolStatus.EXECUTING,
-                    default_open=True,
-                )
-                await asyncio.sleep(0.8)
-
-                # Mark tool as resolved with output
-                tool.set_status(ToolStatus.SUCCESS)
-                tool.set_result(
-                    {"columns": ["id", "email", "created_at"], "rows": 1420}
-                )
-
-                # Stream response
-                agent_msg.append_text(
-                    "Schema inspection completed successfully. No locks detected on `users_v2`.\n\n"
-                    "Click the button below to test the Human-in-the-Loop Security Gate."
-                )
-                agent_msg.set_generating(False)
-                composer.set_running(False)
+                # Resolve simulated tool call with output
+                for tc in result.tool_calls:
+                    if tc.id in bridge._tool_cards:
+                        card = bridge._tool_cards[tc.id]
+                        card.resolve(
+                            {"columns": ["id", "email", "created_at"], "rows": 1420},
+                            duration_ms=62,
+                        )
 
                 # Action button to trigger security gate modal
                 with (
