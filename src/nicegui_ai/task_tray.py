@@ -6,7 +6,7 @@ from typing import Self
 from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
-from nicegui_ai.types import RunningTask
+from nicegui_ai.schema import RunningTask
 
 
 class TaskHandle:

@@ -7,7 +7,7 @@ from typing import Any, Self
 from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
-from nicegui_ai.types import ToolCall, ToolStatus
+from nicegui_ai.schema import ToolCall, ToolStatus
 
 
 class ToolCallCard(ui.element):

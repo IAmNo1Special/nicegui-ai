@@ -7,7 +7,7 @@ from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
 from nicegui_ai.message import AgentMessage, UserMessage
-from nicegui_ai.types import SuggestionPrompt, ToolCall
+from nicegui_ai.schema import SuggestionPrompt, ToolCall
 
 
 class AiThread(ui.column):

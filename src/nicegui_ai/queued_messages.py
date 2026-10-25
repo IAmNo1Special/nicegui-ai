@@ -7,7 +7,7 @@ from typing import Self
 from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
-from nicegui_ai.types import QueuedMessage
+from nicegui_ai.schema import QueuedMessage
 
 
 class QueuedMessagesTray(ui.element):

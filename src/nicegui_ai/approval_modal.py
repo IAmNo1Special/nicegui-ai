@@ -7,7 +7,7 @@ from typing import Self
 from nicegui import ui
 
 from nicegui_ai.icons import LucideIcon
-from nicegui_ai.types import ToolCall
+from nicegui_ai.schema import ToolCall
 
 
 class ApprovalModal(ui.element):

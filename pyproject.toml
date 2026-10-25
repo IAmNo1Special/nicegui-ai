@@ -33,6 +33,10 @@ dependencies = [
     "nicegui>=3.18.0",
 ]
 
+[project.scripts]
+nicegui-ai = "nicegui_ai.gallery:main"
+nicegui-ai-demo = "nicegui_ai.demo:main"
+
 [project.urls]
 Homepage = "https://github.com/mvgeos/nicegui-ai"
 Repository = "https://github.com/mvgeos/nicegui-ai"

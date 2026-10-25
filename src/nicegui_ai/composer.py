@@ -8,8 +8,8 @@ from nicegui import ui
 from nicegui_ai.icons import LucideIcon
 from nicegui_ai.model_selector import ModelOption, ModelSelector
 from nicegui_ai.queued_messages import QueuedMessagesTray
+from nicegui_ai.schema import QueuedMessage
 from nicegui_ai.task_tray import TaskHandle, TaskTray
-from nicegui_ai.types import QueuedMessage
 from nicegui_ai.voice_pill import VoicePill
 
 

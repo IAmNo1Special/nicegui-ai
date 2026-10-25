@@ -11,8 +11,8 @@ from nicegui_ai.code_block import CodeBlock
 from nicegui_ai.icons import LucideIcon
 from nicegui_ai.markdown import AiMarkdown
 from nicegui_ai.reasoning import ReasoningCard
+from nicegui_ai.schema import ToolCall, ToolStatus
 from nicegui_ai.tool_call import ToolCallCard
-from nicegui_ai.types import ToolCall, ToolStatus
 
 
 class UserMessage(ui.row):

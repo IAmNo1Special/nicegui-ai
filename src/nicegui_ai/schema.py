@@ -1,4 +1,4 @@
-"""Data models and types for nicegui-ai primitives."""
+"""Data models and schemas for nicegui-ai primitives."""
 
 from dataclasses import dataclass, field
 from enum import StrEnum

@@ -17,11 +17,7 @@ from nicegui_ai.model_selector import (
 )
 from nicegui_ai.queued_messages import QueuedMessagesTray
 from nicegui_ai.reasoning import ReasoningCard
-from nicegui_ai.task_tray import TaskHandle, TaskTray
-from nicegui_ai.theme import THEME_CSS, setup_ai_theme
-from nicegui_ai.thread import AiThread
-from nicegui_ai.tool_call import ToolCallCard
-from nicegui_ai.types import (
+from nicegui_ai.schema import (
     ChatMessage,
     MessageRole,
     QueuedMessage,
@@ -31,6 +27,10 @@ from nicegui_ai.types import (
     ToolCall,
     ToolStatus,
 )
+from nicegui_ai.task_tray import TaskHandle, TaskTray
+from nicegui_ai.theme import THEME_CSS, setup_ai_theme
+from nicegui_ai.thread import AiThread
+from nicegui_ai.tool_call import ToolCallCard
 from nicegui_ai.voice_pill import VoicePill
 
 __version__ = "0.2.0"
