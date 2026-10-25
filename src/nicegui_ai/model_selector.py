@@ -120,8 +120,10 @@ class ReasoningEffortSelector(ui.element):
         self.label.text = self._format_label(effort)
         for eff_val, icon in self._effort_checks.items():
             if eff_val == effort:
+                icon.set_icon("check", size=12, classes="text-amber-400")
                 icon.classes(remove="opacity-0", add="text-amber-400")
             else:
+                icon.set_icon("check", size=12, classes="opacity-0")
                 icon.classes(remove="text-amber-400", add="opacity-0")
         if notify and self._on_change:
             self._on_change(effort)
@@ -176,6 +178,10 @@ class ModelSelector(ui.element):
         self._on_view_usage = on_view_usage
         self._show_effort = show_effort_selector
         self._variant = variant
+
+        self._row_effort_labels: dict[str, ui.label] = {}
+        self._model_icons: dict[str, LucideIcon] = {}
+        self._effort_checks: dict[tuple[str, str], LucideIcon] = {}
 
         trigger_classes = (
             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-800 "
@@ -251,10 +257,12 @@ class ModelSelector(ui.element):
                             active_eff = (
                                 self._reasoning_effort if is_active else opt.effort
                             )
-                            if active_eff:
-                                ui.label(active_eff).classes(
-                                    "text-xs text-gray-400 font-normal"
-                                )
+                            eff_lbl = ui.label(active_eff or "").classes(
+                                "text-xs text-gray-400 font-normal"
+                            )
+                            if not active_eff:
+                                eff_lbl.set_visibility(False)
+                            self._row_effort_labels[opt.name] = eff_lbl
 
                             if opt.badge:
                                 with ui.element("span").classes(
@@ -263,13 +271,16 @@ class ModelSelector(ui.element):
                                     ui.label(opt.badge)
 
                             if is_active:
-                                LucideIcon("check", size=13, classes="text-gray-200")
+                                model_icon = LucideIcon(
+                                    "check", size=13, classes="text-gray-200"
+                                )
                             else:
-                                LucideIcon(
+                                model_icon = LucideIcon(
                                     "chevron-right",
                                     size=13,
                                     classes="text-gray-500 group-hover:text-gray-300",
                                 )
+                            self._model_icons[opt.name] = model_icon
 
                         # Cascading Flyout Submenu for Reasoning Effort (pure CSS hover driven)
                         if self._show_effort and opt.effort_options:
@@ -297,12 +308,18 @@ class ModelSelector(ui.element):
                                         )
                                     ):
                                         ui.label(eff).classes("text-xs")
-                                        if is_eff_active:
-                                            LucideIcon(
-                                                "check",
-                                                size=13,
-                                                classes="text-gray-200",
-                                            )
+                                        check_icon = LucideIcon(
+                                            "check",
+                                            size=13,
+                                            classes="text-gray-200"
+                                            if is_eff_active
+                                            else "opacity-0",
+                                        )
+                                        if not is_eff_active:
+                                            check_icon.classes("opacity-0")
+                                        self._effort_checks[(opt.name, eff.lower())] = (
+                                            check_icon
+                                        )
 
                         self.model_items.append(item)
 
@@ -388,6 +405,42 @@ class ModelSelector(ui.element):
         else:
             self.effort_badge.text = ""
             self.effort_badge.set_visibility(False)
+
+        # Update model row effort labels, model checks, and stored efforts
+        for opt in self._model_options:
+            if opt.name == model:
+                opt.effort = effort
+
+            is_active = opt.name == self._current_model
+            active_eff = self._reasoning_effort if is_active else opt.effort
+
+            if opt.name in self._row_effort_labels:
+                lbl = self._row_effort_labels[opt.name]
+                lbl.text = active_eff or ""
+                lbl.set_visibility(bool(active_eff))
+
+            if opt.name in self._model_icons:
+                icon = self._model_icons[opt.name]
+                if is_active:
+                    icon.set_icon("check", size=13, classes="text-gray-200")
+                else:
+                    icon.set_icon(
+                        "chevron-right",
+                        size=13,
+                        classes="text-gray-500 group-hover:text-gray-300",
+                    )
+
+        # Update flyout reasoning effort checkmarks
+        for (m_name, eff_lower), check_icon in self._effort_checks.items():
+            is_eff_active = (m_name == self._current_model) and (
+                (self._reasoning_effort or "").lower() == eff_lower
+            )
+            if is_eff_active:
+                check_icon.set_icon("check", size=13, classes="text-gray-200")
+                check_icon.classes(remove="opacity-0", add="text-gray-200")
+            else:
+                check_icon.set_icon("check", size=13, classes="opacity-0")
+                check_icon.classes(remove="text-gray-200", add="opacity-0")
 
         self.menu.close()
 

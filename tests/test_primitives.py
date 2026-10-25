@@ -277,6 +277,103 @@ def test_model_selector():
     assert standalone_efforts == ["max"]
 
 
+def test_model_selector_effort_update_in_menu():
+    from nicegui import ui
+
+    from nicegui_ai import ModelOption, ModelSelector
+    from nicegui_ai.icons import LucideIcon
+
+    selector = ModelSelector(
+        models=[
+            ModelOption(
+                name="Gemini 3.8 Flash",
+                effort="High",
+                effort_options=["Low", "Medium", "High"],
+            ),
+            ModelOption(
+                name="Gemini 4 Argon",
+                effort="Medium",
+                effort_options=["Low", "Medium", "High"],
+            ),
+        ],
+        current_model="Gemini 3.8 Flash",
+        reasoning_effort="High",
+    )
+
+    # In model menu, the row for Gemini 3.8 Flash
+    flash_item = selector.model_items[0]
+    flash_row = flash_item.default_slot.children[1]
+    flash_flyout = flash_item.default_slot.children[2]
+
+    # Find the effort label in the Flash row
+    row_labels = [c for c in flash_row.default_slot.children if isinstance(c, ui.label)]
+    assert len(row_labels) >= 1
+    assert row_labels[0].text == "High"
+
+    # Select new reasoning effort: "Low"
+    selector.set_reasoning_effort("Low")
+
+    # 1. Verify text for currently selected effort in model menu updates
+    assert row_labels[0].text == "Low"
+
+    # 2. Verify check mark in effort submenu updates
+    low_opt_div = flash_flyout.default_slot.children[0]
+    high_opt_div = flash_flyout.default_slot.children[2]
+
+    low_checks = [
+        c for c in low_opt_div.default_slot.children if isinstance(c, LucideIcon)
+    ]
+    high_checks = [
+        c for c in high_opt_div.default_slot.children if isinstance(c, LucideIcon)
+    ]
+
+    # Low option should have a visible checkmark
+    assert len(low_checks) == 1
+    assert "opacity-0" not in low_checks[0].extra_classes
+    assert low_checks[0].visible is not False
+
+    # High option should NOT have a visible checkmark
+    assert len(high_checks) == 1
+    assert "opacity-0" in high_checks[0].extra_classes
+
+    # Switch model to Gemini 4 Argon
+    argon_item = selector.model_items[1]
+    argon_row = argon_item.default_slot.children[1]
+    argon_flyout = argon_item.default_slot.children[2]
+    argon_row_labels = [
+        c for c in argon_row.default_slot.children if isinstance(c, ui.label)
+    ]
+
+    selector.set_model_and_effort("Gemini 4 Argon", "Medium")
+    assert selector.current_model == "Gemini 4 Argon"
+    assert selector.reasoning_effort == "Medium"
+    assert argon_row_labels[0].text == "Medium"
+    assert argon_row_labels[0].visible is True
+
+    # Check model row icons
+    flash_model_icon = selector._model_icons["Gemini 3.8 Flash"]
+    argon_model_icon = selector._model_icons["Gemini 4 Argon"]
+    assert flash_model_icon.icon_name == "chevron-right"
+    assert argon_model_icon.icon_name == "check"
+
+    # Check flyout checkmarks on Argon
+    argon_med_div = argon_flyout.default_slot.children[1]
+    argon_med_checks = [
+        c for c in argon_med_div.default_slot.children if isinstance(c, LucideIcon)
+    ]
+    assert len(argon_med_checks) == 1
+    assert "opacity-0" not in argon_med_checks[0].extra_classes
+
+    # Flash flyout checkmark should now be hidden
+    assert "opacity-0" in low_checks[0].extra_classes
+
+    # Clear effort
+    selector.set_reasoning_effort(None)
+    assert selector.reasoning_effort is None
+    assert argon_row_labels[0].visible is False
+    assert "opacity-0" in argon_med_checks[0].extra_classes
+
+
 def test_voice_pill():
     from nicegui_ai import VoicePill
 
