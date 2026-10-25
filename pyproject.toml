@@ -1,15 +1,42 @@
 [project]
 name = "nicegui-ai"
-version = "0.1.0"
+version = "0.2.0"
 description = "Modern AI agent UI primitives for NiceGUI (1:1 port of assistant-ui and Vercel AI SDK)"
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "Malcom Van Luther", email = "ivmno1special@gmail.com" }
 ]
 requires-python = ">=3.13"
+keywords = [
+    "nicegui",
+    "ai",
+    "agent",
+    "assistant-ui",
+    "ui-components",
+    "llm",
+    "chat",
+    "reasoning",
+    "tool-calling",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "nicegui>=3.18.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/mvgeos/nicegui-ai"
+Repository = "https://github.com/mvgeos/nicegui-ai"
+Issues = "https://github.com/mvgeos/nicegui-ai/issues"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]

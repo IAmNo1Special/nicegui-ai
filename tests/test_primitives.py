@@ -194,3 +194,27 @@ def test_approval_modal():
 
     modal.close()
     assert not modal.is_open
+
+
+def test_package_version():
+    import nicegui_ai
+
+    assert nicegui_ai.__version__ == "0.2.0"
+
+
+def test_examples_importable():
+    import importlib.util
+    from pathlib import Path
+
+    examples_dir = Path(__file__).parent.parent / "examples"
+    for name in ["basic_chat.py", "tools_and_reasoning.py", "artifacts_and_drawers.py"]:
+        file_path = examples_dir / name
+        assert file_path.exists()
+        spec = importlib.util.spec_from_file_location(
+            name.removesuffix(".py"), file_path
+        )
+        assert spec is not None
+        assert spec.loader is not None
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        assert hasattr(mod, "main_page")
