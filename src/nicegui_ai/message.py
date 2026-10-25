@@ -70,6 +70,7 @@ class AgentMessage(ui.row):
         self.agent_name = agent_name
         self.text = text or (initial_text or "")
         self.tokens_used = tokens_used
+        self.is_generating: bool = is_generating
         self.classes("justify-start w-full my-4 no-wrap gap-3")
 
         with self:
@@ -199,6 +200,7 @@ class AgentMessage(ui.row):
 
     def set_generating(self, is_generating: bool = True) -> None:
         """Update status badge between Generating... and Done."""
+        self.is_generating = is_generating
         if is_generating:
             self.status_pill.set_text("Generating...")
             self.status_pill.classes(
@@ -294,6 +296,13 @@ class AgentMessage(ui.row):
             )
         return block
 
+    async def consume(
+        self,
+        adapter: Any,
+        header: Any = None,
+    ) -> Any:
+        """Consume an AG-UI stream adapter reactively into this message."""
+        from nicegui_ai.stream import StreamBridge
 
-# Backwards compatibility alias
-AssistantMessage = AgentMessage
+        bridge = StreamBridge(message=self, header=header)
+        return await bridge.consume(adapter)

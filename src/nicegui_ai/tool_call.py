@@ -89,9 +89,9 @@ class ToolCallCard(ui.element):
                 with ui.element("pre").classes(
                     "p-2 bg-[#121620] rounded text-gray-300 overflow-x-auto border border-gray-800 w-full"
                 ):
-                    ui.label(json.dumps(self.tool_call.args, indent=2)).classes(
-                        "font-mono whitespace-pre text-inherit select-text"
-                    )
+                    self.args_label = ui.label(
+                        json.dumps(self.tool_call.args, indent=2)
+                    ).classes("font-mono whitespace-pre text-inherit select-text")
 
                 # Results
                 self.result_container = ui.column().classes("w-full space-y-1")
@@ -124,6 +124,18 @@ class ToolCallCard(ui.element):
         self.body.set_visibility(False)
         self.chevron.set_icon("chevron-right")
         return self
+
+    def update_args(self, args: dict[str, Any]) -> None:
+        """Update tool call arguments dynamically."""
+        self.tool_call.args.update(args)
+        if hasattr(self, "args_label"):
+            self.args_label.text = json.dumps(self.tool_call.args, indent=2)
+
+    def set_args(self, args: dict[str, Any]) -> None:
+        """Replace tool call arguments dynamically."""
+        self.tool_call.args = args
+        if hasattr(self, "args_label"):
+            self.args_label.text = json.dumps(self.tool_call.args, indent=2)
 
     def _render_status_badge(self) -> None:
         self.status_container.clear()

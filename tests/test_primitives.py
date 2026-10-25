@@ -6,7 +6,6 @@ from nicegui_ai import (
     AiThread,
     ApprovalModal,
     ArtifactCard,
-    AssistantMessage,
     BranchPicker,
     CodeBlock,
     FloatingHeader,
@@ -140,12 +139,6 @@ def test_thread_messages():
     agent_msg = thread.add_agent_message(agent_name="Agent", text="Hello User")
     assert isinstance(agent_msg, AgentMessage)
     assert len(thread.messages) == 2
-
-    # Backward compatibility alias check
-    asst_msg = thread.add_assistant_message(agent_name="Agent", text="Hello User 2")
-    assert isinstance(asst_msg, AgentMessage)
-    assert isinstance(asst_msg, AssistantMessage)
-    assert len(thread.messages) == 3
 
     thread.clear()
     assert len(thread.messages) == 0

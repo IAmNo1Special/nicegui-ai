@@ -145,9 +145,6 @@ class AiThread(ui.column):
         self.scroll_to_bottom()
         return msg
 
-    # Backwards compatibility alias
-    add_assistant_message = add_agent_message
-
     def scroll_to_bottom(self) -> None:
         """Auto-scroll the thread viewport to the latest message."""
         self.scroll_area.scroll_to(percent=1.0)

@@ -343,13 +343,6 @@ class ModelSelector(ui.element):
                             classes="text-gray-500 group-hover:text-gray-300",
                         )
 
-        # Backward compatibility aliases
-        self.model_btn = self.trigger_btn
-        self.model_menu = self.menu
-        self.effort_btn = self.trigger_btn
-        self.effort_menu = None
-        self.effort_selector = None
-
     def _normalize_option(
         self, item: str | ModelOption | dict[str, Any]
     ) -> ModelOption:
