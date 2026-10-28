@@ -14,9 +14,7 @@ class AntigravityModelDef:
     name: str
     short_name: str
     badge: str | None = None
-    efforts: list[str] = field(
-        default_factory=lambda: ["Low", "Medium", "High", "Max"]
-    )
+    efforts: list[str] = field(default_factory=lambda: ["Low", "Medium", "High", "Max"])
     default_effort: str | None = "High"
 
 
@@ -154,7 +152,9 @@ class AntigravityModelSelector(ui.element):
                             "px-2.5 py-1 text-[11px] font-medium text-[#888888] flex items-center justify-between"
                         ):
                             ui.label("Select Model")
-                            ui.label("Effort ▸").classes("text-[10px] font-mono text-[#6e6e6e]")
+                            ui.label("Effort ▸").classes(
+                                "text-[10px] font-mono text-[#6e6e6e]"
+                            )
 
                         for m in ANTIGRAVITY_MODELS:
                             is_curr = m.id == active_def.id
@@ -197,9 +197,7 @@ class AntigravityModelSelector(ui.element):
                                     "flex items-center gap-1 shrink-0"
                                 ):
                                     eff_txt = (
-                                        active_effort
-                                        if is_curr
-                                        else m.default_effort
+                                        active_effort if is_curr else m.default_effort
                                     )
                                     if eff_txt:
                                         ui.label(eff_txt).classes(
@@ -217,7 +215,9 @@ class AntigravityModelSelector(ui.element):
 
                         with (
                             ui.element("button")
-                            .props('type="button" data-testid="model-view-usage-button"')
+                            .props(
+                                'type="button" data-testid="model-view-usage-button"'
+                            )
                             .classes(
                                 "w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#272727] "
                                 "text-xs text-[#888888] hover:text-[#cccccc] flex items-center "
@@ -226,7 +226,9 @@ class AntigravityModelSelector(ui.element):
                             .on("click", self._handle_open_usage)
                         ):
                             ui.label("View Usage & Quotas")
-                            AntigravityIcon("chevron_right", size=13, classes="text-[#6e6e6e]")
+                            AntigravityIcon(
+                                "chevron_right", size=13, classes="text-[#6e6e6e]"
+                            )
 
                     # Right Side-by-Side Flyout: Reasoning Effort
                     if hovered_def.efforts:
@@ -269,7 +271,9 @@ class AntigravityModelSelector(ui.element):
                                 ):
                                     ui.label(eff)
                                     if is_eff_sel:
-                                        AntigravityIcon("check", size=13, classes="text-[#cccccc]")
+                                        AntigravityIcon(
+                                            "check", size=13, classes="text-[#cccccc]"
+                                        )
 
     def _set_hovered(self, model_id: str) -> None:
         if self.hovered_model_id != model_id:

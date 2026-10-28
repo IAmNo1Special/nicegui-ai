@@ -20,11 +20,20 @@ from .state import (
 SLASH_COMMANDS: list[dict[str, str]] = [
     {"cmd": "/goal", "desc": "Run a thorough autonomous goal loop until completion"},
     {"cmd": "/plan", "desc": "Draft a structured step-by-step implementation plan"},
-    {"cmd": "/grill-me", "desc": "Stress-test design decisions with interactive questions"},
+    {
+        "cmd": "/grill-me",
+        "desc": "Stress-test design decisions with interactive questions",
+    },
     {"cmd": "/boost", "desc": "Enable multi-perspective reasoning & verification"},
     {"cmd": "/compact", "desc": "Compact conversation history to free context window"},
-    {"cmd": "/schedule", "desc": "Create a recurring cron or one-shot timer automation"},
-    {"cmd": "/browser", "desc": "Launch headless browser inspector for web verification"},
+    {
+        "cmd": "/schedule",
+        "desc": "Create a recurring cron or one-shot timer automation",
+    },
+    {
+        "cmd": "/browser",
+        "desc": "Launch headless browser inspector for web verification",
+    },
     {"cmd": "/learn", "desc": "Persist reusable workflow or rule into .agents/skills"},
 ]
 
@@ -77,7 +86,8 @@ class ChatView(ui.element):
         on_open_aux_tab: Callable[[AuxTabType], None] | None = None,
         on_open_settings: Callable[[str | None], None] | None = None,
         on_model_change: Callable[[str], None] | None = None,
-        on_effort_change: Callable[[Literal["Low", "Medium", "High"]], None] | None = None,
+        on_effort_change: Callable[[Literal["Low", "Medium", "High"]], None]
+        | None = None,
         on_fork_from_message: Callable[[str], None] | None = None,
     ) -> None:
         super().__init__("main")
@@ -172,14 +182,18 @@ class ChatView(ui.element):
         with (
             ui.column()
             .props('data-testid="zero-state-home-view"')
-            .classes("flex-1 w-full h-full overflow-y-auto items-center justify-between p-6")
+            .classes(
+                "flex-1 w-full h-full overflow-y-auto items-center justify-between p-6"
+            )
         ):
             # Top Bar with Auxiliary Sidebar Toggle
             with ui.row().classes("w-full items-center justify-end"):
                 aux_btn = (
                     ui.button(on_click=self._handle_toggle_aux)
                     .props('flat dense no-caps data-testid="toggle-aux-sidebar"')
-                    .classes("p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919] min-h-0 min-w-0")
+                    .classes(
+                        "p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919] min-h-0 min-w-0"
+                    )
                 )
                 with aux_btn:
                     AntigravityIcon("aux_sidebar_toggle", size=16)
@@ -187,10 +201,14 @@ class ChatView(ui.element):
             # Centered Hero + Workspace Pill + Composer Card
             with ui.column().classes("w-full max-w-[680px] items-center gap-5 my-auto"):
                 with ui.row().classes("items-center gap-2"):
-                    ui.label("New Conversation in").classes("text-[20px] font-medium text-[#cccccc]")
+                    ui.label("New Conversation in").classes(
+                        "text-[20px] font-medium text-[#cccccc]"
+                    )
                     ws_btn = (
                         ui.button(on_click=self._cycle_workspace)
-                        .props('flat dense no-caps data-testid="zero-state-workspace-selector"')
+                        .props(
+                            'flat dense no-caps data-testid="zero-state-workspace-selector"'
+                        )
                         .classes(
                             "px-3 py-1 bg-[#191919] hover:bg-[#272727] border border-[#222222] rounded-lg text-[16px] font-medium text-[#cccccc] flex items-center gap-2"
                         )
@@ -198,13 +216,17 @@ class ChatView(ui.element):
                     with ws_btn:
                         AntigravityIcon("folder", size=16, classes="text-[#6e6e6e]")
                         ui.label(proj_name)
-                        AntigravityIcon("chevron_down", size=12, classes="text-[#6e6e6e]")
+                        AntigravityIcon(
+                            "chevron_down", size=12, classes="text-[#6e6e6e]"
+                        )
 
                 # Composer Card inside Zero-State
                 self._render_composer_box(is_zero_state=True)
 
             # Bottom Recent Conversation History Search Strip (Q1b)
-            with ui.column().classes("w-full max-w-[680px] gap-2 pt-4 border-t border-[#222222]/60"):
+            with ui.column().classes(
+                "w-full max-w-[680px] gap-2 pt-4 border-t border-[#222222]/60"
+            ):
                 with ui.row().classes("w-full items-center justify-between"):
                     ui.label("Recent Conversations").classes(
                         "text-[11px] font-semibold uppercase tracking-wider text-[#6e6e6e]"
@@ -213,9 +235,13 @@ class ChatView(ui.element):
                         ui.input(
                             placeholder="Filter recent conversations...",
                             value=self.zero_state_search,
-                            on_change=lambda e: self._set_zero_state_search(str(e.value)),
+                            on_change=lambda e: self._set_zero_state_search(
+                                str(e.value)
+                            ),
                         )
-                        .props('borderless dense dark data-testid="zero-state-history-search"')
+                        .props(
+                            'borderless dense dark data-testid="zero-state-history-search"'
+                        )
                         .classes(
                             "w-56 px-2.5 py-0.5 bg-[#191919] border border-[#222222] rounded-md text-[11px] text-[#cccccc]"
                         )
@@ -241,12 +267,16 @@ class ChatView(ui.element):
                                     else None
                                 )
                             )
-                            .props(f'flat dense no-caps data-testid="zero-state-session-{s.id}"')
+                            .props(
+                                f'flat dense no-caps data-testid="zero-state-session-{s.id}"'
+                            )
                             .classes(
                                 "w-full px-3 py-1.5 rounded-md hover:bg-[#191919] flex items-center justify-between font-normal"
                             )
                         ):
-                            ui.label(s.title).classes("text-[12px] text-[#cccccc] truncate")
+                            ui.label(s.title).classes(
+                                "text-[12px] text-[#cccccc] truncate"
+                            )
                             ui.label(s.timestamp).classes("text-[11px] text-[#6e6e6e]")
 
     def _cycle_workspace(self) -> None:
@@ -326,7 +356,9 @@ class ChatView(ui.element):
                             for act_label, shortcut in kebab_actions:
                                 with (
                                     ui.button(
-                                        on_click=lambda a=act_label: self._handle_kebab_action(a)
+                                        on_click=lambda a=act_label: (
+                                            self._handle_kebab_action(a)
+                                        )
                                     )
                                     .props("flat dense no-caps")
                                     .classes(
@@ -339,16 +371,22 @@ class ChatView(ui.element):
                                             "text-[10px] text-[#6e6e6e] font-mono"
                                         )
 
-                            ui.element("div").classes("my-1 border-t border-[#222222] w-full")
+                            ui.element("div").classes(
+                                "my-1 border-t border-[#222222] w-full"
+                            )
                             with (
                                 ui.button(on_click=self._toggle_telemetry)
-                                .props('flat dense no-caps data-testid="conversation-telemetry-switch"')
+                                .props(
+                                    'flat dense no-caps data-testid="conversation-telemetry-switch"'
+                                )
                                 .classes(
                                     "w-full px-3 py-1.5 text-[12px] text-[#cccccc] hover:bg-[#272727]/70 flex items-center justify-between rounded-none font-normal"
                                 )
                             ):
                                 ui.label("Conversation Telemetry")
-                                ui.label("ON" if self.telemetry_enabled else "OFF").classes(
+                                ui.label(
+                                    "ON" if self.telemetry_enabled else "OFF"
+                                ).classes(
                                     f"text-[10px] font-mono px-1.5 py-0.5 rounded "
                                     f"{'bg-emerald-500/20 text-emerald-400' if self.telemetry_enabled else 'bg-[#272727] text-[#6e6e6e]'}"
                                 )
@@ -397,7 +435,9 @@ class ChatView(ui.element):
             if self.settings.conversation_width == "full"
             else "max-w-[780px]"
         )
-        with ui.column().classes("flex-1 w-full overflow-y-auto px-6 py-5 items-center"):
+        with ui.column().classes(
+            "flex-1 w-full overflow-y-auto px-6 py-5 items-center"
+        ):
             with ui.column().classes(f"w-full {max_w_cls} gap-5"):
                 for msg in self.session.messages:
                     if msg.role == "user":
@@ -450,21 +490,22 @@ class ChatView(ui.element):
                     for label, shortcut in lifted_items:
                         with (
                             ui.button(
-                                on_click=lambda lbl=label, mid=msg.id: self._handle_lifted_action(lbl, mid)
+                                on_click=lambda lbl=label, mid=msg.id: (
+                                    self._handle_lifted_action(lbl, mid)
+                                )
                             )
                             .props("flat dense no-caps")
-
                             .classes(
                                 "w-full px-3 py-1.5 text-[12px] text-[#cccccc] hover:bg-[#272727] flex items-center justify-between rounded-none font-normal"
                             )
                         ):
                             ui.label(label)
-                            ui.label(shortcut).classes("text-[10px] text-[#6e6e6e] font-mono")
+                            ui.label(shortcut).classes(
+                                "text-[10px] text-[#6e6e6e] font-mono"
+                            )
 
     def _toggle_lifted_menu(self, msg_id: str) -> None:
-        self.lifted_menu_msg_id = (
-            None if self.lifted_menu_msg_id == msg_id else msg_id
-        )
+        self.lifted_menu_msg_id = None if self.lifted_menu_msg_id == msg_id else msg_id
         self.render()
 
     def _handle_lifted_action(self, action: str, msg_id: str) -> None:
@@ -488,7 +529,9 @@ class ChatView(ui.element):
                 ):
                     with (
                         ui.button(on_click=lambda m=msg.id: self._toggle_thought(m))
-                        .props(f'flat dense no-caps data-testid="trajectory-toggle-{msg.id}"')
+                        .props(
+                            f'flat dense no-caps data-testid="trajectory-toggle-{msg.id}"'
+                        )
                         .classes(
                             "w-full px-3 py-2 flex items-center justify-between text-left hover:bg-[#191919] font-normal rounded-none"
                         )
@@ -515,8 +558,12 @@ class ChatView(ui.element):
                         ):
                             if msg.thinking:
                                 for step in msg.thinking.steps:
-                                    with ui.row().classes("items-center gap-2 text-[11px] text-[#6e6e6e]"):
-                                        AntigravityIcon("sparkle", size=11, classes="text-[#6e6e6e]")
+                                    with ui.row().classes(
+                                        "items-center gap-2 text-[11px] text-[#6e6e6e]"
+                                    ):
+                                        AntigravityIcon(
+                                            "sparkle", size=11, classes="text-[#6e6e6e]"
+                                        )
                                         ui.label(step)
 
                             for tc in msg.tool_calls:
@@ -535,7 +582,9 @@ class ChatView(ui.element):
                                 ):
                                     with (
                                         ui.button(
-                                            on_click=lambda tid=tc.id: self._toggle_tool_output(tid)
+                                            on_click=lambda tid=tc.id: (
+                                                self._toggle_tool_output(tid)
+                                            )
                                         )
                                         .props("flat dense no-caps")
                                         .classes(
@@ -565,16 +614,22 @@ class ChatView(ui.element):
                                     for art in tc.artifacts:
                                         with (
                                             ui.button(
-                                                on_click=lambda a=art: self._handle_open_artifact(a)
+                                                on_click=lambda a=art: (
+                                                    self._handle_open_artifact(a)
+                                                )
                                             )
-                                            .props('flat dense no-caps data-testid="agent-embed"')
+                                            .props(
+                                                'flat dense no-caps data-testid="agent-embed"'
+                                            )
                                             .classes(
                                                 "w-full px-3 py-2 bg-[#151515] hover:bg-[#272727]/50 border-t border-[#222222] flex items-center justify-between font-normal rounded-none"
                                             )
                                         ):
                                             with ui.row().classes("items-center gap-2"):
                                                 AntigravityIcon(
-                                                    "file_doc", size=14, classes="text-blue-400"
+                                                    "file_doc",
+                                                    size=14,
+                                                    classes="text-blue-400",
                                                 )
                                                 ui.label(art.title).classes(
                                                     "text-[12px] font-medium text-[#cccccc]"
@@ -608,7 +663,9 @@ class ChatView(ui.element):
         with (
             ui.column()
             .props('data-testid="ask-question-card"')
-            .classes("w-full p-3.5 bg-[#191919] border border-[#222222] rounded-xl gap-2.5")
+            .classes(
+                "w-full p-3.5 bg-[#191919] border border-[#222222] rounded-xl gap-2.5"
+            )
         ):
             with ui.row().classes("items-center justify-between w-full"):
                 ui.label("Clarification Question").classes(
@@ -658,7 +715,9 @@ class ChatView(ui.element):
     # FLOATING COMPOSER & FOOTER CONTROLS (MBb: +, @, /, Modes, Side Question, Permissions, Model)
     # =========================================================================
     def _render_bottom_composer_area(self) -> None:
-        with ui.column().classes("w-full px-6 pb-4 pt-1 items-center shrink-0 relative z-30"):
+        with ui.column().classes(
+            "w-full px-6 pb-4 pt-1 items-center shrink-0 relative z-30"
+        ):
             self._render_composer_box(is_zero_state=False)
 
     def _render_composer_box(self, *, is_zero_state: bool) -> None:
@@ -693,7 +752,9 @@ class ChatView(ui.element):
                                     self, "side_question_input", str(e.value)
                                 ),
                             )
-                            .props('borderless dense dark data-testid="side-question-input"')
+                            .props(
+                                'borderless dense dark data-testid="side-question-input"'
+                            )
                             .classes(
                                 "flex-1 px-2.5 py-1 bg-[#101010] border border-[#222222] rounded text-[11px] text-[#cccccc]"
                             )
@@ -724,9 +785,13 @@ class ChatView(ui.element):
                     for sc in SLASH_COMMANDS:
                         with (
                             ui.button(
-                                on_click=lambda c=sc["cmd"]: self._select_slash_command(c)
+                                on_click=lambda c=sc["cmd"]: self._select_slash_command(
+                                    c
+                                )
                             )
-                            .props(f'flat dense no-caps data-testid="fastpick-item-{sc["cmd"][1:]}"')
+                            .props(
+                                f'flat dense no-caps data-testid="fastpick-item-{sc["cmd"][1:]}"'
+                            )
                             .classes(
                                 "w-full px-2.5 py-1.5 rounded-lg hover:bg-[#272727] flex items-center justify-between font-normal text-left"
                             )
@@ -748,7 +813,9 @@ class ChatView(ui.element):
                             ui.label(att.label)
                             ui.button(
                                 "×",
-                                on_click=lambda aid=att.id: self._remove_attachment(aid),
+                                on_click=lambda aid=att.id: self._remove_attachment(
+                                    aid
+                                ),
                             ).props("flat dense no-caps").classes(
                                 "text-[#6e6e6e] hover:text-[#cccccc] min-h-0 min-w-0 p-0 text-[11px]"
                             )
@@ -766,14 +833,18 @@ class ChatView(ui.element):
             _ = prompt_input
 
             # Footer Toolbar (MBb)
-            with ui.row().classes("w-full items-center justify-between gap-2 pt-1 relative"):
+            with ui.row().classes(
+                "w-full items-center justify-between gap-2 pt-1 relative"
+            ):
                 # Left Controls: + Context Picker, Modes, Side Question, Permissions, Model Selector
                 with ui.row().classes("items-center gap-1.5 flex-wrap relative"):
                     # '+' Add Context Button & Popover (vBb)
                     with ui.element("div").classes("relative"):
                         ctx_btn = (
                             ui.button(on_click=self._toggle_context_menu)
-                            .props('flat dense no-caps data-testid="composer-plus-context"')
+                            .props(
+                                'flat dense no-caps data-testid="composer-plus-context"'
+                            )
                             .classes(
                                 f"p-1.5 rounded-lg border transition-colors min-h-0 min-w-0 "
                                 f"{'bg-[#272727] border-[#cccccc]/30 text-[#cccccc]' if self.context_menu_open else 'bg-[#151515] border-[#222222] text-[#6e6e6e] hover:text-[#cccccc]'}"
@@ -797,22 +868,31 @@ class ChatView(ui.element):
                                     for aid, alabel, adetail in items:
                                         with (
                                             ui.button(
-                                                on_click=lambda i=aid, lbl=alabel: self._add_context_attachment(i, lbl)
+                                                on_click=lambda i=aid, lbl=alabel: (
+                                                    self._add_context_attachment(i, lbl)
+                                                )
                                             )
-                                            .props(f'flat dense no-caps data-testid="context-item-{aid}"')
-
+                                            .props(
+                                                f'flat dense no-caps data-testid="context-item-{aid}"'
+                                            )
                                             .classes(
                                                 "w-full px-2 py-1 rounded hover:bg-[#272727] flex items-center justify-between text-left font-normal"
                                             )
                                         ):
-                                            ui.label(alabel).classes("text-[11px] text-[#cccccc] truncate")
-                                            ui.label(adetail).classes("text-[10px] text-[#6e6e6e] font-mono")
+                                            ui.label(alabel).classes(
+                                                "text-[11px] text-[#cccccc] truncate"
+                                            )
+                                            ui.label(adetail).classes(
+                                                "text-[10px] text-[#6e6e6e] font-mono"
+                                            )
 
                     # Zero-state Environment selector pill (Local / Worktree)
                     if is_zero_state:
                         env_btn = (
                             ui.button(on_click=self._toggle_environment_mode)
-                            .props('flat dense no-caps data-testid="environment-selector"')
+                            .props(
+                                'flat dense no-caps data-testid="environment-selector"'
+                            )
                             .classes(
                                 "px-2.5 py-1 bg-[#151515] hover:bg-[#272727] border border-[#222222] rounded-lg text-[11px] text-[#cccccc] flex items-center gap-1.5 min-h-0 font-normal"
                             )
@@ -825,7 +905,9 @@ class ChatView(ui.element):
                     with ui.element("div").classes("relative"):
                         modes_btn = (
                             ui.button(on_click=self._toggle_modes_popover)
-                            .props('flat dense no-caps data-testid="internal-modes-trigger"')
+                            .props(
+                                'flat dense no-caps data-testid="internal-modes-trigger"'
+                            )
                             .classes(
                                 f"px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1.5 min-h-0 font-normal "
                                 f"{'bg-[#272727] border-[#cccccc]/30 text-[#cccccc]' if self.modes_open else 'bg-[#151515] border-[#222222] text-[#6e6e6e] hover:text-[#cccccc]'}"
@@ -848,25 +930,37 @@ class ChatView(ui.element):
                                 )
                                 with (
                                     ui.button(on_click=self._toggle_autonomous_mode)
-                                    .props('flat dense no-caps data-testid="autonomous-mode-row"')
+                                    .props(
+                                        'flat dense no-caps data-testid="autonomous-mode-row"'
+                                    )
                                     .classes(
                                         "w-full px-2 py-1.5 rounded hover:bg-[#272727] flex items-center justify-between text-left font-normal"
                                     )
                                 ):
-                                    ui.label("Autonomous Mode").classes("text-[12px] text-[#cccccc]")
-                                    ui.label("ON" if self.autonomous_mode else "OFF").classes(
+                                    ui.label("Autonomous Mode").classes(
+                                        "text-[12px] text-[#cccccc]"
+                                    )
+                                    ui.label(
+                                        "ON" if self.autonomous_mode else "OFF"
+                                    ).classes(
                                         f"text-[10px] font-mono px-1.5 py-0.5 rounded "
                                         f"{'bg-emerald-500/20 text-emerald-400' if self.autonomous_mode else 'bg-[#272727] text-[#6e6e6e]'}"
                                     )
                                 with (
                                     ui.button(on_click=self._toggle_best_of_n)
-                                    .props('flat dense no-caps data-testid="best-of-n-toggle"')
+                                    .props(
+                                        'flat dense no-caps data-testid="best-of-n-toggle"'
+                                    )
                                     .classes(
                                         "w-full px-2 py-1.5 rounded hover:bg-[#272727] flex items-center justify-between text-left font-normal"
                                     )
                                 ):
-                                    ui.label("Best of N (Battle Mode)").classes("text-[12px] text-[#cccccc]")
-                                    ui.label("ON" if self.best_of_n_mode else "OFF").classes(
+                                    ui.label("Best of N (Battle Mode)").classes(
+                                        "text-[12px] text-[#cccccc]"
+                                    )
+                                    ui.label(
+                                        "ON" if self.best_of_n_mode else "OFF"
+                                    ).classes(
                                         f"text-[10px] font-mono px-1.5 py-0.5 rounded "
                                         f"{'bg-blue-500/20 text-blue-400' if self.best_of_n_mode else 'bg-[#272727] text-[#6e6e6e]'}"
                                     )
@@ -888,7 +982,9 @@ class ChatView(ui.element):
                     # Permissions Preset Selector (Awb)
                     perm_btn = (
                         ui.button(on_click=self._cycle_permission_preset)
-                        .props('flat dense no-caps data-testid="permissions-selector-trigger"')
+                        .props(
+                            'flat dense no-caps data-testid="permissions-selector-trigger"'
+                        )
                         .classes(
                             "px-2.5 py-1 bg-[#151515] hover:bg-[#272727] border border-[#222222] rounded-lg text-[11px] text-[#cccccc] flex items-center gap-1.5 min-h-0 font-normal"
                         )
@@ -908,7 +1004,6 @@ class ChatView(ui.element):
                         ),
                         initial_open=self.model_open,
                     )
-
 
                 # Right Controls: Send Prompt Button
                 send_btn = (
@@ -976,9 +1071,7 @@ class ChatView(ui.element):
 
     def _submit_side_question(self) -> None:
         if self.side_question_input.strip():
-            self.side_question_answer = (
-                f"Answer: '{self.side_question_input.strip()}' verified against nicegui_ai.antigravity state."
-            )
+            self.side_question_answer = f"Answer: '{self.side_question_input.strip()}' verified against nicegui_ai.antigravity state."
             self.render()
 
     def _cycle_permission_preset(self) -> None:

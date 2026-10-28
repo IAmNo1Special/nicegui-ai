@@ -102,9 +102,7 @@ class Sidebar(ui.element):
     def render_content(self) -> None:
         self.clear()
         visible_sessions = [
-            s
-            for s in self.sessions
-            if self.show_archived_in_sidebar or not s.archived
+            s for s in self.sessions if self.show_archived_in_sidebar or not s.archived
         ]
         pinned_sessions = [s for s in visible_sessions if s.pinned]
         standalone_sessions = [
@@ -226,7 +224,9 @@ class Sidebar(ui.element):
                     )
 
                 with ui.element("div").classes("pt-1 space-y-0.5 flex flex-col"):
-                    nav_items: list[tuple[str, str, str, CenterViewType, Callable[[], None]]] = [
+                    nav_items: list[
+                        tuple[str, str, str, CenterViewType, Callable[[], None]]
+                    ] = [
                         (
                             "Conversation History",
                             "history",
@@ -299,7 +299,10 @@ class Sidebar(ui.element):
                             with (
                                 ui.element("div")
                                 .classes(row_cls)
-                                .on("click", lambda _, sid=s.id: self.on_select_session(sid))
+                                .on(
+                                    "click",
+                                    lambda _, sid=s.id: self.on_select_session(sid),
+                                )
                             ):
                                 with ui.element("div").classes("min-w-0 flex-1"):
                                     ui.label(s.title).classes("truncate text-xs")
@@ -475,7 +478,9 @@ class Sidebar(ui.element):
                         )
                         with (
                             ui.element("button")
-                            .props('type="button" aria-label="New Standalone Conversation"')
+                            .props(
+                                'type="button" aria-label="New Standalone Conversation"'
+                            )
                             .classes(
                                 "inline-flex items-center justify-center h-6 w-6 rounded "
                                 "text-secondary-foreground hover:text-foreground hover:bg-secondary "

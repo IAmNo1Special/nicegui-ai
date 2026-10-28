@@ -42,7 +42,9 @@ class AutomationsView(ui.element):
         self.draft_name: str = ""
         self.draft_prompt: str = ""
         self.draft_project_id: str = (
-            projects[3].id if len(projects) > 3 else (projects[0].id if projects else "")
+            projects[3].id
+            if len(projects) > 3
+            else (projects[0].id if projects else "")
         )
         self.draft_frequency: Literal["daily", "weekly", "hourly", "weekdays"] = "daily"
         self.draft_hour: str = "9:00 AM"
@@ -73,9 +75,7 @@ class AutomationsView(ui.element):
             "w-full max-w-3xl mx-auto p-8 space-y-6 pb-20 flex flex-col"
         ):
             # Header
-            with ui.element("div").classes(
-                "flex items-center justify-between gap-4"
-            ):
+            with ui.element("div").classes("flex items-center justify-between gap-4"):
                 with ui.element("div").classes("flex flex-col gap-1"):
                     ui.label("Automations").classes(
                         "text-lg font-medium text-foreground select-none"
@@ -95,9 +95,7 @@ class AutomationsView(ui.element):
                         )
                         .on("click", self._open_modal)
                     ):
-                        AntigravityIcon(
-                            "sparkles", size=14, classes="text-primary"
-                        )
+                        AntigravityIcon("sparkles", size=14, classes="text-primary")
                         ui.label("Create with Prompt")
 
                     with (
@@ -136,9 +134,7 @@ class AutomationsView(ui.element):
                         with ui.element("div").classes(
                             "flex flex-col gap-1 min-w-0 flex-1"
                         ):
-                            with ui.element("div").classes(
-                                "flex items-center gap-2"
-                            ):
+                            with ui.element("div").classes("flex items-center gap-2"):
                                 AntigravityIcon(
                                     "automations",
                                     size=15,
@@ -189,11 +185,7 @@ class AutomationsView(ui.element):
                                 )
                                 .classes(
                                     "relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors "
-                                    + (
-                                        "bg-primary"
-                                        if item.enabled
-                                        else "bg-secondary"
-                                    )
+                                    + ("bg-primary" if item.enabled else "bg-secondary")
                                 )
                                 .on(
                                     "click.stop",
@@ -219,14 +211,10 @@ class AutomationsView(ui.element):
         with (
             ui.element("div")
             .props('data-testid="cloud-trigger-detail"')
-            .classes(
-                "w-full max-w-2xl mx-auto p-8 space-y-6 pb-20 flex flex-col"
-            )
+            .classes("w-full max-w-2xl mx-auto p-8 space-y-6 pb-20 flex flex-col")
         ):
             # Top Title Bar
-            with ui.element("div").classes(
-                "flex items-center justify-between gap-4"
-            ):
+            with ui.element("div").classes("flex items-center justify-between gap-4"):
                 with ui.element("div").classes("flex items-center gap-2 min-w-0"):
                     ui.label(item.display_name).classes(
                         "text-lg font-medium text-foreground truncate"
@@ -268,9 +256,7 @@ class AutomationsView(ui.element):
                     with ui.element("div").classes(
                         "flex items-center justify-between text-xs"
                     ):
-                        ui.label("Prompt").classes(
-                            "text-muted-foreground font-medium"
-                        )
+                        ui.label("Prompt").classes("text-muted-foreground font-medium")
                         ui.label("Runs as Gemini 3.8 Flash").classes(
                             "text-[11px] font-mono text-muted-foreground"
                         )
@@ -292,9 +278,7 @@ class AutomationsView(ui.element):
                                 "folder", size=14, classes="text-muted-foreground"
                             )
                             folder_str = (
-                                f" ({proj.folders[0]})"
-                                if proj and proj.folders
-                                else ""
+                                f" ({proj.folders[0]})" if proj and proj.folders else ""
                             )
                             ui.label(
                                 f"{proj.name if proj else 'Workspace'}{folder_str}"
@@ -307,9 +291,7 @@ class AutomationsView(ui.element):
 
                 # Trigger Schedule vs Event
                 with ui.element("div").classes("space-y-2 flex flex-col"):
-                    with ui.element("div").classes(
-                        "flex items-center justify-between"
-                    ):
+                    with ui.element("div").classes("flex items-center justify-between"):
                         ui.label("Trigger").classes(
                             "text-xs text-muted-foreground font-medium"
                         )
@@ -432,9 +414,7 @@ class AutomationsView(ui.element):
                             with ui.element("div").classes(
                                 "flex items-center justify-between px-4 py-3 text-xs"
                             ):
-                                with ui.element("div").classes(
-                                    "flex flex-col gap-0.5"
-                                ):
+                                with ui.element("div").classes("flex flex-col gap-0.5"):
                                     with ui.element("div").classes(
                                         "flex items-center gap-2"
                                     ):
@@ -447,9 +427,7 @@ class AutomationsView(ui.element):
                                         ui.label(f"{run_id} • {dur}").classes(
                                             "font-mono text-[11px] text-muted-foreground"
                                         )
-                                    ui.label(desc).classes(
-                                        "text-muted-foreground"
-                                    )
+                                    ui.label(desc).classes("text-muted-foreground")
                                 ui.label(ago).classes(
                                     "text-[11px] text-muted-foreground shrink-0"
                                 )
@@ -465,9 +443,7 @@ class AutomationsView(ui.element):
             with ui.element("div").classes(
                 "w-[640px] max-w-full rounded-xl border border-card-border bg-card shadow-2xl p-6 space-y-5 flex flex-col"
             ):
-                with ui.element("div").classes(
-                    "flex items-center justify-between"
-                ):
+                with ui.element("div").classes("flex items-center justify-between"):
                     ui.label("New Automation").classes(
                         "text-base font-medium text-foreground"
                     )
@@ -487,9 +463,7 @@ class AutomationsView(ui.element):
                             "text-xs text-muted-foreground"
                         )
                         name_inp = (
-                            ui.input(
-                                placeholder="e.g., Daily REA Bundle Parity Audit"
-                            )
+                            ui.input(placeholder="e.g., Daily REA Bundle Parity Audit")
                             .props("dense borderless")
                             .classes(
                                 "w-full h-9 px-3 rounded-lg border border-card-border bg-background text-xs text-foreground"
@@ -512,9 +486,7 @@ class AutomationsView(ui.element):
                         )
                         prompt_inp.bind_value(self, "draft_prompt")
 
-                    with ui.element("div").classes(
-                        "grid grid-cols-2 gap-3"
-                    ):
+                    with ui.element("div").classes("grid grid-cols-2 gap-3"):
                         with ui.element("div").classes(
                             "p-3 rounded-lg border border-card-border bg-background text-xs flex items-center justify-between"
                         ):
@@ -540,9 +512,7 @@ class AutomationsView(ui.element):
                         ui.label("Cancel")
                     with (
                         ui.element("button")
-                        .props(
-                            'type="button" data-testid="create-automation-submit"'
-                        )
+                        .props('type="button" data-testid="create-automation-submit"')
                         .classes(
                             "h-8 px-4 rounded-lg bg-primary text-primary-foreground text-xs font-medium border-none cursor-pointer"
                         )
@@ -572,10 +542,7 @@ class AutomationsView(ui.element):
 
     def _submit_new_automation(self) -> None:
         name = self.draft_name.strip() or "Scheduled Workspace Check"
-        prompt = (
-            self.draft_prompt.strip()
-            or "Run tests and report any regressions."
-        )
+        prompt = self.draft_prompt.strip() or "Run tests and report any regressions."
         new_item = AutomationItem(
             id=f"auto-{len(self.automations) + 1}",
             display_name=name,

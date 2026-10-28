@@ -50,8 +50,18 @@ CHANGED_FILES: list[ChangedFile] = [
                 type="hunk",
                 text="@@ -220,10 +220,28 @@ class AuxiliaryPane(ui.element):",
             ),
-            DiffLine(old_num=220, new_num=220, type="context", text="    def _render_overview(self) -> None:"),
-            DiffLine(old_num=221, new_num=None, type="del", text='        with ui.column().classes("p-4 gap-4"):'),
+            DiffLine(
+                old_num=220,
+                new_num=220,
+                type="context",
+                text="    def _render_overview(self) -> None:",
+            ),
+            DiffLine(
+                old_num=221,
+                new_num=None,
+                type="del",
+                text='        with ui.column().classes("p-4 gap-4"):',
+            ),
             DiffLine(
                 old_num=None,
                 new_num=221,
@@ -95,8 +105,18 @@ CHANGED_FILES: list[ChangedFile] = [
                 type="hunk",
                 text="@@ -512,8 +512,19 @@ class ChatView(ui.element):",
             ),
-            DiffLine(old_num=512, new_num=512, type="context", text="    # Composer Footer (MBb at 5441000)"),
-            DiffLine(old_num=513, new_num=None, type="del", text='    with ui.row().classes("items-center gap-1"):' ),
+            DiffLine(
+                old_num=512,
+                new_num=512,
+                type="context",
+                text="    # Composer Footer (MBb at 5441000)",
+            ),
+            DiffLine(
+                old_num=513,
+                new_num=None,
+                type="del",
+                text='    with ui.row().classes("items-center gap-1"):',
+            ),
             DiffLine(
                 old_num=None,
                 new_num=513,
@@ -271,8 +291,14 @@ class AuxiliaryPane(ui.element):
 
         # Terminal state
         self.terminal_lines: list[dict[str, str]] = [
-            {"cmd": "ps aux | grep -i antigravity", "output": "vanluther 3366 /home/vanluther/Downloads/Antigravity/Antigravity-x64/antigravity"},
-            {"cmd": "uv run pytest", "output": "======================== 28 passed in 0.84s ========================"},
+            {
+                "cmd": "ps aux | grep -i antigravity",
+                "output": "vanluther 3366 /home/vanluther/Downloads/Antigravity/Antigravity-x64/antigravity",
+            },
+            {
+                "cmd": "uv run pytest",
+                "output": "======================== 28 passed in 0.84s ========================",
+            },
         ]
         self.terminal_input = ""
         self.active_process_id = "proc-1"
@@ -354,11 +380,25 @@ class AuxiliaryPane(ui.element):
             "h-[40px] px-2 border-b border-[#222222] items-center justify-between shrink-0 bg-[#101010] w-full gap-1 relative"
         ):
             with ui.row().classes("items-center gap-0.5 relative"):
-                self._tab_icon_btn("overview", "overview_tab", "Overview", "aux-tab-overview")
-                self._tab_icon_btn("review", "review_tab", "Review Changes", "aux-tab-review", badge="3")
-                self._tab_icon_btn("terminal", "terminal_tab", "Terminal", "aux-tab-terminal")
-                self._tab_icon_btn("file", "file_doc", "Files & Artifacts", "aux-tab-file")
-                self._tab_icon_btn("browser", "globe", "Browser Preview", "aux-tab-browser")
+                self._tab_icon_btn(
+                    "overview", "overview_tab", "Overview", "aux-tab-overview"
+                )
+                self._tab_icon_btn(
+                    "review",
+                    "review_tab",
+                    "Review Changes",
+                    "aux-tab-review",
+                    badge="3",
+                )
+                self._tab_icon_btn(
+                    "terminal", "terminal_tab", "Terminal", "aux-tab-terminal"
+                )
+                self._tab_icon_btn(
+                    "file", "file_doc", "Files & Artifacts", "aux-tab-file"
+                )
+                self._tab_icon_btn(
+                    "browser", "globe", "Browser Preview", "aux-tab-browser"
+                )
                 self._tab_icon_btn(
                     "agents",
                     "subagent",
@@ -381,38 +421,70 @@ class AuxiliaryPane(ui.element):
                         AntigravityIcon("plus", size=14)
 
                     if self.plus_dropdown_open:
-                        with ui.column().props('data-testid="aux-panel-plus-dropdown-menu"').classes(
-                            "absolute left-0 top-full mt-1 w-48 bg-[#191919] border border-[#222222] rounded-lg shadow-2xl py-1 z-50 gap-0"
+                        with (
+                            ui.column()
+                            .props('data-testid="aux-panel-plus-dropdown-menu"')
+                            .classes(
+                                "absolute left-0 top-full mt-1 w-48 bg-[#191919] border border-[#222222] rounded-lg shadow-2xl py-1 z-50 gap-0"
+                            )
                         ):
                             ui.label("Open Auxiliary Tab").classes(
                                 "px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[#6e6e6e]"
                             )
                             plus_items: list[tuple[AuxTabType, str, str, str]] = [
-                                ("overview", "overview_tab", "Overview", "Ctrl+Shift+O"),
-                                ("review", "review_tab", "Review Changes", "Ctrl+Shift+R"),
+                                (
+                                    "overview",
+                                    "overview_tab",
+                                    "Overview",
+                                    "Ctrl+Shift+O",
+                                ),
+                                (
+                                    "review",
+                                    "review_tab",
+                                    "Review Changes",
+                                    "Ctrl+Shift+R",
+                                ),
                                 ("terminal", "terminal_tab", "Terminal", "Ctrl+`"),
-                                ("file", "file_doc", "File & Artifact Viewer", "Ctrl+Shift+E"),
+                                (
+                                    "file",
+                                    "file_doc",
+                                    "File & Artifact Viewer",
+                                    "Ctrl+Shift+E",
+                                ),
                                 ("browser", "globe", "Browser Preview", "Ctrl+Shift+B"),
-                                ("agents", "subagent", "Subagents Inspector", "Ctrl+Shift+A"),
+                                (
+                                    "agents",
+                                    "subagent",
+                                    "Subagents Inspector",
+                                    "Ctrl+Shift+A",
+                                ),
                             ]
                             for tab_id, icon_name, label, shortcut in plus_items:
                                 with (
                                     ui.button(on_click=lambda t=tab_id: self.set_tab(t))
-                                    .props(f'flat dense no-caps data-testid="aux-plus-item-{tab_id}"')
+                                    .props(
+                                        f'flat dense no-caps data-testid="aux-plus-item-{tab_id}"'
+                                    )
                                     .classes(
                                         "w-full px-2.5 py-1.5 text-[12px] text-[#cccccc] hover:bg-[#272727]/70 flex items-center justify-between rounded-none font-normal"
                                     )
                                 ):
                                     with ui.row().classes("items-center gap-2"):
-                                        AntigravityIcon(icon_name, size=14, classes="text-[#6e6e6e]")
+                                        AntigravityIcon(
+                                            icon_name, size=14, classes="text-[#6e6e6e]"
+                                        )
                                         ui.label(label)
-                                    ui.label(shortcut).classes("text-[10px] text-[#6e6e6e] font-mono")
+                                    ui.label(shortcut).classes(
+                                        "text-[10px] text-[#6e6e6e] font-mono"
+                                    )
 
             with ui.row().classes("items-center gap-1"):
                 max_btn = (
                     ui.button(on_click=self._toggle_maximized)
                     .props('flat dense no-caps data-testid="aux-fullscreen-toggle"')
-                    .classes("p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919]/60 min-h-0 min-w-0")
+                    .classes(
+                        "p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919]/60 min-h-0 min-w-0"
+                    )
                 )
                 with max_btn:
                     AntigravityIcon("fullscreen", size=14)
@@ -420,7 +492,9 @@ class AuxiliaryPane(ui.element):
                 close_btn = (
                     ui.button(on_click=self._handle_close)
                     .props('flat dense no-caps data-testid="aux-close-button"')
-                    .classes("p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919]/60 min-h-0 min-w-0")
+                    .classes(
+                        "p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919]/60 min-h-0 min-w-0"
+                    )
                 )
                 with close_btn:
                     AntigravityIcon("close", size=14)
@@ -476,11 +550,15 @@ class AuxiliaryPane(ui.element):
             with ui.row().classes(
                 "px-3 py-2 border-b border-[#222222] items-center justify-between w-full relative shrink-0"
             ):
-                ui.label("Conversation Overview").classes("text-[12px] font-medium text-[#cccccc]")
+                ui.label("Conversation Overview").classes(
+                    "text-[12px] font-medium text-[#cccccc]"
+                )
                 with ui.element("div").classes("relative"):
                     cust_btn = (
                         ui.button(on_click=self._toggle_overview_customize)
-                        .props('flat dense no-caps data-testid="overview-panel-customize-trigger"')
+                        .props(
+                            'flat dense no-caps data-testid="overview-panel-customize-trigger"'
+                        )
                         .classes(
                             "px-2 py-1 rounded text-[11px] text-[#6e6e6e] hover:text-[#cccccc] hover:bg-[#191919] flex items-center gap-1 min-h-0"
                         )
@@ -507,22 +585,32 @@ class AuxiliaryPane(ui.element):
                                 ("uploads", "Uploads"),
                             ]
                             for sec_key, sec_label in section_labels:
-                                enabled = self.enabled_overview_sections.get(sec_key, True)
+                                enabled = self.enabled_overview_sections.get(
+                                    sec_key, True
+                                )
                                 with (
                                     ui.button(
-                                        on_click=lambda k=sec_key: self._toggle_overview_section(k)
+                                        on_click=lambda k=sec_key: (
+                                            self._toggle_overview_section(k)
+                                        )
                                     )
-                                    .props(f'flat dense no-caps data-testid="overview-customize-{sec_key}"')
+                                    .props(
+                                        f'flat dense no-caps data-testid="overview-customize-{sec_key}"'
+                                    )
                                     .classes(
                                         "w-full px-2 py-1 text-[11px] text-[#cccccc] hover:bg-[#272727]/60 rounded flex items-center justify-between font-normal"
                                     )
                                 ):
                                     ui.label(sec_label)
                                     if enabled:
-                                        AntigravityIcon("check", size=12, classes="text-emerald-400")
+                                        AntigravityIcon(
+                                            "check", size=12, classes="text-emerald-400"
+                                        )
 
             # Quick Navigation Rows (Review, Files, Terminal, Browser, Plugins)
-            with ui.column().classes("shrink-0 gap-px p-1.5 border-b border-[#222222] w-full"):
+            with ui.column().classes(
+                "shrink-0 gap-px p-1.5 border-b border-[#222222] w-full"
+            ):
                 self._overview_quick_row(
                     "overview-panel-row-review",
                     "review_tab",
@@ -569,8 +657,14 @@ class AuxiliaryPane(ui.element):
                             "Verify all 26 UI views via pytest and headless Chromium",
                         ]
                         for g in goals:
-                            with ui.row().classes("items-center gap-2 text-[11px] text-[#cccccc] py-0.5"):
-                                AntigravityIcon("check", size=12, classes="text-emerald-400 shrink-0")
+                            with ui.row().classes(
+                                "items-center gap-2 text-[11px] text-[#cccccc] py-0.5"
+                            ):
+                                AntigravityIcon(
+                                    "check",
+                                    size=12,
+                                    classes="text-emerald-400 shrink-0",
+                                )
                                 ui.label(g)
 
                 if self.enabled_overview_sections.get("subagents", True):
@@ -579,43 +673,67 @@ class AuxiliaryPane(ui.element):
                     ):
                         for agent in self.subagents:
                             with (
-                                ui.button(on_click=lambda a=agent: self._open_subagent(a.id))
-                                .props('flat dense no-caps')
+                                ui.button(
+                                    on_click=lambda a=agent: self._open_subagent(a.id)
+                                )
+                                .props("flat dense no-caps")
                                 .classes(
                                     "w-full px-2.5 py-1.5 bg-[#191919] hover:bg-[#272727]/60 border border-[#222222] rounded-md flex items-center justify-between font-normal"
                                 )
                             ):
                                 with ui.row().classes("items-center gap-2"):
-                                    ui.element("span").classes("w-1.5 h-1.5 rounded-full bg-emerald-400")
-                                    ui.label(agent.name).classes("text-[12px] text-[#cccccc] font-medium")
-                                ui.label(agent.role).classes("text-[10px] text-[#6e6e6e] truncate max-w-[200px]")
+                                    ui.element("span").classes(
+                                        "w-1.5 h-1.5 rounded-full bg-emerald-400"
+                                    )
+                                    ui.label(agent.name).classes(
+                                        "text-[12px] text-[#cccccc] font-medium"
+                                    )
+                                ui.label(agent.role).classes(
+                                    "text-[10px] text-[#6e6e6e] truncate max-w-[200px]"
+                                )
 
                 if self.enabled_overview_sections.get("backgroundTasks", True):
-                    with self._overview_section("backgroundTasks", "Background Tasks", "2 running"):
+                    with self._overview_section(
+                        "backgroundTasks", "Background Tasks", "2 running"
+                    ):
                         tasks = [
-                            ("task-cdp", "CDP Runtime Inspector (127.0.0.1:46349)", "Running"),
+                            (
+                                "task-cdp",
+                                "CDP Runtime Inspector (127.0.0.1:46349)",
+                                "Running",
+                            ),
                             ("task-pytest", "uv run pytest -q", "Completed (0.84s)"),
                         ]
                         for _tid, tlabel, tstatus in tasks:
                             with ui.row().classes(
                                 "w-full px-2.5 py-1.5 bg-[#191919] border border-[#222222] rounded-md items-center justify-between text-[11px]"
                             ):
-                                ui.label(tlabel).classes("text-[#cccccc] font-mono text-[11px]")
-                                ui.label(tstatus).classes("text-[10px] text-emerald-400")
+                                ui.label(tlabel).classes(
+                                    "text-[#cccccc] font-mono text-[11px]"
+                                )
+                                ui.label(tstatus).classes(
+                                    "text-[10px] text-emerald-400"
+                                )
 
-
-                if self.enabled_overview_sections.get("artifacts", True) and self.active_artifact:
+                if (
+                    self.enabled_overview_sections.get("artifacts", True)
+                    and self.active_artifact
+                ):
                     with self._overview_section("artifacts", "Artifacts", "1 artifact"):
                         with (
                             ui.button(on_click=lambda: self.set_tab("file"))
-                            .props('flat dense no-caps')
+                            .props("flat dense no-caps")
                             .classes(
                                 "w-full px-2.5 py-2 bg-[#191919] hover:bg-[#272727]/60 border border-[#222222] rounded-md flex items-center justify-between font-normal"
                             )
                         ):
                             with ui.row().classes("items-center gap-2"):
-                                AntigravityIcon("file_doc", size=14, classes="text-blue-400")
-                                ui.label(self.active_artifact.title).classes("text-[12px] text-[#cccccc]")
+                                AntigravityIcon(
+                                    "file_doc", size=14, classes="text-blue-400"
+                                )
+                                ui.label(self.active_artifact.title).classes(
+                                    "text-[12px] text-[#cccccc]"
+                                )
                             ui.label("Open ▸").classes("text-[10px] text-[#6e6e6e]")
 
                 if self.enabled_overview_sections.get("modifiedFiles", True):
@@ -625,15 +743,23 @@ class AuxiliaryPane(ui.element):
                         for cf in CHANGED_FILES:
                             with (
                                 ui.button(on_click=lambda: self.set_tab("review"))
-                                .props('flat dense no-caps')
+                                .props("flat dense no-caps")
                                 .classes(
                                     "w-full px-2.5 py-1.5 bg-[#191919] hover:bg-[#272727]/60 border border-[#222222] rounded-md flex items-center justify-between font-normal"
                                 )
                             ):
-                                ui.label(cf.path).classes("text-[11px] font-mono text-[#cccccc] truncate")
-                                with ui.row().classes("items-center gap-1.5 font-mono text-[10px]"):
-                                    ui.label(f"+{cf.additions}").classes("text-emerald-400")
-                                    ui.label(f"-{cf.deletions}").classes("text-rose-400")
+                                ui.label(cf.path).classes(
+                                    "text-[11px] font-mono text-[#cccccc] truncate"
+                                )
+                                with ui.row().classes(
+                                    "items-center gap-1.5 font-mono text-[10px]"
+                                ):
+                                    ui.label(f"+{cf.additions}").classes(
+                                        "text-emerald-400"
+                                    )
+                                    ui.label(f"-{cf.deletions}").classes(
+                                        "text-rose-400"
+                                    )
 
     def _overview_quick_row(
         self,
@@ -660,9 +786,13 @@ class AuxiliaryPane(ui.element):
         container = ui.column().classes("w-full gap-1.5")
         with container:
             with (
-                ui.button(on_click=lambda k=key: self._toggle_collapse_overview_section(k))
+                ui.button(
+                    on_click=lambda k=key: self._toggle_collapse_overview_section(k)
+                )
                 .props("flat dense no-caps")
-                .classes("w-full flex items-center justify-between py-0.5 text-left font-normal")
+                .classes(
+                    "w-full flex items-center justify-between py-0.5 text-left font-normal"
+                )
             ):
                 with ui.row().classes("items-center gap-1.5"):
                     AntigravityIcon(
@@ -690,9 +820,9 @@ class AuxiliaryPane(ui.element):
         self.render()
 
     def _toggle_collapse_overview_section(self, key: str) -> None:
-        self.collapsed_overview_sections[key] = not self.collapsed_overview_sections.get(
-            key, False
-        )
+        self.collapsed_overview_sections[
+            key
+        ] = not self.collapsed_overview_sections.get(key, False)
         self.render()
 
     def _open_subagent(self, agent_id: str) -> None:
@@ -720,20 +850,26 @@ class AuxiliaryPane(ui.element):
                     }
                     mode_btn = (
                         ui.button(on_click=self._cycle_diff_mode)
-                        .props('flat dense no-caps data-testid="diff-view-mode-trigger"')
+                        .props(
+                            'flat dense no-caps data-testid="diff-view-mode-trigger"'
+                        )
                         .classes(
                             "px-2.5 py-1 bg-[#191919] border border-[#222222] rounded-md text-[11px] text-[#cccccc] flex items-center gap-1.5 min-h-0 font-normal"
                         )
                     )
                     with mode_btn:
                         ui.label(mode_labels[self.diff_mode])
-                        AntigravityIcon("chevron_down", size=11, classes="text-[#6e6e6e]")
+                        AntigravityIcon(
+                            "chevron_down", size=11, classes="text-[#6e6e6e]"
+                        )
 
                     with ui.row().classes("items-center gap-1 text-[11px] font-mono"):
                         ui.label("+741").classes("text-emerald-400")
                         ui.label("-60").classes("text-rose-400")
 
-                with ui.row().classes("items-center gap-1 bg-[#191919] p-0.5 rounded-md border border-[#222222]"):
+                with ui.row().classes(
+                    "items-center gap-1 bg-[#191919] p-0.5 rounded-md border border-[#222222]"
+                ):
                     for style in ("unified", "split"):
                         active = self.diff_view_style == style
                         ui.button(
@@ -753,8 +889,12 @@ class AuxiliaryPane(ui.element):
                     ):
                         # File Header
                         with (
-                            ui.button(on_click=lambda p=cf.path: self._toggle_diff_file(p))
-                            .props('flat dense no-caps data-testid="file-diff-accordion-toggle"')
+                            ui.button(
+                                on_click=lambda p=cf.path: self._toggle_diff_file(p)
+                            )
+                            .props(
+                                'flat dense no-caps data-testid="file-diff-accordion-toggle"'
+                            )
                             .classes(
                                 "w-full px-3 py-2 bg-[#191919] hover:bg-[#272727]/50 flex items-center justify-between font-normal rounded-none"
                             )
@@ -765,8 +905,12 @@ class AuxiliaryPane(ui.element):
                                     size=11,
                                     classes="text-[#6e6e6e]",
                                 )
-                                ui.label(cf.path).classes("text-[12px] font-mono text-[#cccccc]")
-                            with ui.row().classes("items-center gap-1.5 font-mono text-[11px]"):
+                                ui.label(cf.path).classes(
+                                    "text-[12px] font-mono text-[#cccccc]"
+                                )
+                            with ui.row().classes(
+                                "items-center gap-1.5 font-mono text-[11px]"
+                            ):
                                 ui.label(f"+{cf.additions}").classes("text-emerald-400")
                                 ui.label(f"-{cf.deletions}").classes("text-rose-400")
 
@@ -774,13 +918,14 @@ class AuxiliaryPane(ui.element):
                             with (
                                 ui.column()
                                 .props('data-testid="code-gutter-diff"')
-                                .classes("w-full font-mono text-[11px] divide-y divide-[#222222]/40 gap-0")
+                                .classes(
+                                    "w-full font-mono text-[11px] divide-y divide-[#222222]/40 gap-0"
+                                )
                             ):
                                 for idx, dl in enumerate(cf.lines):
                                     line_num = dl.new_num or dl.old_num or idx
                                     line_key = f"{cf.path}:{dl.type}:{line_num}"
                                     bg_cls = (
-
                                         "bg-emerald-500/10 text-emerald-200"
                                         if dl.type == "add"
                                         else "bg-rose-500/10 text-rose-200"
@@ -801,9 +946,13 @@ class AuxiliaryPane(ui.element):
                                         comment_btn = (
                                             ui.button(
                                                 "+",
-                                                on_click=lambda k=line_key: self._open_diff_comment(k),
+                                                on_click=lambda k=line_key: (
+                                                    self._open_diff_comment(k)
+                                                ),
                                             )
-                                            .props('flat dense no-caps data-testid="gutter-comment-button"')
+                                            .props(
+                                                'flat dense no-caps data-testid="gutter-comment-button"'
+                                            )
                                             .classes(
                                                 "w-4 h-4 rounded bg-blue-600/80 text-white text-[10px] opacity-80 hover:opacity-100 min-h-0 min-w-0 p-0 shrink-0"
                                             )
@@ -825,32 +974,44 @@ class AuxiliaryPane(ui.element):
                                         with (
                                             ui.column()
                                             .props('data-testid="comment-box"')
-                                            .classes("w-full p-3 bg-[#191919] border-y border-[#222222] gap-2")
-                                        ):
-                                            ui.label(f"Add inline review comment on {line_key}").classes(
-                                                "text-[11px] text-[#6e6e6e]"
+                                            .classes(
+                                                "w-full p-3 bg-[#191919] border-y border-[#222222] gap-2"
                                             )
+                                        ):
+                                            ui.label(
+                                                f"Add inline review comment on {line_key}"
+                                            ).classes("text-[11px] text-[#6e6e6e]")
                                             comment_input = (
                                                 ui.textarea(
                                                     value=self.draft_comment,
                                                     on_change=lambda e: setattr(
-                                                        self, "draft_comment", str(e.value)
+                                                        self,
+                                                        "draft_comment",
+                                                        str(e.value),
                                                     ),
                                                 )
                                                 .props("outlined dense autogrow dark")
-                                                .classes("w-full text-[12px] bg-[#101010]")
+                                                .classes(
+                                                    "w-full text-[12px] bg-[#101010]"
+                                                )
                                             )
                                             _ = comment_input
-                                            with ui.row().classes("justify-end gap-2 w-full"):
+                                            with ui.row().classes(
+                                                "justify-end gap-2 w-full"
+                                            ):
                                                 ui.button(
                                                     "Cancel",
-                                                    on_click=lambda: self._open_diff_comment(None),
+                                                    on_click=lambda: (
+                                                        self._open_diff_comment(None)
+                                                    ),
                                                 ).props("flat dense no-caps").classes(
                                                     "px-2.5 py-1 text-[11px] text-[#6e6e6e] hover:text-[#cccccc]"
                                                 )
                                                 ui.button(
                                                     "Add Comment",
-                                                    on_click=lambda f=cf.path, ln=str(line_num): self._submit_diff_comment(f, ln),
+                                                    on_click=lambda f=cf.path, ln=str(line_num): (
+                                                        self._submit_diff_comment(f, ln)
+                                                    ),
                                                 ).props("flat dense no-caps").classes(
                                                     "px-3 py-1 bg-blue-600 text-white rounded text-[11px]"
                                                 )
@@ -864,14 +1025,22 @@ class AuxiliaryPane(ui.element):
                         with (
                             ui.column()
                             .props('data-testid="comment-card"')
-                            .classes("w-full p-2.5 bg-[#191919] border border-[#222222] rounded-lg gap-1")
+                            .classes(
+                                "w-full p-2.5 bg-[#191919] border border-[#222222] rounded-lg gap-1"
+                            )
                         ):
-                            with ui.row().classes("items-center justify-between w-full"):
-                                ui.label(f"{sc['author']} • {sc['file']}:{sc['line']}").classes(
-                                    "text-[11px] font-medium text-[#cccccc]"
+                            with ui.row().classes(
+                                "items-center justify-between w-full"
+                            ):
+                                ui.label(
+                                    f"{sc['author']} • {sc['file']}:{sc['line']}"
+                                ).classes("text-[11px] font-medium text-[#cccccc]")
+                                ui.label(sc["timestamp"]).classes(
+                                    "text-[10px] text-[#6e6e6e]"
                                 )
-                                ui.label(sc["timestamp"]).classes("text-[10px] text-[#6e6e6e]")
-                            ui.label(sc["text"]).classes("text-[12px] text-[#cccccc]/90")
+                            ui.label(sc["text"]).classes(
+                                "text-[12px] text-[#cccccc]/90"
+                            )
 
     def _cycle_diff_mode(self) -> None:
         order: list[Literal["all", "uncommitted", "last-turn"]] = [
@@ -938,7 +1107,9 @@ class AuxiliaryPane(ui.element):
                     with ui.row().classes("items-center gap-1.5 text-[#cccccc] mt-1"):
                         ui.label("~").classes("text-blue-400 font-semibold")
                         ui.label("❯").classes("text-emerald-400")
-                        ui.element("span").classes("w-2 h-4 bg-[#cccccc] inline-block animate-pulse")
+                        ui.element("span").classes(
+                            "w-2 h-4 bg-[#cccccc] inline-block animate-pulse"
+                        )
 
                 # Bottom Command Input Bar
                 with ui.row().classes(
@@ -948,15 +1119,21 @@ class AuxiliaryPane(ui.element):
                         ui.input(
                             placeholder="Run shell command in /mnt/storage/projects/nicegui-ai...",
                             value=self.terminal_input,
-                            on_change=lambda e: setattr(self, "terminal_input", str(e.value)),
+                            on_change=lambda e: setattr(
+                                self, "terminal_input", str(e.value)
+                            ),
                         )
-                        .props('borderless dense dark data-testid="terminal-command-input"')
+                        .props(
+                            'borderless dense dark data-testid="terminal-command-input"'
+                        )
                         .classes("flex-1 text-[12px] font-mono text-[#cccccc]")
                     )
                     cmd_input.on("keydown.enter", self._execute_terminal_cmd)
                     ui.button("Run", on_click=self._execute_terminal_cmd).props(
                         "flat dense no-caps"
-                    ).classes("px-2.5 py-1 bg-[#191919] hover:bg-[#272727] rounded text-[11px] text-[#cccccc]")
+                    ).classes(
+                        "px-2.5 py-1 bg-[#191919] hover:bg-[#272727] rounded text-[11px] text-[#cccccc]"
+                    )
 
             # Right Column: Conversations Process Tree Sidebar
             with ui.column().classes(
@@ -980,9 +1157,13 @@ class AuxiliaryPane(ui.element):
                         )
                     ):
                         with ui.row().classes("items-center gap-1.5 w-full"):
-                            AntigravityIcon("terminal_tab", size=12, classes="text-emerald-400")
+                            AntigravityIcon(
+                                "terminal_tab", size=12, classes="text-emerald-400"
+                            )
                             ui.label(plabel).classes("text-[11px] font-mono truncate")
-                        ui.label(pconv).classes("text-[10px] text-[#6e6e6e] truncate pl-4")
+                        ui.label(pconv).classes(
+                            "text-[10px] text-[#6e6e6e] truncate pl-4"
+                        )
 
     def _execute_terminal_cmd(self) -> None:
         cmd = self.terminal_input.strip()
@@ -1021,7 +1202,9 @@ class AuxiliaryPane(ui.element):
                 with (
                     ui.column()
                     .props('data-testid="tab-file-tree-sidebar"')
-                    .classes("w-[185px] h-full bg-[#151515] border-r border-[#222222] p-2 shrink-0 gap-1")
+                    .classes(
+                        "w-[185px] h-full bg-[#151515] border-r border-[#222222] p-2 shrink-0 gap-1"
+                    )
                 ):
                     ui.label("Workspace Files").classes(
                         "px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#6e6e6e]"
@@ -1029,7 +1212,9 @@ class AuxiliaryPane(ui.element):
                     for fname in SOURCE_FILES:
                         is_sel = fname == self.selected_source_file
                         with (
-                            ui.button(on_click=lambda f=fname: self._select_source_file(f))
+                            ui.button(
+                                on_click=lambda f=fname: self._select_source_file(f)
+                            )
                             .props("flat dense no-caps")
                             .classes(
                                 f"w-full px-2 py-1.5 rounded text-left text-[11px] flex items-center gap-1.5 font-normal "
@@ -1045,9 +1230,9 @@ class AuxiliaryPane(ui.element):
                     "w-full items-center justify-between pb-2 border-b border-[#222222]"
                 ):
                     with ui.row().classes("items-center gap-2"):
-                        ui.button(
-                            on_click=self._toggle_file_tree
-                        ).props("flat dense no-caps").classes(
+                        ui.button(on_click=self._toggle_file_tree).props(
+                            "flat dense no-caps"
+                        ).classes(
                             "p-1 text-[#6e6e6e] hover:text-[#cccccc] min-h-0 min-w-0"
                         )
                         ui.label(self.selected_source_file).classes(
@@ -1061,15 +1246,21 @@ class AuxiliaryPane(ui.element):
                     with (
                         ui.column()
                         .props('data-testid="markdown-frontmatter"')
-                        .classes("w-full bg-[#191919] border border-[#222222] rounded-lg p-2.5 gap-1")
+                        .classes(
+                            "w-full bg-[#191919] border border-[#222222] rounded-lg p-2.5 gap-1"
+                        )
                     ):
                         for k, v in frontmatter.items():
-                            with ui.row().classes("items-center justify-between text-[11px] w-full"):
+                            with ui.row().classes(
+                                "items-center justify-between text-[11px] w-full"
+                            ):
                                 ui.label(str(k)).classes("font-mono text-[#6e6e6e]")
                                 ui.label(str(v)).classes("font-mono text-[#cccccc]")
 
                 if str(file_entry.get("lang", "")).startswith("Markdown"):
-                    ui.markdown(content).classes("text-[12px] text-[#cccccc] leading-relaxed w-full")
+                    ui.markdown(content).classes(
+                        "text-[12px] text-[#cccccc] leading-relaxed w-full"
+                    )
                 else:
                     ui.code(content, language="python").classes("w-full text-[11px]")
 
@@ -1118,13 +1309,15 @@ class AuxiliaryPane(ui.element):
                 with ui.column().classes(
                     "max-w-md p-5 bg-[#191919] border border-[#222222] rounded-xl items-center gap-2"
                 ):
-                    AntigravityIcon("antigravity_logo", size=28, classes="text-[#cccccc]")
+                    AntigravityIcon(
+                        "antigravity_logo", size=28, classes="text-[#cccccc]"
+                    )
                     ui.label("Antigravity Headless Browser Target").classes(
                         "text-[14px] font-medium text-[#cccccc]"
                     )
-                    ui.label(f"Connected to {self.browser_url} (CDP Port 46349)").classes(
-                        "text-[11px] font-mono text-emerald-400"
-                    )
+                    ui.label(
+                        f"Connected to {self.browser_url} (CDP Port 46349)"
+                    ).classes("text-[11px] font-mono text-emerald-400")
                     ui.label(
                         "Live DOM & CSS Computed Style Inspector ready for agent visual verification."
                     ).classes("text-[12px] text-[#6e6e6e]")
@@ -1150,7 +1343,9 @@ class AuxiliaryPane(ui.element):
             with (
                 ui.column()
                 .props('data-testid="subagent-tab-sidebar"')
-                .classes("w-[180px] h-full bg-[#151515] border-r border-[#222222] p-2 shrink-0 gap-1")
+                .classes(
+                    "w-[180px] h-full bg-[#151515] border-r border-[#222222] p-2 shrink-0 gap-1"
+                )
             ):
                 ui.label("Subagents").classes(
                     "px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#6e6e6e]"
@@ -1165,10 +1360,12 @@ class AuxiliaryPane(ui.element):
                             f"{'bg-[#272727] text-[#cccccc]' if is_sel else 'text-[#6e6e6e] hover:text-[#cccccc] hover:bg-[#191919]'}"
                         )
                     ):
-                        ui.label(agent.name).classes("text-[11px] font-medium truncate w-full")
-                        ui.label(self.subagent_states.get(agent.id, agent.state)).classes(
-                            "text-[10px] text-emerald-400 font-mono"
+                        ui.label(agent.name).classes(
+                            "text-[11px] font-medium truncate w-full"
                         )
+                        ui.label(
+                            self.subagent_states.get(agent.id, agent.state)
+                        ).classes("text-[10px] text-emerald-400 font-mono")
 
             # Right Detail Inspector
             with ui.column().classes("flex-1 h-full p-4 overflow-y-auto gap-4"):
@@ -1177,25 +1374,41 @@ class AuxiliaryPane(ui.element):
                         "w-full items-center justify-between pb-3 border-b border-[#222222]"
                     ):
                         with ui.column().classes("gap-0.5"):
-                            ui.label(selected.name).classes("text-[14px] font-medium text-[#cccccc]")
-                            ui.label(selected.role).classes("text-[11px] text-[#6e6e6e]")
+                            ui.label(selected.name).classes(
+                                "text-[14px] font-medium text-[#cccccc]"
+                            )
+                            ui.label(selected.role).classes(
+                                "text-[11px] text-[#6e6e6e]"
+                            )
                         with ui.row().classes("items-center gap-1.5"):
                             ui.button(
                                 "Approve",
-                                on_click=lambda a=selected: self._set_subagent_state(a.id, "approved"),
-                            ).props('flat dense no-caps data-testid="subagent-approve"').classes(
+                                on_click=lambda a=selected: self._set_subagent_state(
+                                    a.id, "approved"
+                                ),
+                            ).props(
+                                'flat dense no-caps data-testid="subagent-approve"'
+                            ).classes(
                                 "px-2.5 py-1 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded text-[11px]"
                             )
                             ui.button(
                                 "Deny",
-                                on_click=lambda a=selected: self._set_subagent_state(a.id, "denied"),
-                            ).props('flat dense no-caps data-testid="subagent-deny"').classes(
+                                on_click=lambda a=selected: self._set_subagent_state(
+                                    a.id, "denied"
+                                ),
+                            ).props(
+                                'flat dense no-caps data-testid="subagent-deny"'
+                            ).classes(
                                 "px-2.5 py-1 bg-amber-600/20 text-amber-300 border border-amber-500/30 rounded text-[11px]"
                             )
                             ui.button(
                                 "Stop",
-                                on_click=lambda a=selected: self._set_subagent_state(a.id, "stopped"),
-                            ).props('flat dense no-caps data-testid="subagent-stop"').classes(
+                                on_click=lambda a=selected: self._set_subagent_state(
+                                    a.id, "stopped"
+                                ),
+                            ).props(
+                                'flat dense no-caps data-testid="subagent-stop"'
+                            ).classes(
                                 "px-2.5 py-1 bg-rose-600/20 text-rose-300 border border-rose-500/30 rounded text-[11px]"
                             )
 
@@ -1205,7 +1418,9 @@ class AuxiliaryPane(ui.element):
                         ui.label("Latest Trajectory Step").classes(
                             "text-[10px] font-semibold uppercase tracking-wider text-[#6e6e6e]"
                         )
-                        ui.label(selected.last_activity).classes("text-[12px] text-[#cccccc]")
+                        ui.label(selected.last_activity).classes(
+                            "text-[12px] text-[#cccccc]"
+                        )
                         ui.label(
                             f"Current status: {self.subagent_states.get(selected.id, selected.state)}"
                         ).classes("text-[11px] font-mono text-emerald-400")
@@ -1227,7 +1442,9 @@ class AuxiliaryPane(ui.element):
             .props('data-testid="aux-pane-new-tab-view"')
             .classes("flex-1 p-6 items-center justify-center gap-4 w-full")
         ):
-            ui.label("Open Auxiliary Surface").classes("text-[14px] font-medium text-[#cccccc]")
+            ui.label("Open Auxiliary Surface").classes(
+                "text-[14px] font-medium text-[#cccccc]"
+            )
             cards: list[tuple[AuxTabType, str, str]] = [
                 ("overview", "overview_tab", "Conversation Overview"),
                 ("review", "review_tab", "Review File Diffs"),

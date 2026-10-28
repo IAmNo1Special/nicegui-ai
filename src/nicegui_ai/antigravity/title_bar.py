@@ -50,27 +50,41 @@ class TitleBar(ui.element):
 
         self._menus: dict[str, list[MenuEntry]] = {
             "Antigravity": [
-                MenuEntry("About Antigravity", action_key="settings", divider_after=True),
+                MenuEntry(
+                    "About Antigravity", action_key="settings", divider_after=True
+                ),
                 MenuEntry("Settings...", "Ctrl+,", "settings"),
                 MenuEntry("Customizations...", action_key="customizations"),
-                MenuEntry("Automations...", action_key="automations", divider_after=True),
-                MenuEntry("Check for Updates...", action_key="settings", divider_after=True),
+                MenuEntry(
+                    "Automations...", action_key="automations", divider_after=True
+                ),
+                MenuEntry(
+                    "Check for Updates...", action_key="settings", divider_after=True
+                ),
                 MenuEntry("Quit Antigravity", "Ctrl+Q", "quit"),
             ],
             "File": [
                 MenuEntry("New Conversation", "Ctrl+N", "new_conversation"),
-                MenuEntry("Open Workspace...", "Ctrl+O", "settings", divider_after=True),
+                MenuEntry(
+                    "Open Workspace...", "Ctrl+O", "settings", divider_after=True
+                ),
                 MenuEntry("Search Conversations...", "Ctrl+K", "search"),
-                MenuEntry("Conversation History", "Ctrl+H", "history", divider_after=True),
+                MenuEntry(
+                    "Conversation History", "Ctrl+H", "history", divider_after=True
+                ),
                 MenuEntry("Close Conversation", "Ctrl+W", "new_conversation"),
             ],
             "View": [
                 MenuEntry("Toggle Sidebar", "Ctrl+B", "toggle_sidebar"),
-                MenuEntry("Toggle Auxiliary Pane", action_key="toggle_aux", divider_after=True),
+                MenuEntry(
+                    "Toggle Auxiliary Pane", action_key="toggle_aux", divider_after=True
+                ),
                 MenuEntry("Overview Panel", action_key="aux_overview"),
                 MenuEntry("Review Changes", action_key="aux_review"),
                 MenuEntry("Terminal", "Ctrl+`", "aux_terminal"),
-                MenuEntry("Browser Preview", action_key="aux_browser", divider_after=True),
+                MenuEntry(
+                    "Browser Preview", action_key="aux_browser", divider_after=True
+                ),
                 MenuEntry("Reload Window", "Ctrl+R", "reload"),
                 MenuEntry("Toggle Developer Tools", "Ctrl+Shift+I", "devtools"),
             ],
@@ -139,7 +153,9 @@ class TitleBar(ui.element):
                     if is_open:
                         with (
                             ui.element("div")
-                            .props(f'data-testid="title-menu-dropdown-{menu_name.lower()}"')
+                            .props(
+                                f'data-testid="title-menu-dropdown-{menu_name.lower()}"'
+                            )
                             .classes(
                                 "absolute left-0 top-full mt-1 w-56 rounded-xl border border-card-border "
                                 "bg-card shadow-2xl py-1 z-50 text-xs flex flex-col"
@@ -148,7 +164,9 @@ class TitleBar(ui.element):
                             for entry in entries:
                                 with (
                                     ui.element("button")
-                                    .props('type="button" data-testid="title-menu-bar-option"')
+                                    .props(
+                                        'type="button" data-testid="title-menu-bar-option"'
+                                    )
                                     .classes(
                                         "w-full flex items-center justify-between px-3 py-1.5 text-left "
                                         "text-secondary-foreground hover:text-foreground hover:bg-secondary "
@@ -156,7 +174,9 @@ class TitleBar(ui.element):
                                     )
                                     .on(
                                         "click",
-                                        lambda _, k=entry.action_key: self._trigger_action(k),
+                                        lambda _, k=entry.action_key: (
+                                            self._trigger_action(k)
+                                        ),
                                     )
                                 ):
                                     ui.label(entry.label)

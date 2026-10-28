@@ -143,7 +143,9 @@ class ProjectConfig:
     folders: list[str]
     active_conversations: int
     archived_conversations: int
-    security_preset: Literal["inherit", "strict", "default", "auto", "turbo"] = "inherit"
+    security_preset: Literal["inherit", "strict", "default", "auto", "turbo"] = (
+        "inherit"
+    )
     artifact_review_mode: Literal["inherit", "always", "review", "auto"] = "inherit"
     sandbox_enabled: bool = True
     sandbox_allow_network: bool = False
@@ -171,9 +173,7 @@ class AppSettings:
     enable_agent_sounds: bool = False
     browser_allowed_urls: list[str] = field(default_factory=list)
     browser_denied_urls: list[str] = field(default_factory=list)
-    terminal_setup_script: str = (
-        "# Antigravity non-interactive shell setup\nexport PAGER=cat\nexport FORCE_COLOR=1"
-    )
+    terminal_setup_script: str = "# Antigravity non-interactive shell setup\nexport PAGER=cat\nexport FORCE_COLOR=1"
     default_workspace_vcs: Literal["git", "jj"] = "git"
     sync_jj_worktrees: bool = True
     use_full_vcs_clones: bool = False
@@ -323,7 +323,11 @@ def create_default_settings() -> AppSettings:
                 id="mcp-fs",
                 name="filesystem",
                 command="npx",
-                args=["-y", "@modelcontextprotocol/server-filesystem", "/mnt/storage/projects"],
+                args=[
+                    "-y",
+                    "@modelcontextprotocol/server-filesystem",
+                    "/mnt/storage/projects",
+                ],
                 enabled=True,
                 status="connected",
                 tools=[

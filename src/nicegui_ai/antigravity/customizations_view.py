@@ -193,7 +193,9 @@ class WorkspaceCustomizationsView(ui.element):
         self.clear()
         active_project = next(
             (p for p in self.projects if p.id == self.active_project_id),
-            self.projects[3] if len(self.projects) > 3 else (self.projects[0] if self.projects else None),
+            self.projects[3]
+            if len(self.projects) > 3
+            else (self.projects[0] if self.projects else None),
         )
         q = self.search_query.strip().lower()
 
@@ -306,7 +308,9 @@ class WorkspaceCustomizationsView(ui.element):
                             "folder", size=14, classes="text-muted-foreground"
                         )
                         ui.label(
-                            active_project.name if active_project else "antigravity-studio"
+                            active_project.name
+                            if active_project
+                            else "antigravity-studio"
                         )
                         AntigravityIcon("chevron_down", size=12)
 
@@ -498,9 +502,7 @@ class WorkspaceCustomizationsView(ui.element):
                                             "text-xs text-muted-foreground truncate"
                                         )
 
-    def _render_skill_or_rule_row(
-        self, entry: SkillRuleEntry, is_skill: bool
-    ) -> None:
+    def _render_skill_or_rule_row(self, entry: SkillRuleEntry, is_skill: bool) -> None:
         with ui.element("div").classes(
             "flex items-center justify-between gap-3 px-4 py-3 hover:bg-secondary/40 transition-colors"
         ):
@@ -520,13 +522,10 @@ class WorkspaceCustomizationsView(ui.element):
                         ui.label(entry.trigger).classes(
                             "text-[10px] px-1.5 py-0.2 rounded bg-secondary text-secondary-foreground border border-card-border"
                         )
-                    scope_cls = (
-                        "text-[10px] px-1.5 py-0.2 rounded border "
-                        + (
-                            "bg-primary/10 text-primary border-primary/30"
-                            if entry.scope == "Workspace"
-                            else "bg-secondary text-muted-foreground border-card-border"
-                        )
+                    scope_cls = "text-[10px] px-1.5 py-0.2 rounded border " + (
+                        "bg-primary/10 text-primary border-primary/30"
+                        if entry.scope == "Workspace"
+                        else "bg-secondary text-muted-foreground border-card-border"
                     )
                     ui.label(entry.scope).classes(scope_cls)
                 ui.label(entry.description).classes(

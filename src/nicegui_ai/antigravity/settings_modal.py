@@ -53,7 +53,6 @@ class SettingsModal(ui.element):
             return screen
         return screen.lower()
 
-
     def _apply_root_classes(self) -> None:
         self._classes.clear()
         if not self.is_open:
@@ -82,7 +81,6 @@ class SettingsModal(ui.element):
         self.active_screen = self._normalize_screen(screen)
         self.active_subview = None
         self.render()
-
 
     def set_subview(self, subview: str | None) -> None:
         self.active_subview = subview
@@ -153,7 +151,9 @@ class SettingsModal(ui.element):
                     self._nav_item("not-in-project", "Not in Project")
 
                 # Misc Section
-                with ui.column().classes("w-full gap-0.5 pt-1 border-t border-[#222222]"):
+                with ui.column().classes(
+                    "w-full gap-0.5 pt-1 border-t border-[#222222]"
+                ):
                     self._nav_item("shortcuts", "Shortcuts")
                     self._nav_item("feedback", "Provide Feedback")
 
@@ -177,7 +177,9 @@ class SettingsModal(ui.element):
             ui.label(label).classes("truncate")
 
     def _render_right_content(self) -> None:
-        with ui.column().classes("flex-1 h-full flex flex-col overflow-hidden bg-[#101010]"):
+        with ui.column().classes(
+            "flex-1 h-full flex flex-col overflow-hidden bg-[#101010]"
+        ):
             # Top Header Bar
             with ui.row().classes(
                 "h-[48px] px-6 border-b border-[#222222] items-center justify-between w-full shrink-0"
@@ -187,7 +189,9 @@ class SettingsModal(ui.element):
                         ui.button(
                             "← Back",
                             on_click=lambda: self.set_subview(None),
-                        ).props('flat dense no-caps data-testid="settings-subview-back"').classes(
+                        ).props(
+                            'flat dense no-caps data-testid="settings-subview-back"'
+                        ).classes(
                             "px-2 py-1 rounded bg-[#191919] text-[11px] text-[#cccccc] min-h-0"
                         )
                     ui.label(self._screen_title()).classes(
@@ -196,7 +200,9 @@ class SettingsModal(ui.element):
                 close_btn = (
                     ui.button(on_click=self.close)
                     .props('flat dense no-caps data-testid="settings-close-button"')
-                    .classes("p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919] min-h-0 min-w-0")
+                    .classes(
+                        "p-1.5 text-[#6e6e6e] hover:text-[#cccccc] rounded-md hover:bg-[#191919] min-h-0 min-w-0"
+                    )
                 )
                 with close_btn:
                     AntigravityIcon("close", size=15)
@@ -531,9 +537,9 @@ class SettingsModal(ui.element):
             ui.label("Google Antigravity Desktop (NiceGUI 1:1 Edition)").classes(
                 "text-[15px] font-semibold text-[#cccccc]"
             )
-            ui.label("Version 2.0.0-rea • ConnectRPC Port 46349 • Python 3.13 + NiceGUI").classes(
-                "text-[11px] font-mono text-[#6e6e6e]"
-            )
+            ui.label(
+                "Version 2.0.0-rea • ConnectRPC Port 46349 • Python 3.13 + NiceGUI"
+            ).classes("text-[11px] font-mono text-[#6e6e6e]")
 
     def _render_project_screen(self, project_id: str) -> None:
         proj = next(
@@ -743,7 +749,9 @@ class SettingsModal(ui.element):
             with ui.column().classes("gap-0.5 max-w-[60%]"):
                 ui.label(title).classes("text-[13px] font-medium text-[#cccccc]")
                 ui.label(subtitle).classes("text-[11px] text-[#6e6e6e]")
-            with ui.row().classes("items-center gap-1 bg-[#151515] p-1 rounded-lg border border-[#222222]"):
+            with ui.row().classes(
+                "items-center gap-1 bg-[#151515] p-1 rounded-lg border border-[#222222]"
+            ):
                 for opt in options:
                     active = current_value == opt
                     ui.button(

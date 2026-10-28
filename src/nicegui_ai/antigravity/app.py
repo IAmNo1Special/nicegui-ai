@@ -76,7 +76,15 @@ class AntigravityApp(ui.element):
         self.aux_tab: AuxTabType = (
             raw_aux_tab  # type: ignore[assignment]
             if raw_aux_tab
-            in ("overview", "review", "terminal", "file", "browser", "agents", "new-tab")
+            in (
+                "overview",
+                "review",
+                "terminal",
+                "file",
+                "browser",
+                "agents",
+                "new-tab",
+            )
             else "terminal"
         )
 
@@ -144,7 +152,9 @@ class AntigravityApp(ui.element):
                         on_open_automations=self._handle_open_automations,
                         on_open_customizations=self._handle_open_customizations,
                         on_open_settings=lambda: self._handle_open_settings("general"),
-                        on_open_search_modal=lambda: self._handle_set_search_modal(True),
+                        on_open_search_modal=lambda: self._handle_set_search_modal(
+                            True
+                        ),
                         on_toggle_sidebar=self._handle_toggle_sidebar,
                         on_toggle_pin=self._handle_toggle_pin,
                         on_toggle_archive=self._handle_toggle_archive,
@@ -177,7 +187,8 @@ class AntigravityApp(ui.element):
                         on_create_automation=self._handle_create_automation,
                         on_update_automation=self._handle_update_automation,
                         on_run_automation_now=self._handle_run_automation_now,
-                        initial_modal_open=self.params.get("openNewAutomation") == "true",
+                        initial_modal_open=self.params.get("openNewAutomation")
+                        == "true",
                         initial_selected_trigger_id=self.params.get("triggerId"),
                     )
                 elif self.center_view == "customizations":
@@ -185,8 +196,8 @@ class AntigravityApp(ui.element):
                         projects=self.settings.projects,
                         active_project_id=self.active_project_id,
                         on_select_project=self._handle_select_project,
-                        on_open_global_customizations=lambda: self._handle_open_settings(
-                            "customizations"
+                        on_open_global_customizations=lambda: (
+                            self._handle_open_settings("customizations")
                         ),
                         on_open_file_in_aux=self._handle_open_file_in_aux,
                     )
@@ -328,7 +339,15 @@ class AntigravityApp(ui.element):
         self.render()
 
     def _handle_select_aux_tab_str(self, tab: str) -> None:
-        if tab in ("overview", "review", "terminal", "file", "browser", "agents", "new-tab"):
+        if tab in (
+            "overview",
+            "review",
+            "terminal",
+            "file",
+            "browser",
+            "agents",
+            "new-tab",
+        ):
             self._handle_open_aux_tab(tab)  # type: ignore[arg-type]
 
     def _handle_aux_tab_change(self, tab: AuxTabType) -> None:
@@ -429,7 +448,9 @@ class AntigravityApp(ui.element):
         self.render()
 
     def _handle_run_automation_now(self, item: AutomationItem) -> None:
-        self._handle_send_message(f"[Automation: {item.display_name}] {item.prompt}", [])
+        self._handle_send_message(
+            f"[Automation: {item.display_name}] {item.prompt}", []
+        )
 
     def _handle_model_change(self, model: str) -> None:
         self.selected_model = model

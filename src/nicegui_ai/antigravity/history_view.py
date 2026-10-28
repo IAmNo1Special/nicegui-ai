@@ -84,7 +84,9 @@ class ConversationHistoryView(ui.element):
 
                     with (
                         ui.element("button")
-                        .props('type="button" data-testid="history-new-conversation-button"')
+                        .props(
+                            'type="button" data-testid="history-new-conversation-button"'
+                        )
                         .classes(
                             "inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-secondary "
                             "hover:bg-secondary/80 text-foreground text-xs font-medium "
@@ -131,7 +133,9 @@ class ConversationHistoryView(ui.element):
                                 placeholder="Search conversations by title or workspace...",
                                 on_change=lambda e: self._on_search_change(e.value),
                             )
-                            .props('dense borderless data-testid="history-search-input"')
+                            .props(
+                                'dense borderless data-testid="history-search-input"'
+                            )
                             .classes("flex-1 text-xs text-foreground bg-transparent")
                         )
                         inp.value = self.search_query
@@ -225,9 +229,7 @@ class ConversationHistoryView(ui.element):
                 # Grouped or Flat Conversation List
                 if self.group_by == "project":
                     for proj in self.projects:
-                        p_sessions = [
-                            s for s in filtered if s.project_id == proj.id
-                        ]
+                        p_sessions = [s for s in filtered if s.project_id == proj.id]
                         if not p_sessions:
                             continue
                         is_collapsed = self.collapsed_groups.get(proj.id, False)
@@ -447,9 +449,7 @@ class SearchConversationsModal(ui.element):
                 with ui.element("div").classes(
                     "flex items-center gap-2.5 px-4 py-3 border-b border-card-border"
                 ):
-                    AntigravityIcon(
-                        "search", size=16, classes="text-muted-foreground"
-                    )
+                    AntigravityIcon("search", size=16, classes="text-muted-foreground")
                     inp = (
                         ui.input(
                             placeholder="Search conversations, workspaces, or commands...",
@@ -508,9 +508,7 @@ class SearchConversationsModal(ui.element):
                         )
                         with (
                             ui.element("button")
-                            .props(
-                                f'type="button" data-testid="picker-session-{s.id}"'
-                            )
+                            .props(f'type="button" data-testid="picker-session-{s.id}"')
                             .classes(
                                 "w-full flex items-center justify-between px-3 py-2 rounded-lg "
                                 "hover:bg-secondary text-left bg-transparent border-none cursor-pointer"

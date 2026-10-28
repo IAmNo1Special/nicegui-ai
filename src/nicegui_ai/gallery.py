@@ -702,7 +702,9 @@ def gallery_page() -> None:
         ):
             with ui.row().classes("w-full items-center justify-between"):
                 with ui.column().classes("gap-0.5"):
-                    ui.label("Antigravity 1:1 Desktop UI/UX Suite (nicegui_ai.antigravity)").classes(
+                    ui.label(
+                        "Antigravity 1:1 Desktop UI/UX Suite (nicegui_ai.antigravity)"
+                    ).classes(
                         "text-xs font-bold uppercase tracking-wider text-emerald-400"
                     )
                     ui.label(
@@ -725,4 +727,3 @@ def main() -> None:
 
 if __name__ in {"__main__", "__mp_main__"}:
     main()
-

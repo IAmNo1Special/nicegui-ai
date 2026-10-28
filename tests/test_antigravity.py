@@ -168,7 +168,6 @@ def test_workspace_customizations_view():
     assert len(cv.skills) >= 3
 
 
-
 def test_auxiliary_pane_all_tabs():
     art = create_default_artifact()
     subagents = create_default_subagents()
@@ -198,10 +197,8 @@ def test_auxiliary_pane_all_tabs():
     pane.terminal_input = "uv run ruff check ."
     pane._execute_terminal_cmd()
     assert any(
-        line_item["cmd"] == "uv run ruff check ."
-        for line_item in pane.terminal_lines
+        line_item["cmd"] == "uv run ruff check ." for line_item in pane.terminal_lines
     )
-
 
 
 def test_chat_view_and_composer_controls():
@@ -274,7 +271,13 @@ def test_settings_modal_all_screens():
         sm.set_screen(screen)
         assert sm.active_screen == screen
 
-    for subview in ("mcp-servers", "skills-manager", "hooks-manager", "browser-urls", "file-access-rules"):
+    for subview in (
+        "mcp-servers",
+        "skills-manager",
+        "hooks-manager",
+        "browser-urls",
+        "file-access-rules",
+    ):
         sm.set_subview(subview)
         assert sm.active_subview == subview
 

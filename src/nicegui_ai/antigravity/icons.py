@@ -132,9 +132,7 @@ ANTIGRAVITY_SVGS: dict[str, tuple[str, str]] = {
 
 def get_antigravity_svg(name: str, size: int = 16, classes: str = "") -> str:
     """Return raw SVG string for a named Antigravity icon."""
-    view_box, inner = ANTIGRAVITY_SVGS.get(
-        name, ANTIGRAVITY_SVGS["sparkles"]
-    )
+    view_box, inner = ANTIGRAVITY_SVGS.get(name, ANTIGRAVITY_SVGS["sparkles"])
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
         f'viewBox="{view_box}" fill="none" class="shrink-0 {classes}">{inner}</svg>'
