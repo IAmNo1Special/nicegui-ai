@@ -17,6 +17,7 @@
 <p align="center">
   <a href="#quickstart">Quickstart</a> •
   <a href="#component-catalog">Component Catalog</a> •
+  <a href="#antigravity-desktop-ide-11-parity">Antigravity 1:1 Desktop</a> •
   <a href="#live-showcase-demo--component-gallery">Live Showcase</a> •
   <a href="https://pypi.org/project/nicegui-ai/">PyPI</a>
 </p>
@@ -170,6 +171,42 @@ ui.run(port=8080)
 <p align="center">
   <img src="https://raw.githubusercontent.com/IAmNo1Special/nicegui-ai/main/assets/artifact-drawer-preview.png" alt="nicegui-ai Off-Canvas Artifact Drawer with Unified Diff" width="100%">
 </p>
+
+---
+
+## Antigravity Desktop IDE (1:1 Parity)
+
+`nicegui-ai` includes a complete, pixel-perfect 1:1 Python + NiceGUI reconstruction of the **Google Antigravity** desktop AI IDE (`nicegui_ai.antigravity`), matching all 26 extracted surfaces, modals, popovers, and auxiliary panels extracted directly from the upstream release via reverse engineering and live DevTools inspection.
+
+### Running the Antigravity Desktop App
+
+Run directly via the included CLI command:
+
+```bash
+uv run nicegui-antigravity
+# or via module:
+uv run python -m nicegui_ai.antigravity.app
+```
+
+Then visit **http://localhost:8080** (or embed it directly into your own NiceGUI app via `from nicegui_ai.antigravity import AntigravityApp`).
+
+### Architecture & Reconstructed Surfaces
+
+| Surface | Module | Description |
+| :--- | :--- | :--- |
+| **Title Bar** | [`title_bar.py`](src/nicegui_ai/antigravity/title_bar.py) | 35px native header (`Antigravity`, `File`, `View`, `Window`). |
+| **Sidebar Navigation** | [`sidebar.py`](src/nicegui_ai/antigravity/sidebar.py) | 256px nav tree with Pinned items, collapsible Projects, and Settings footer. |
+| **Zero-State Home** | [`chat_view.py`](src/nicegui_ai/antigravity/chat_view.py) | Upstream hero card (`rYb`/`Q1b`) with prompt pill chips and quick-start guides. |
+| **Chat & Trajectory** | [`chat_view.py`](src/nicegui_ai/antigravity/chat_view.py) | Message stream, expandable reasoning accordions, tool execution cards, and `ask_question` cards. |
+| **Model Selector** | [`model_selector.py`](src/nicegui_ai/antigravity/model_selector.py) | Upward popover with side-by-side Reasoning Effort flyout (`Low`, `Medium`, `High`, `Max`) and quota inspection. |
+| **Composer Controls** | [`chat_view.py`](src/nicegui_ai/antigravity/chat_view.py) | Fastpick `/` slash menu, `@` file mentions, `+` Context Picker modal, Modes popover, and Permissions presets. |
+| **6-Tab Auxiliary Pane** | [`auxiliary_pane.py`](src/nicegui_ai/antigravity/auxiliary_pane.py) | Overview (`P_b`/`N_b`/`0_b`), Review Changes (unified/split diffs with gutter comments), 2-Column Terminal, File Viewer, Browser Target Preview, and Subagents Inspector. |
+| **Conversation History** | [`history_view.py`](src/nicegui_ai/antigravity/history_view.py) | Full-screen timeline (`IRb`) with search filters and `Ctrl+K` command palette modal (`oMb`). |
+| **Automations & Schedules** | [`automations_view.py`](src/nicegui_ai/antigravity/automations_view.py) | Grid view (`K1b`), Schedule Editor (`B1b`/`A1b`), and New Automation creator (`I1b`). |
+| **Customizations** | [`customizations_view.py`](src/nicegui_ai/antigravity/customizations_view.py) | Workspace & Global Skills (`.agents/skills/`), Rules (`AGENTS.md`), Plugins, and Subagents (`xUb`/`wUb`). |
+| **Two-Column Settings** | [`settings_modal.py`](src/nicegui_ai/antigravity/settings_modal.py) | 13 primary categories, 11 subviews, model credentials, and theme modes (`dark`, `light`, `oled`). |
+
+For design rationale, state model, and ubiquitous language, see [ADR 0005](docs/adr/0005-antigravity-subpackage-and-1-to-1-parity.md) and [CONTEXT-MAP.md](CONTEXT-MAP.md).
 
 ---
 
