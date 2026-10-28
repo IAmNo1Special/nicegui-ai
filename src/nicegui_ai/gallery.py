@@ -696,10 +696,33 @@ def gallery_page() -> None:
                 ):
                     ui.label("OpenCode Stream")
 
+        # Section 9: 1:1 Antigravity Desktop UI/UX Suite Showcase
+        with ui.column().classes(
+            "w-full gap-3 p-4 bg-[#101010] rounded-2xl border border-[#222222]"
+        ):
+            with ui.row().classes("w-full items-center justify-between"):
+                with ui.column().classes("gap-0.5"):
+                    ui.label("Antigravity 1:1 Desktop UI/UX Suite (nicegui_ai.antigravity)").classes(
+                        "text-xs font-bold uppercase tracking-wider text-emerald-400"
+                    )
+                    ui.label(
+                        "Full 1:1 Antigravity desktop clone: TitleBar, Sidebar, Zero-State Home, ChatView, ModelSelector, History, Automations, Customizations, 6-Tab AuxiliaryPane, and 2-Column SettingsModal."
+                    ).classes("text-xs text-gray-400")
+                ui.link(
+                    "Open 1:1 Antigravity App →",
+                    "/antigravity",
+                ).classes(
+                    "px-3.5 py-1.5 rounded-lg bg-[#272727] hover:bg-[#333333] text-[#cccccc] text-xs font-medium no-underline border border-[#222222]"
+                )
+
 
 def main() -> None:
+    from nicegui_ai.antigravity import register_antigravity_routes
+
+    register_antigravity_routes("/antigravity")
     ui.run(title="nicegui-ai Component Gallery", port=8080, reload=False)
 
 
 if __name__ in {"__main__", "__mp_main__"}:
     main()
+

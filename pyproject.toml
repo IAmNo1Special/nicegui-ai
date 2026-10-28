@@ -36,6 +36,8 @@ dependencies = [
 [project.scripts]
 nicegui-ai = "nicegui_ai.gallery:main"
 nicegui-ai-demo = "nicegui_ai.demo:main"
+nicegui-antigravity = "nicegui_ai.antigravity.app:main"
+nicegui-ai-antigravity = "nicegui_ai.antigravity.app:main"
 
 [project.urls]
 Homepage = "https://github.com/IAmNo1Special/nicegui-ai"

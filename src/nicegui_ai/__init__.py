@@ -1,5 +1,6 @@
 """nicegui-ai: Modern AI agent UI primitives for NiceGUI."""
 
+from nicegui_ai import antigravity
 from nicegui_ai.adapters import (
     AgUiStreamAdapter,
     BaseStreamAdapter,
@@ -7,6 +8,7 @@ from nicegui_ai.adapters import (
     OpenCodeStreamAdapter,
     OpenRouterStreamAdapter,
 )
+from nicegui_ai.antigravity import AntigravityApp
 from nicegui_ai.approval_modal import ApprovalModal
 from nicegui_ai.artifact import ArtifactCard
 from nicegui_ai.artifact_viewer import ArtifactViewerDrawer
@@ -47,6 +49,7 @@ from nicegui_ai.voice_pill import VoicePill
 
 __version__ = "0.2.0"
 
+
 __all__ = [
     "AgUiEvent",
     "AgUiEventType",
@@ -55,6 +58,7 @@ __all__ = [
     "AiComposer",
     "AiMarkdown",
     "AiThread",
+    "AntigravityApp",
     "ApprovalModal",
     "ArtifactCard",
     "ArtifactViewerDrawer",
@@ -90,7 +94,9 @@ __all__ = [
     "ToolStatus",
     "UserMessage",
     "VoicePill",
+    "antigravity",
     "get_lucide_svg",
     "parse_markdown_blocks",
     "setup_ai_theme",
 ]
+

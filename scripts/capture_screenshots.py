@@ -193,8 +193,12 @@ def gallery():
 
 
 def run_server():
+    from nicegui_ai.antigravity import register_antigravity_routes
+
+    register_antigravity_routes("/antigravity")
     ui.run(port=PORT, show=False, reload=False)
 
 
 if __name__ == "__main__":
     run_server()
+
